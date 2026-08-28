@@ -37,3 +37,6 @@ yarn-error.log*
 # typescript
 /koc-paneli/*.tsbuildinfo
 /koc-paneli/next-env.d.ts
+node_modules/
+cloudflare/node_modules/
+.DS_Store

@@ -1,7 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
+import { cfStorage } from '@/lib/cloudflare/storage'
 import { getAuthenticatedStudentId } from '@/lib/student/auth'
 
 type ActionResponse = {
@@ -15,16 +16,11 @@ export async function submitWeeklyProgress(formData: FormData): Promise<ActionRe
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
-
   // Get coach_id
-  const { data: rel } = await supabase
-    .from('coach_students')
-    .select('coach_id')
-    .eq('student_id', studentId)
-    .eq('status', 'active')
-    .limit(1)
-    .single()
+  const rel = await d1.first<{ coach_id: string }>(
+    "SELECT coach_id FROM coach_students WHERE student_id = ? AND status = 'active' LIMIT 1",
+    [studentId]
+  )
 
   const coachId = rel?.coach_id
   if (!coachId) {
@@ -82,12 +78,8 @@ export async function submitWeeklyProgress(formData: FormData): Promise<ActionRe
     const safeExtension = extension.replace(/[^a-z0-9]/g, '').slice(0, 8) || 'jpg'
     const path = `${studentId}/${crypto.randomUUID()}-weekly.${safeExtension}`
 
-    const { error: uploadErr } = await supabase.storage
-      .from('progress-photos')
-      .upload(path, photoFile, {
-        contentType: photoFile.type,
-        upsert: false,
-      })
+    const buffer = await photoFile.arrayBuffer()
+    const { error: uploadErr } = await cfStorage.upload('progress-photos', path, buffer, photoFile.type)
 
     if (uploadErr) {
       console.error('Error uploading weekly photo:', uploadErr)
@@ -117,20 +109,16 @@ export async function submitWeeklyProgress(formData: FormData): Promise<ActionRe
     before_photo_path: beforePhotoPath || null,
   }
 
-  const { error } = await supabase
-    .from('progress_entries')
-    .insert({
-      student_id: studentId,
-      coach_id: coachId,
-      date,
-      weight,
-      note,
-      custom_metrics,
-    })
-
-  if (error) {
+  const id = crypto.randomUUID()
+  try {
+    await d1.run(
+      `INSERT INTO progress_entries (id, student_id, coach_id, date, weight, note, custom_metrics)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, studentId, coachId, date, weight, note, JSON.stringify(custom_metrics)]
+    )
+  } catch (error: any) {
     console.error('Error saving weekly progress:', error)
-    return { success: false, error: 'Veritabanına kaydedilirken bir hata oluştu.' }
+    return { success: false, error: error.message || 'Veritabanına kaydedilirken bir hata oluştu.' }
   }
 
   revalidatePath('/student/ilerleme')
@@ -149,16 +137,12 @@ export async function updateProgressEntryPhoto(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
+  const entry = await d1.first<{ student_id: string; custom_metrics: any }>(
+    'SELECT student_id, custom_metrics FROM progress_entries WHERE id = ? LIMIT 1',
+    [entryId]
+  )
 
-  // Verify ownership
-  const { data: entry, error: fetchError } = await supabase
-    .from('progress_entries')
-    .select('student_id, custom_metrics')
-    .eq('id', entryId)
-    .single()
-
-  if (fetchError || !entry) {
+  if (!entry) {
     return { success: false, error: 'Kayıt bulunamadı.' }
   }
 
@@ -182,40 +166,38 @@ export async function updateProgressEntryPhoto(
   const safeExtension = extension.replace(/[^a-z0-9]/g, '').slice(0, 8) || 'jpg'
   const path = `${studentId}/${crypto.randomUUID()}-weekly.${safeExtension}`
 
-  const { error: uploadErr } = await supabase.storage
-    .from('progress-photos')
-    .upload(path, photoFile, {
-      contentType: photoFile.type,
-      upsert: false,
-    })
+  const buffer = await photoFile.arrayBuffer()
+  const { error: uploadErr } = await cfStorage.upload('progress-photos', path, buffer, photoFile.type)
 
   if (uploadErr) {
     console.error('Error uploading weekly photo:', uploadErr)
     return { success: false, error: 'Fotoğraf yüklenirken hata oluştu.' }
   }
 
-  // Update custom_metrics
-  const customMetrics = {
-    ...(entry.custom_metrics as Record<string, unknown> || {}),
-    before_photo_path: path,
+  let metrics: Record<string, unknown> = {}
+  if (entry.custom_metrics) {
+    try {
+      metrics = typeof entry.custom_metrics === 'string'
+        ? JSON.parse(entry.custom_metrics)
+        : entry.custom_metrics
+    } catch {
+      metrics = {}
+    }
   }
+  metrics.before_photo_path = path
 
-  const { error: updateError } = await supabase
-    .from('progress_entries')
-    .update({ custom_metrics: customMetrics })
-    .eq('id', entryId)
-
-  if (updateError) {
+  try {
+    await d1.run(
+      'UPDATE progress_entries SET custom_metrics = ? WHERE id = ?',
+      [JSON.stringify(metrics), entryId]
+    )
+  } catch (updateError) {
     console.error('Error updating progress entry metrics:', updateError)
     return { success: false, error: 'Kayıt güncellenemedi.' }
   }
 
-  // Generate signed URL
-  let signedUrl: string | null = null
-  const { data } = await supabase.storage
-    .from('progress-photos')
-    .createSignedUrl(path, PHOTO_URL_EXPIRES_IN)
-  signedUrl = data?.signedUrl ?? null
+  const { data } = await cfStorage.createSignedUrl('progress-photos', path, PHOTO_URL_EXPIRES_IN)
+  const signedUrl = data?.signedUrl ?? null
 
   revalidatePath('/student/ilerleme')
   revalidatePath('/student/dashboard')
@@ -231,16 +213,12 @@ export async function deleteProgressEntryPhoto(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
+  const entry = await d1.first<{ student_id: string; custom_metrics: any }>(
+    'SELECT student_id, custom_metrics FROM progress_entries WHERE id = ? LIMIT 1',
+    [entryId]
+  )
 
-  // Verify ownership
-  const { data: entry, error: fetchError } = await supabase
-    .from('progress_entries')
-    .select('student_id, custom_metrics')
-    .eq('id', entryId)
-    .single()
-
-  if (fetchError || !entry) {
+  if (!entry) {
     return { success: false, error: 'Kayıt bulunamadı.' }
   }
 
@@ -248,18 +226,24 @@ export async function deleteProgressEntryPhoto(
     return { success: false, error: 'Bu işlem için yetkiniz yok.' }
   }
 
-  // Update custom_metrics by clearing before_photo_path
-  const customMetrics = {
-    ...(entry.custom_metrics as Record<string, unknown> || {}),
-    before_photo_path: null,
+  let metrics: Record<string, unknown> = {}
+  if (entry.custom_metrics) {
+    try {
+      metrics = typeof entry.custom_metrics === 'string'
+        ? JSON.parse(entry.custom_metrics)
+        : entry.custom_metrics
+    } catch {
+      metrics = {}
+    }
   }
+  metrics.before_photo_path = null
 
-  const { error: updateError } = await supabase
-    .from('progress_entries')
-    .update({ custom_metrics: customMetrics })
-    .eq('id', entryId)
-
-  if (updateError) {
+  try {
+    await d1.run(
+      'UPDATE progress_entries SET custom_metrics = ? WHERE id = ?',
+      [JSON.stringify(metrics), entryId]
+    )
+  } catch (updateError) {
     console.error('Error deleting progress photo from db:', updateError)
     return { success: false, error: 'Kayıt güncellenemedi.' }
   }
@@ -269,4 +253,3 @@ export async function deleteProgressEntryPhoto(
 
   return { success: true }
 }
-

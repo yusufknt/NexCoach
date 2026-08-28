@@ -1,5 +1,10 @@
-import type { CoachStudent } from '@/types'
+// ============================================
+// COACH TYPES - Koç paneline özel UI tipleri
+// ============================================
 
+import type { CoachStudentStatus, PaymentStatus } from '@/types'
+
+// --- Dashboard Types ---
 export type DashboardStats = {
   activeStudentCount: number
   unreadMessageCount: number
@@ -24,6 +29,7 @@ export type ActivityItem = {
   createdAt: string
 }
 
+// --- Student List Types ---
 export type CoachStudentListItem = {
   id: string
   studentId: string
@@ -32,7 +38,7 @@ export type CoachStudentListItem = {
   packageName: string | null
   startDate: string
   endDate: string | null
-  status: CoachStudent['status']
+  status: CoachStudentStatus
   lastActivityAt: string | null
 }
 
@@ -45,10 +51,11 @@ export type CoachStudentDetail = {
   packageName: string | null
   startDate: string
   endDate: string | null
-  status: CoachStudent['status']
-  paymentStatus: CoachStudent['payment_status']
+  status: CoachStudentStatus
+  paymentStatus: PaymentStatus
 }
 
+// --- Message Types ---
 export type Message = {
   id: string
   sender_id: string
@@ -71,8 +78,7 @@ export type ChatSummary = {
   unreadCount: number
 }
 
-// --- Calendar types ---
-
+// --- Calendar Types ---
 export type CalendarEventFormData = {
   title: string
   event_type: 'available' | 'session' | 'blocked'
@@ -95,8 +101,7 @@ export type CalendarSummary = {
   weekSessionCount: number
 }
 
-// --- Settings types ---
-
+// --- Settings Types ---
 export type CoachProfile = {
   id: string
   fullName: string
@@ -116,8 +121,7 @@ export type StudentOption = {
   fullName: string
 }
 
-// --- Dashboard extended types ---
-
+// --- Dashboard Extended Types ---
 export type MonthlyRevenue = {
   month: string
   revenue: number

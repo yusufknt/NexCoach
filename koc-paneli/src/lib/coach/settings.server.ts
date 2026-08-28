@@ -1,41 +1,50 @@
-import { createClient } from '@/lib/supabase/server'
+
+import { d1 } from '@/lib/cloudflare/d1'
 import type { CoachProfile, NotificationPreferences } from './types'
 
 export async function getCoachProfile(coachId: string): Promise<CoachProfile | null> {
-  const supabase = await createClient()
+  const profile = await d1.first<{
+    id: string
+    full_name: string | null
+    bio: string | null
+    avatar_url: string | null
+  }>(
+    'SELECT id, full_name, bio, avatar_url FROM profiles WHERE id = ?',
+    [coachId]
+  )
 
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('id, full_name, bio, avatar_url')
-    .eq('id', coachId)
-    .single()
-
-  if (error || !profile) {
-    console.error('Error fetching coach profile:', error)
+  if (!profile) {
     return null
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  
+  const user = await d1.first<{ email: string }>('SELECT email FROM user WHERE id = ?', [coachId])
 
   return {
     id: profile.id,
-    fullName: profile.full_name,
-    bio: profile.bio,
-    avatarUrl: profile.avatar_url,
+    fullName: profile.full_name ?? '',
+    bio: profile.bio ?? null,
+    avatarUrl: profile.avatar_url ?? null,
     email: user?.email ?? null,
   }
 }
 
 export async function getNotificationPreferences(coachId: string): Promise<NotificationPreferences> {
-  const supabase = await createClient()
+  const row = await d1.first<{ notification_preferences: any }>(
+    'SELECT notification_preferences FROM profiles WHERE id = ?',
+    [coachId]
+  )
 
-  const { data } = await supabase
-    .from('profiles')
-    .select('notification_preferences')
-    .eq('id', coachId)
-    .single()
-
-  const prefs = (data as { notification_preferences: Partial<NotificationPreferences> | null } | null)?.notification_preferences
+  let prefs: any = null
+  if (row?.notification_preferences) {
+    try {
+      prefs = typeof row.notification_preferences === 'string'
+        ? JSON.parse(row.notification_preferences)
+        : row.notification_preferences
+    } catch {
+      prefs = null
+    }
+  }
 
   return {
     emailOnMessage: prefs?.emailOnMessage ?? true,

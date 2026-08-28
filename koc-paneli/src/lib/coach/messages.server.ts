@@ -1,85 +1,63 @@
-import { createClient as createServerClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
 import type { ChatSummary } from './types'
 
-interface StudentChatListItemRow {
-  student_id: string
-  profiles: {
-    id: string
-    full_name: string
-    avatar_url: string | null
-  } | {
-    id: string
-    full_name: string
-    avatar_url: string | null
-  }[] | null
+type StudentProfileRow = {
+  id: string
+  full_name: string | null
+  avatar_url: string | null
 }
 
-// Server-side function to get chat summaries for the coach
 export async function getChatSummaries(coachId: string): Promise<ChatSummary[]> {
-  const supabase = await createServerClient()
-
-  // We need to get all students of the coach, and then their latest message and unread count.
-  const { data: students, error: studentError } = await supabase
-    .from('coach_students')
-    .select(`
-      student_id,
-      profiles!coach_students_student_id_fkey(
-        id,
-        full_name,
-        avatar_url
-      )
-    `)
-    .eq('coach_id', coachId)
-
-  if (studentError) {
-    console.error('Error fetching students for chat summary:', studentError)
-    return []
-  }
+  const students = await d1.query<StudentProfileRow>(
+    `SELECT pr.id, pr.full_name, pr.avatar_url
+     FROM coach_students cs
+     JOIN profiles pr ON pr.id = cs.student_id
+     WHERE cs.coach_id = ?`,
+    [coachId]
+  )
 
   const summaries: ChatSummary[] = []
 
-  for (const cs of (students as unknown as StudentChatListItemRow[] | null) ?? []) {
-    const profileRaw = cs.profiles
-    if (!profileRaw) continue
-    const profile = Array.isArray(profileRaw) ? profileRaw[0] : profileRaw
-
-    // Get last message
-    const { data: messages } = await supabase
-      .from('messages')
-      .select('*')
-      .or(`and(sender_id.eq.${coachId},receiver_id.eq.${profile.id}),and(sender_id.eq.${profile.id},receiver_id.eq.${coachId})`)
-      .order('created_at', { ascending: false })
-      .limit(1)
-
-    // Get unread count (messages sent by student to coach that are not read)
-    const { count } = await supabase
-      .from('messages')
-      .select('*', { count: 'exact', head: true })
-      .eq('sender_id', profile.id)
-      .eq('receiver_id', coachId)
-      .eq('is_read', false)
-
-    let lastMessage = null
-    if (messages && messages.length > 0) {
-      const msg = messages[0]
-      lastMessage = {
-        content: msg.content,
-        createdAt: msg.created_at,
-        isRead: msg.is_read,
-        senderId: msg.sender_id
-      }
-    }
+  for (const student of students ?? []) {
+    const [lastMsg, unreadCountRow] = await Promise.all([
+      d1.first<{
+        id: string
+        content: string
+        created_at: string
+        is_read: number | boolean
+        sender_id: string
+      }>(
+        `SELECT id, content, created_at, is_read, sender_id
+         FROM messages
+         WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+         ORDER BY created_at DESC
+         LIMIT 1`,
+        [coachId, student.id, student.id, coachId]
+      ),
+      d1.first<{ count: number }>(
+        `SELECT COUNT(*) as count
+         FROM messages
+         WHERE sender_id = ? AND receiver_id = ? AND is_read = 0`,
+        [student.id, coachId]
+      ),
+    ])
 
     summaries.push({
-      studentId: profile.id,
-      fullName: profile.full_name,
-      avatarUrl: profile.avatar_url,
-      lastMessage,
-      unreadCount: count || 0
+      studentId: student.id,
+      fullName: student.full_name ?? 'İsimsiz',
+      avatarUrl: student.avatar_url ?? null,
+      lastMessage: lastMsg
+        ? {
+            content: lastMsg.content,
+            createdAt: lastMsg.created_at,
+            isRead: Boolean(lastMsg.is_read),
+            senderId: lastMsg.sender_id,
+          }
+        : null,
+      unreadCount: unreadCountRow?.count ?? 0,
     })
   }
 
-  // Sort summaries by last message date descending
   return summaries.sort((a, b) => {
     if (!a.lastMessage) return 1
     if (!b.lastMessage) return -1

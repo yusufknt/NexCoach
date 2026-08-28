@@ -1,54 +1,47 @@
-import { createClient } from '@/lib/supabase/server'
-import type { CoachInfo } from './types'
-
-interface CoachRelationRow {
-  coach: {
-    id: string
-    full_name: string
-    avatar_url: string | null
-    bio: string | null
-  } | {
-    id: string
-    full_name: string
-    avatar_url: string | null
-    bio: string | null
-  }[] | null
-}
+import { d1 } from '@/lib/cloudflare/d1'
+import { unstable_cache } from 'next/cache'
+import type { CoachInfo, StudentMessage } from './types'
 
 export async function getStudentCoachInfo(studentId: string): Promise<CoachInfo | null> {
-  const supabase = await createClient()
-
-  const { data: rel } = await supabase
-    .from('coach_students')
-    .select('coach:profiles!coach_students_coach_id_fkey(id, full_name, avatar_url, bio)')
-    .eq('student_id', studentId)
-    .eq('status', 'active')
-    .limit(1)
-    .single()
-
-  if (!rel) return null
-  const relTyped = rel as unknown as CoachRelationRow
-  const coachRaw = relTyped.coach
-  const coach = Array.isArray(coachRaw) ? coachRaw[0] : coachRaw
+  const coach = await d1.first<{
+    id: string
+    full_name: string | null
+    avatar_url: string | null
+    bio: string | null
+  }>(
+    `SELECT pr.id, pr.full_name, pr.avatar_url, pr.bio
+     FROM coach_students cs
+     JOIN profiles pr ON pr.id = cs.coach_id
+     WHERE cs.student_id = ? AND cs.status = 'active'
+     LIMIT 1`,
+    [studentId]
+  )
 
   if (!coach) return null
 
   return {
     id: coach.id,
-    fullName: coach.full_name,
-    avatarUrl: coach.avatar_url,
-    bio: coach.bio,
+    fullName: coach.full_name ?? 'Koç',
+    avatarUrl: coach.avatar_url ?? null,
+    bio: coach.bio ?? null,
   }
 }
 
-export async function getInitialMessages(studentId: string, coachId: string) {
-  const supabase = await createClient()
+export async function getInitialMessages(studentId: string, coachId: string): Promise<StudentMessage[]> {
+  const getCached = unstable_cache(
+    async (studentId: string, coachId: string) => {
+      const data = await d1.query<StudentMessage>(
+        `SELECT * FROM messages
+         WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+         ORDER BY created_at ASC`,
+        [studentId, coachId, coachId, studentId]
+      )
 
-  const { data } = await supabase
-    .from('messages')
-    .select('*')
-    .or(`and(sender_id.eq.${studentId},receiver_id.eq.${coachId}),and(sender_id.eq.${coachId},receiver_id.eq.${studentId})`)
-    .order('created_at', { ascending: true })
+      return data ?? []
+    },
+    ['student-messages'],
+    { revalidate: 30, tags: ['student-messages'] }
+  )
 
-  return data ?? []
+  return getCached(studentId, coachId)
 }

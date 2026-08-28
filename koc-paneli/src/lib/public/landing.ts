@@ -1,36 +1,38 @@
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
 import type { Package, Profile } from '@/types'
 
 export async function getCoachProfile(): Promise<Profile | null> {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('profiles')
-    .select('id, full_name, role, avatar_url, bio, created_at')
-    .eq('role', 'coach')
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle()
-
+  const data = await d1.first<Profile>(
+    "SELECT id, full_name, role, avatar_url, bio, created_at FROM profiles WHERE role = 'coach' ORDER BY created_at ASC LIMIT 1"
+  )
   return data
 }
 
 export async function getActivePackages(): Promise<Package[]> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('packages')
-    .select('*')
-    .eq('is_active', true)
-    .order('price', { ascending: true })
+  const data = await d1.query<any>(
+    'SELECT * FROM packages WHERE is_active = 1 ORDER BY price ASC'
+  )
 
-  if (error || !data) {
+  if (!data) {
     return []
   }
 
-  return data.map((pkg) => ({
-    ...pkg,
-    price: Number(pkg.price),
-    features: pkg.features ?? [],
-  }))
+  return data.map((pkg) => {
+    let features: string[] = []
+    if (pkg.features) {
+      try {
+        features = typeof pkg.features === 'string' ? JSON.parse(pkg.features) : pkg.features
+      } catch {
+        features = []
+      }
+    }
+    return {
+      ...pkg,
+      price: Number(pkg.price),
+      features,
+      is_active: Boolean(pkg.is_active),
+    }
+  })
 }
 
 export function formatPrice(price: number): string {

@@ -1,4 +1,4 @@
-import type { ProgramListItem } from '@/lib/coach/programs'
+import type { ProgramListItem } from '@/lib/coach/programs.server'
 import { ProgramUpload } from '@/components/coach/student/programs/program-upload'
 import { ProgramList } from '@/components/coach/student/programs/program-list'
 

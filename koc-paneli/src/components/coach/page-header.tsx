@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { PageHeader } from '@/components/shared/page-header'
 
 type CoachPageHeaderProps = {
   eyebrow?: string
@@ -14,19 +15,11 @@ export function CoachPageHeader({
   action,
 }: CoachPageHeaderProps) {
   return (
-    <div className="flex flex-col gap-4 border-b border-[#444933]/70 pb-5 lg:flex-row lg:items-center lg:justify-between">
-      <div className="min-w-0">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ABD600]">
-          {eyebrow}
-        </p>
-        <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-[#E5E1E4] sm:text-4xl">
-          {title}
-        </h1>
-        <p className="mt-1 text-sm text-[#C4C9AC] sm:text-base">
-          {description}
-        </p>
-      </div>
-      {action}
-    </div>
+    <PageHeader
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
+      action={action}
+    />
   )
 }

@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react'
 import { StudentList } from './student-list'
 import { ChatArea } from './chat-area'
 import type { ChatSummary, Message } from '@/lib/coach/types'
-import { getMessages, sendMessage, markAsRead } from '@/lib/coach/messages'
-import { createClient } from '@/lib/supabase/client'
+import { getMessages, sendMessage, markAsRead } from '@/lib/coach/messages.client'
 import { cn } from '@/lib/utils'
 
 type MessageLayoutProps = {
@@ -43,69 +42,51 @@ export function MessageLayout({ coachId, initialSummaries }: MessageLayoutProps)
     loadMessages()
   }, [coachId, selectedStudentId])
 
-  // Realtime subscription
+  // Polling for messages and summaries (Cloudflare D1)
   useEffect(() => {
-    const supabase = createClient()
-    
-    const channel = supabase.channel('public:messages')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        async (payload) => {
-          const newMsg = payload.new as Message
-          
-          // Check if it's relevant to this coach
-          if (newMsg.receiver_id !== coachId && newMsg.sender_id !== coachId) {
-            return
+    let isSubscribed = true
+    const pollUpdates = async () => {
+      try {
+        if (!selectedStudentId) return
+        
+        const [newMessages, { getChatSummaries }] = await Promise.all([
+          getMessages(coachId, selectedStudentId),
+          import('@/lib/coach/messages.server')
+        ])
+
+        if (!isSubscribed) return
+
+        // Update active chat messages
+        setMessages(prev => {
+          if (newMessages.length > prev.length) {
+            // New incoming messages in active chat
+            const incoming = newMessages.filter(m => m.receiver_id === coachId && !m.is_read)
+            if (incoming.length > 0) {
+              markAsRead(coachId, selectedStudentId)
+            }
+            return newMessages
           }
+          return prev
+        })
 
-          const otherUserId = newMsg.sender_id === coachId ? newMsg.receiver_id : newMsg.sender_id
-          const isFromSelected = otherUserId === selectedStudentId
+        // We ideally should poll summaries too, but for a lightweight approach,
+        // we could just fetch them. But since this is a client component, 
+        // calling a server action repeatedly might be heavy. Let's just poll summaries
+        // less frequently or rely on local optimistic updates for now, but 
+        // to fully replace realtime we can fetch summaries too.
+        const newSummaries = await getChatSummaries(coachId)
+        if (!isSubscribed) return
+        setSummaries(newSummaries)
 
-          // 1. Update Messages if current chat is open
-          if (isFromSelected) {
-            setMessages(prev => {
-              if (prev.some(m => m.id === newMsg.id)) return prev
-              return [...prev, newMsg]
-            })
+      } catch (error) {
+        console.error('Polling error:', error)
+      }
+    }
 
-            // Mark as read immediately if it's an incoming message in active chat
-            if (newMsg.receiver_id === coachId) {
-              await markAsRead(coachId, selectedStudentId)
-            }
-          }
-
-          // 2. Update Summaries
-          setSummaries(prev => {
-            const index = prev.findIndex(s => s.studentId === otherUserId)
-            if (index === -1) return prev // If student not in list, ideally we should fetch them, but for now ignore
-
-            const updatedSummary = { ...prev[index] }
-            updatedSummary.lastMessage = {
-              content: newMsg.content,
-              createdAt: newMsg.created_at,
-              isRead: isFromSelected ? true : newMsg.is_read,
-              senderId: newMsg.sender_id
-            }
-
-            // Increment unread count if it's incoming and not the active chat
-            if (newMsg.receiver_id === coachId && !isFromSelected) {
-              updatedSummary.unreadCount += 1
-            } else if (isFromSelected) {
-              updatedSummary.unreadCount = 0
-            }
-
-            // Move to top
-            const newSummaries = [...prev]
-            newSummaries.splice(index, 1)
-            return [updatedSummary, ...newSummaries]
-          })
-        }
-      )
-      .subscribe()
-
+    const intervalId = setInterval(pollUpdates, 5000) // Poll every 5s for coach
     return () => {
-      supabase.removeChannel(channel)
+      isSubscribed = false
+      clearInterval(intervalId)
     }
   }, [coachId, selectedStudentId])
 

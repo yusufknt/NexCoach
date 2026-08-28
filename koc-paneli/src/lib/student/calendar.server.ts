@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
 import type { StudentCalendarEvent } from './types'
 
 interface CalendarEventRow {
@@ -13,33 +13,23 @@ interface CalendarEventRow {
 }
 
 export async function getStudentCalendarEvents(studentId: string): Promise<StudentCalendarEvent[]> {
-  const supabase = await createClient()
-
   // Get coach
-  const { data: rel } = await supabase
-    .from('coach_students')
-    .select('coach_id')
-    .eq('student_id', studentId)
-    .eq('status', 'active')
-    .limit(1)
-    .single()
+  const rel = await d1.first<{ coach_id: string }>(
+    "SELECT coach_id FROM coach_students WHERE student_id = ? AND status = 'active' LIMIT 1",
+    [studentId]
+  )
 
   if (!rel) return []
 
   // Get available slots + sessions for this student
-  const { data, error } = await supabase
-    .from('calendar_events')
-    .select('*')
-    .eq('coach_id', rel.coach_id)
-    .or(`event_type.eq.available,and(event_type.eq.session,student_id.eq.${studentId})`)
-    .order('start_time', { ascending: true })
+  const data = await d1.query<CalendarEventRow>(
+    `SELECT * FROM calendar_events 
+     WHERE coach_id = ? AND (event_type = 'available' OR (event_type = 'session' AND student_id = ?))
+     ORDER BY start_time ASC`,
+    [rel.coach_id, studentId]
+  )
 
-  if (error) {
-    console.error('Error fetching calendar:', error)
-    return []
-  }
-
-  return ((data as CalendarEventRow[] | null) ?? []).map((e) => ({
+  return (data ?? []).map((e) => ({
     id: e.id,
     title: e.title,
     start: e.start_time,

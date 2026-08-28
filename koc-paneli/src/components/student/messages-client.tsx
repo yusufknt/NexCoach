@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Send, Check, CheckCheck, MessageSquare } from 'lucide-react'
 import { formatTime } from '@/lib/coach/format'
 import { sendMessage, markAsRead } from '@/lib/student/messages.client'
-import { createClient } from '@/lib/supabase/client'
+import { sendNewMessageNotification } from '@/lib/email/send'
 import { cn } from '@/lib/utils'
 import type { StudentMessage, CoachInfo } from '@/lib/student/types'
 
@@ -32,25 +32,36 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
     markAsRead(studentId, coach.id)
   }, [studentId, coach.id])
 
-  // Realtime
+  // Polling for new messages (Cloudflare D1)
   useEffect(() => {
-    const supabase = createClient()
-    const channel = supabase.channel('student:messages')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
-        const msg = payload.new as StudentMessage
-        if (
-          (msg.sender_id === coach.id && msg.receiver_id === studentId) ||
-          (msg.sender_id === studentId && msg.receiver_id === coach.id)
-        ) {
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === msg.id)) return prev
-            return [...prev, msg]
-          })
-          if (msg.sender_id === coach.id) markAsRead(studentId, coach.id)
-        }
-      })
-      .subscribe()
-    return () => { supabase.removeChannel(channel) }
+    let isSubscribed = true
+    const pollMessages = async () => {
+      try {
+        const { getMessages } = await import('@/lib/student/messages.client')
+        const newMessages = await getMessages(studentId, coach.id)
+        if (!isSubscribed) return
+        
+        setMessages((prev) => {
+          if (newMessages.length > prev.length) {
+            // New messages arrived, mark as read if any incoming
+            const incoming = newMessages.filter(m => m.receiver_id === studentId && !m.is_read)
+            if (incoming.length > 0) {
+              markAsRead(studentId, coach.id)
+            }
+            return newMessages
+          }
+          return prev
+        })
+      } catch (error) {
+        console.error('Polling error:', error)
+      }
+    }
+
+    const intervalId = setInterval(pollMessages, 3000)
+    return () => {
+      isSubscribed = false
+      clearInterval(intervalId)
+    }
   }, [studentId, coach.id])
 
   const handleSend = async () => {
@@ -69,6 +80,7 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
     const sent = await sendMessage(studentId, coach.id, content)
     if (sent) {
       setMessages((prev) => prev.map((m) => m.id === tempId ? sent : m))
+      sendNewMessageNotification({ studentId, coachId: coach.id, messageContent: content })
     } else {
       setMessages((prev) => prev.filter((m) => m.id !== tempId))
     }

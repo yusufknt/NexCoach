@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
 import type { CalendarSummary, StudentOption } from './types'
 
 interface CalendarEventRow {
@@ -10,7 +10,7 @@ interface CalendarEventRow {
   description: string | null
   meeting_url: string | null
   student_id: string | null
-  student: { full_name: string } | null
+  student_name: string | null
 }
 
 interface TodayEventRow {
@@ -19,31 +19,22 @@ interface TodayEventRow {
   start_time: string
   end_time: string
   event_type: 'available' | 'session' | 'blocked'
-  student: { full_name: string } | null
-}
-
-interface StudentOptionRow {
-  student_id: string
-  profiles: { id: string; full_name: string } | { id: string; full_name: string }[] | null
+  student_name: string | null
 }
 
 export async function getCalendarEvents(coachId: string) {
-  const supabase = await createClient()
+  const data = await d1.query<CalendarEventRow>(
+    `SELECT 
+      c.id, c.title, c.start_time, c.end_time, c.event_type, c.description, c.meeting_url, c.student_id,
+      pr.full_name as student_name
+     FROM calendar_events c
+     LEFT JOIN profiles pr ON pr.id = c.student_id
+     WHERE c.coach_id = ?
+     ORDER BY c.start_time ASC`,
+    [coachId]
+  )
 
-  const { data, error } = await supabase
-    .from('calendar_events')
-    .select(
-      '*, student:profiles!calendar_events_student_id_fkey(full_name)'
-    )
-    .eq('coach_id', coachId)
-    .order('start_time', { ascending: true })
-
-  if (error) {
-    console.error('Error fetching calendar events:', error)
-    return []
-  }
-
-  return ((data as CalendarEventRow[] | null) ?? []).map((e) => ({
+  return (data ?? []).map((e) => ({
     id: e.id,
     title: e.title,
     start: e.start_time,
@@ -52,13 +43,11 @@ export async function getCalendarEvents(coachId: string) {
     description: e.description ?? '',
     meetingUrl: e.meeting_url ?? '',
     studentId: e.student_id,
-    studentName: e.student?.full_name ?? null,
+    studentName: e.student_name ?? null,
   }))
 }
 
 export async function getCalendarSummary(coachId: string): Promise<CalendarSummary> {
-  const supabase = await createClient()
-
   const now = new Date()
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
   const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString()
@@ -70,57 +59,49 @@ export async function getCalendarSummary(coachId: string): Promise<CalendarSumma
   const weekEnd = new Date(weekStart)
   weekEnd.setDate(weekEnd.getDate() + 7)
 
-  const [todayResult, weekResult] = await Promise.all([
-    supabase
-      .from('calendar_events')
-      .select('id, title, start_time, end_time, event_type, student:profiles!calendar_events_student_id_fkey(full_name)')
-      .eq('coach_id', coachId)
-      .gte('start_time', todayStart)
-      .lt('start_time', todayEnd)
-      .order('start_time', { ascending: true }),
-    supabase
-      .from('calendar_events')
-      .select('id', { count: 'exact', head: true })
-      .eq('coach_id', coachId)
-      .eq('event_type', 'session')
-      .gte('start_time', weekStart.toISOString())
-      .lt('start_time', weekEnd.toISOString()),
+  const [todayEventsData, weekCountRow] = await Promise.all([
+    d1.query<TodayEventRow>(
+      `SELECT c.id, c.title, c.start_time, c.end_time, c.event_type, pr.full_name as student_name
+       FROM calendar_events c
+       LEFT JOIN profiles pr ON pr.id = c.student_id
+       WHERE c.coach_id = ? AND c.start_time >= ? AND c.start_time < ?
+       ORDER BY c.start_time ASC`,
+      [coachId, todayStart, todayEnd]
+    ),
+    d1.first<{ count: number }>(
+      `SELECT COUNT(*) as count
+       FROM calendar_events
+       WHERE coach_id = ? AND event_type = 'session' AND start_time >= ? AND start_time < ?`,
+      [coachId, weekStart.toISOString(), weekEnd.toISOString()]
+    ),
   ])
 
-  const todayEvents = ((todayResult.data as TodayEventRow[] | null) ?? []).map((e) => ({
+  const todayEvents = (todayEventsData ?? []).map((e) => ({
     id: e.id,
     title: e.title,
     startTime: e.start_time,
     endTime: e.end_time,
     eventType: e.event_type,
-    studentName: e.student?.full_name ?? null,
+    studentName: e.student_name ?? null,
   }))
 
   return {
     todayEvents,
-    weekSessionCount: weekResult.count ?? 0,
+    weekSessionCount: weekCountRow?.count ?? 0,
   }
 }
 
 export async function getStudentOptions(coachId: string): Promise<StudentOption[]> {
-  const supabase = await createClient()
+  const rows = await d1.query<{ student_id: string; full_name: string | null }>(
+    `SELECT cs.student_id, pr.full_name
+     FROM coach_students cs
+     LEFT JOIN profiles pr ON pr.id = cs.student_id
+     WHERE cs.coach_id = ? AND cs.status = 'active'`,
+    [coachId]
+  )
 
-  const { data, error } = await supabase
-    .from('coach_students')
-    .select('student_id, profiles!coach_students_student_id_fkey(id, full_name)')
-    .eq('coach_id', coachId)
-    .eq('status', 'active')
-
-  if (error) {
-    console.error('Error fetching student options:', error)
-    return []
-  }
-
-  return ((data as unknown as StudentOptionRow[] | null) ?? []).map((row) => {
-    const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles
-    return {
-      id: profile?.id ?? row.student_id,
-      fullName: profile?.full_name ?? 'İsimsiz',
-    }
-  })
+  return (rows ?? []).map((row) => ({
+    id: row.student_id,
+    fullName: row.full_name ?? 'İsimsiz',
+  }))
 }

@@ -1,0 +1,222 @@
+'use client'
+
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  Legend,
+  AreaChart,
+  Area,
+} from 'recharts'
+
+export type ChartDataPoint = {
+  date: string
+  label: string
+  weight: number | null
+  waist: number | null
+  bench: number | null
+  squat: number | null
+  deadlift: number | null
+  sleep: number | null
+  steps: number | null
+  diet: number | null
+  energy: number | null
+}
+
+const tooltipContentStyle = {
+  backgroundColor: '#131315',
+  borderColor: '#2C2C2E',
+  borderRadius: '12px',
+}
+const tooltipLabelStyle = { color: '#E5E1E4', fontWeight: 'bold' as const, fontSize: '12px' }
+const tooltipItemStyle = { fontSize: '12px' }
+
+export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
+  return (
+    <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+      <defs>
+        <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#ABD600" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="#ABD600" stopOpacity={0.0} />
+        </linearGradient>
+        <linearGradient id="colorWaist" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#00eefc" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="#00eefc" stopOpacity={0.0} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
+      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <YAxis
+        yAxisId="left"
+        domain={['auto', 'auto']}
+        tick={{ fill: '#ABD600', fontSize: 10 }}
+        tickLine={false}
+        axisLine={false}
+        unit=" kg"
+      />
+      <YAxis
+        yAxisId="right"
+        orientation="right"
+        domain={['auto', 'auto']}
+        tick={{ fill: '#00eefc', fontSize: 10 }}
+        tickLine={false}
+        axisLine={false}
+        unit=" cm"
+      />
+      <Tooltip
+        contentStyle={tooltipContentStyle}
+        labelStyle={tooltipLabelStyle}
+        itemStyle={tooltipItemStyle}
+      />
+      <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+      <Area
+        yAxisId="left"
+        type="monotone"
+        dataKey="weight"
+        name="Kilo"
+        stroke="#ABD600"
+        strokeWidth={2}
+        fillOpacity={1}
+        fill="url(#colorWeight)"
+        dot={{ r: 3 }}
+        connectNulls
+      />
+      <Area
+        yAxisId="right"
+        type="monotone"
+        dataKey="waist"
+        name="Bel Çevresi"
+        stroke="#00eefc"
+        strokeWidth={2}
+        fillOpacity={1}
+        fill="url(#colorWaist)"
+        dot={{ r: 3 }}
+        connectNulls
+      />
+    </AreaChart>
+  )
+}
+
+export function LiftsLineChart({ data }: { data: ChartDataPoint[] }) {
+  return (
+    <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
+      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} unit=" kg" />
+      <Tooltip
+        contentStyle={tooltipContentStyle}
+        labelStyle={tooltipLabelStyle}
+        itemStyle={tooltipItemStyle}
+      />
+      <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+      <Line
+        type="monotone"
+        dataKey="bench"
+        name="Bench Press"
+        stroke="#ffb4ab"
+        strokeWidth={2}
+        dot={{ r: 3 }}
+        connectNulls
+      />
+      <Line
+        type="monotone"
+        dataKey="squat"
+        name="Squat"
+        stroke="#ABD600"
+        strokeWidth={2}
+        dot={{ r: 3 }}
+        connectNulls
+      />
+      <Line
+        type="monotone"
+        dataKey="deadlift"
+        name="Deadlift"
+        stroke="#00eefc"
+        strokeWidth={2}
+        dot={{ r: 3 }}
+        connectNulls
+      />
+    </LineChart>
+  )
+}
+
+export function LifestyleLineChart({ data }: { data: ChartDataPoint[] }) {
+  return (
+    <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
+      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} domain={[0, 10]} />
+      <Tooltip
+        contentStyle={tooltipContentStyle}
+        labelStyle={tooltipLabelStyle}
+        itemStyle={tooltipItemStyle}
+      />
+      <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+      <Line
+        type="monotone"
+        dataKey="sleep"
+        name="Uyku (saat)"
+        stroke="#d2e5f5"
+        strokeWidth={2}
+        dot={{ r: 3 }}
+        connectNulls
+      />
+      <Line
+        type="monotone"
+        dataKey="diet"
+        name="Diyet Skoru"
+        stroke="#ABD600"
+        strokeWidth={2}
+        dot={{ r: 3 }}
+        connectNulls
+      />
+      <Line
+        type="monotone"
+        dataKey="energy"
+        name="Enerji Seviyesi"
+        stroke="#00eefc"
+        strokeWidth={2}
+        dot={{ r: 3 }}
+        connectNulls
+      />
+    </LineChart>
+  )
+}
+
+export function StepsAreaChart({ data }: { data: ChartDataPoint[] }) {
+  return (
+    <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+      <defs>
+        <linearGradient id="colorSteps" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#ABD600" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="#ABD600" stopOpacity={0.0} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
+      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <Tooltip
+        contentStyle={tooltipContentStyle}
+        labelStyle={tooltipLabelStyle}
+        itemStyle={tooltipItemStyle}
+        formatter={(value) => [`${Math.round(Number(value)).toLocaleString('tr-TR')} adım`, 'Adım Sayısı']}
+      />
+      <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+      <Area
+        type="monotone"
+        dataKey="steps"
+        name="Günlük Ortalama Adım"
+        stroke="#ABD600"
+        strokeWidth={2}
+        fillOpacity={1}
+        fill="url(#colorSteps)"
+        dot={{ r: 3 }}
+        connectNulls
+      />
+    </AreaChart>
+  )
+}

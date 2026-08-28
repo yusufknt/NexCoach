@@ -14,8 +14,11 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Kinetic Performance | Elite Coaching Dashboard',
-  description: 'Online elite coaching platform',
+  title: {
+    default: 'NexCoach | Online Koçluk Platformu',
+    template: '%s | NexCoach',
+  },
+  description: 'Hedeflerinize göre şekillenen kişiselleştirilmiş online koçluk deneyimi.',
 }
 
 export default function RootLayout({
@@ -24,14 +27,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="tr" className={`${inter.variable} ${montserrat.variable} dark`}>
+    <html lang="tr" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-background font-sans text-white antialiased">
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

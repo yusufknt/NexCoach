@@ -1,70 +1,76 @@
+import Image from 'next/image'
 import Link from 'next/link'
+import { ArrowRight, CheckCircle2, PlayCircle } from 'lucide-react'
 import type { Profile } from '@/types'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type HeroSectionProps = {
   coach: Profile | null
 }
 
 export function HeroSection({ coach }: HeroSectionProps) {
-  const name = coach?.full_name && coach.full_name !== 'İsimsiz' ? coach.full_name : 'Can Demir'
-  
-  // Use first line of bio as intro, or default text
-  const bioFirstLine = coach?.bio?.split('\n')[0]
-  const intro = bioFirstLine && bioFirstLine.trim().length > 0 
-    ? bioFirstLine 
-    : 'Hedeflerinize Bilimsel Yaklaşımla Ulaşın. Kişiselleştirilmiş online koçluk ile sağlıklı alışkanlıklar kazanın, performansınızı artırın ve sürdürülebilir sonuçlar elde edin.'
-
-  const avatarUrl = coach?.avatar_url ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4YB0MuoomtHxWBv398hQSzGYLHbw34-1OBEAkhtqLiPKdIMTC0vtiAmUPArq8hYfKa3kFPzSJ6QgdhEOwoyBj7BbCaknvhoxtLXK6d-QAv33kJzC8CG17RJfvQLQtFbFvlMUxxr0p18_aUfZ-ffhBhxsASM0jkvJO8Up7NRLsU5aJIBqC7Jcz5j4HKjXVuT5HenAPfZn1-8yin9l4WpXvVLXZgztahxrnbNf7054PCGMYS7qYEghWvSzLJCSpMg5hqrZAbE8N_90E'
+  const name = coach?.full_name && coach.full_name !== 'İsimsiz' ? coach.full_name : 'uzman koçunuz'
+  const avatarUrl = coach?.avatar_url
 
   return (
-    <section className="relative min-h-screen flex items-center pt-20 px-margin-x overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-primary-container/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-1/4 -left-1/4 w-[400px] h-[400px] bg-secondary-container/5 rounded-full blur-[100px]"></div>
-      </div>
-      <div className="container-max mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter relative z-10 w-full">
-        <div className="lg:col-span-7 flex flex-col justify-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-surface-container-highest text-primary font-label-md text-label-md mb-stack-md w-fit">
-            Online Koçluk
-          </span>
-          <h1 className="font-display-lg text-display-lg mb-stack-md leading-none">
-            {name} ile <br />
-            <span className="gradient-text">KİNETİK PERFORMANCE</span>
+    <section className="relative overflow-hidden pb-20 pt-32 sm:pb-24 sm:pt-40 lg:min-h-[760px] lg:pb-28 lg:pt-44">
+      <div className="hero-grid absolute inset-0" aria-hidden="true" />
+      <div className="public-container relative grid items-center gap-14 lg:grid-cols-[1.08fr_.92fr] lg:gap-16">
+        <div className="max-w-3xl">
+          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3.5 py-2 text-xs font-semibold tracking-wide text-white/75">
+            <span className="size-1.5 rounded-full bg-primary shadow-[0_0_12px_rgba(104,117,255,.9)]" />
+            Kişisel koçluk, tek bir yerde
+          </div>
+          <h1 className="max-w-[13ch] font-heading text-[2.8rem] font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-6xl lg:text-[4.65rem]">
+            Hedefine giden yol, <span className="text-primary">sana özel.</span>
           </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg max-w-xl">
-            {intro}
+          <p className="mt-7 max-w-2xl text-base leading-7 text-white/62 sm:text-lg sm:leading-8">
+            NexCoach ile {name} tarafından hazırlanan programını takip et, ilerlemeni görünür kıl ve ihtiyaç duyduğun anda destek al.
           </p>
-          <div className="flex flex-wrap gap-stack-md">
-            <Link
-              href="#paketler"
-              className="px-8 py-4 bg-primary-container text-on-primary font-label-md text-label-md font-bold rounded-lg btn-glow transition-all active:scale-95 text-center min-w-[180px]"
-            >
-              Paketleri İncele
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <Link href="#paketler" className={cn(buttonVariants({ size: 'lg' }), 'public-primary-button h-12 justify-center gap-2 px-6 text-sm sm:w-auto')}>
+              Koçluğa başla <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
-            <Link
-              href="/giris"
-              className="px-8 py-4 border border-outline-variant text-on-surface font-label-md text-label-md font-bold rounded-lg hover:bg-surface-container-high transition-all active:scale-95 text-center min-w-[180px]"
-            >
-              Giriş Yap
+            <Link href="#nasil-calisir" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'h-12 justify-center gap-2 px-6 text-sm sm:w-auto')}>
+              <PlayCircle className="size-4" aria-hidden="true" /> Nasıl çalışır?
             </Link>
           </div>
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/55">
+            {['Kişisel program', 'Haftalık takip', 'Doğrudan iletişim'].map((item) => (
+              <span key={item} className="flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-primary" aria-hidden="true" /> {item}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="lg:col-span-5 hidden lg:block">
-          <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden glass-card group">
-            <img
-              alt={`${name} Coach`}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              src={avatarUrl}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"></div>
-            <div className="absolute bottom-6 left-6 right-6 p-4 glass-card rounded-lg">
-              <div className="flex items-center gap-stack-sm">
-                <span className="w-3 h-3 bg-primary-container rounded-full animate-pulse"></span>
-                <span className="font-label-md text-label-md text-primary">
-                  Şu an aktif öğrenci alımı açık
-                </span>
+
+        <div className="relative mx-auto w-full max-w-[520px] lg:mx-0">
+          <div className="relative aspect-[5/6] overflow-hidden rounded-[1.25rem] border border-white/10 bg-[#121622] shadow-[0_28px_90px_rgba(0,0,0,.42)]">
+            {avatarUrl ? (
+              <Image src={avatarUrl} alt={`${name} profil fotoğrafı`} fill sizes="(max-width: 1024px) 90vw, 42vw" className="object-cover" priority />
+            ) : (
+              <div className="flex h-full items-center justify-center px-12 text-center">
+                <div>
+                  <div className="mx-auto flex size-20 items-center justify-center rounded-2xl border border-primary/25 bg-primary/10 font-heading text-3xl font-bold text-primary">N</div>
+                  <p className="mt-5 text-sm leading-6 text-white/50">Koç profil fotoğrafı eklendiğinde burada otomatik olarak gösterilir.</p>
+                </div>
               </div>
+            )}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#090b12] to-transparent" />
+            <div className="absolute inset-x-5 bottom-5 flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-[#0d1019]/90 p-4 backdrop-blur-md sm:inset-x-6 sm:bottom-6">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/45">NexCoach ile</p>
+                <p className="mt-1 text-sm font-semibold text-white sm:text-base">Planın her zaman yanında</p>
+              </div>
+              <span className="flex shrink-0 items-center gap-2 text-xs font-semibold text-primary">
+                <span className="size-2 rounded-full bg-primary" /> Aktif
+              </span>
             </div>
+          </div>
+          <div className="absolute -right-4 top-14 hidden w-44 border-l-2 border-primary bg-[#111521] p-4 shadow-xl sm:block">
+            <p className="text-2xl font-bold text-white">%100</p>
+            <p className="mt-1 text-xs leading-5 text-white/50">Sana göre hazırlanan yol haritası</p>
           </div>
         </div>
       </div>

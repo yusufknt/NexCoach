@@ -1,9 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
+import { cfStorage } from '@/lib/cloudflare/storage'
 import { getAuthenticatedCoachId } from '@/lib/coach/auth'
-import type { CreateProgressEntryInput, CreateProgressEntryResult } from '@/lib/coach/progress'
+import type { CreateProgressEntryInput, CreateProgressEntryResult } from '@/lib/coach/progress.server'
 
 export async function createProgressEntry(
   input: CreateProgressEntryInput
@@ -13,35 +14,36 @@ export async function createProgressEntry(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
-
-  const { data: relation } = await supabase
-    .from('coach_students')
-    .select('id, student_id')
-    .eq('id', input.coachStudentId)
-    .eq('coach_id', coachId)
-    .eq('student_id', input.studentId)
-    .single()
+  const relation = await d1.first<{ id: string }>(
+    'SELECT id FROM coach_students WHERE id = ? AND coach_id = ? AND student_id = ? LIMIT 1',
+    [input.coachStudentId, coachId, input.studentId]
+  )
 
   if (!relation) {
     return { success: false, error: 'Öğrenci ilişkisi bulunamadı.' }
   }
 
-  const { error } = await supabase.from('progress_entries').insert({
-    student_id: input.studentId,
-    coach_id: coachId,
-    date: input.date,
-    weight: input.weight,
-    note: input.note,
-    custom_metrics: input.customMetrics,
-  })
+  const id = crypto.randomUUID()
+  try {
+    await d1.run(
+      `INSERT INTO progress_entries (id, student_id, coach_id, date, weight, note, custom_metrics)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        input.studentId,
+        coachId,
+        input.date,
+        input.weight,
+        input.note,
+        JSON.stringify(input.customMetrics || {}),
+      ]
+    )
 
-  if (error) {
-    return { success: false, error: error.message }
+    revalidatePath(`/coach/ogrenciler/${input.coachStudentId}`)
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Kayıt eklenemedi.' }
   }
-
-  revalidatePath(`/coach/ogrenciler/${input.coachStudentId}`)
-  return { success: true }
 }
 
 export async function createProgressEntryFromForm(
@@ -83,34 +85,17 @@ export async function createProgressEntryFromForm(
     }
   }
 
-  const supabase = await createClient()
-
-  const { data: relation } = await supabase
-    .from('coach_students')
-    .select('id, student_id')
-    .eq('id', coachStudentId)
-    .eq('coach_id', coachId)
-    .eq('student_id', studentId)
-    .single()
+  const relation = await d1.first<{ id: string }>(
+    'SELECT id FROM coach_students WHERE id = ? AND coach_id = ? AND student_id = ? LIMIT 1',
+    [coachStudentId, coachId, studentId]
+  )
 
   if (!relation) {
     return { success: false, error: 'Öğrenci ilişkisi bulunamadı.' }
   }
 
-  const beforePhotoPath = await uploadProgressPhoto(
-    supabase,
-    coachId,
-    studentId,
-    beforePhoto,
-    'before'
-  )
-  const afterPhotoPath = await uploadProgressPhoto(
-    supabase,
-    coachId,
-    studentId,
-    afterPhoto,
-    'after'
-  )
+  const beforePhotoPath = await uploadProgressPhoto(coachId, studentId, beforePhoto, 'before')
+  const afterPhotoPath = await uploadProgressPhoto(coachId, studentId, afterPhoto, 'after')
 
   if (beforePhotoPath === false || afterPhotoPath === false) {
     return { success: false, error: 'Fotoğraf yüklenemedi.' }
@@ -123,26 +108,31 @@ export async function createProgressEntryFromForm(
     customMetrics.after_photo_path = afterPhotoPath
   }
 
-  const { error } = await supabase.from('progress_entries').insert({
-    student_id: studentId,
-    coach_id: coachId,
-    date,
-    weight,
-    note: noteRaw || null,
-    custom_metrics: customMetrics,
-  })
+  const id = crypto.randomUUID()
+  try {
+    await d1.run(
+      `INSERT INTO progress_entries (id, student_id, coach_id, date, weight, note, custom_metrics)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        studentId,
+        coachId,
+        date,
+        weight,
+        noteRaw || null,
+        JSON.stringify(customMetrics),
+      ]
+    )
 
-  if (error) {
-    return { success: false, error: error.message }
+    revalidatePath(`/coach/ogrenciler/${coachStudentId}`)
+    revalidatePath('/student/ilerleme')
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Kayıt eklenemedi.' }
   }
-
-  revalidatePath(`/coach/ogrenciler/${coachStudentId}`)
-  revalidatePath('/student/ilerleme')
-  return { success: true }
 }
 
 async function uploadProgressPhoto(
-  supabase: Awaited<ReturnType<typeof createClient>>,
   coachId: string,
   studentId: string,
   fileValue: FormDataEntryValue | null,
@@ -160,12 +150,8 @@ async function uploadProgressPhoto(
   const safeExtension = extension.replace(/[^a-z0-9]/g, '').slice(0, 8) || 'jpg'
   const path = `${coachId}/${studentId}/${crypto.randomUUID()}-${kind}.${safeExtension}`
 
-  const { error } = await supabase.storage
-    .from('progress-photos')
-    .upload(path, fileValue, {
-      contentType: fileValue.type,
-      upsert: false,
-    })
+  const buffer = await fileValue.arrayBuffer()
+  const { error } = await cfStorage.upload('progress-photos', path, buffer, fileValue.type)
 
   if (error) {
     return false

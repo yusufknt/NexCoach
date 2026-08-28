@@ -6,7 +6,7 @@ import { ProgressTab } from '@/components/coach/student/progress-tab'
 import { ProgramsTab } from '@/components/coach/student/programs/programs-tab'
 import { ReportsTab } from '@/components/coach/student/reports-tab'
 import type { ProgressEntry } from '@/types'
-import type { ProgramListItem } from '@/lib/coach/programs'
+import type { ProgramListItem } from '@/lib/coach/programs.server'
 import type { StudentOnboardingView } from '@/lib/coach/onboarding.server'
 
 type StudentDetailTabsProps = {
@@ -19,7 +19,7 @@ type StudentDetailTabsProps = {
 
 function TabPlaceholder({ title }: { title: string }) {
   return (
-    <p className="rounded-2xl border border-dashed border-[#444933] bg-[#18181B]/60 p-8 text-center text-sm text-[#C4C9AC]">
+    <p className="rounded-2xl border border-dashed border-border/80 bg-card p-8 text-center text-sm text-muted-foreground">
       {title} yakında eklenecek.
     </p>
   )

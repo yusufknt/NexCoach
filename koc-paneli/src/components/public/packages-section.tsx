@@ -1,89 +1,63 @@
 import Link from 'next/link'
+import { ArrowRight, Check, PackageOpen } from 'lucide-react'
 import { getActivePackages, formatDuration, formatPrice } from '@/lib/public/landing'
+import { Card, CardContent } from '@/components/ui/card'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export async function PackagesSection() {
   const packages = await getActivePackages()
 
   return (
-    <section className="py-stack-lg px-margin-x" id="paketler">
-      <div className="container-max mx-auto text-center mb-stack-lg">
-        <span className="px-4 py-1 bg-surface-container-highest text-on-surface font-label-md text-label-md rounded-full mb-4 inline-block">
-          Fiyatlandırma
-        </span>
-        <h2 className="font-display-lg text-display-lg mb-4">Size Uygun Koçluk Paketi</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">
-          Hedefinize göre seçebileceğiniz paketler. Satın alma için giriş yapmanız yeterli.
-        </p>
-      </div>
+    <section className="public-section" id="paketler">
+      <div className="public-container">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="section-eyebrow">Koçluk paketleri</p>
+          <h2 className="section-title mt-4">Hedefin için doğru başlangıcı seç.</h2>
+          <p className="mt-5 text-base leading-7 text-white/55">Karmaşık seçenekler yok. İhtiyaç duyduğun destek seviyesini seç, yolculuğuna bugün başla.</p>
+        </div>
 
-      <div className="container-max mx-auto flex flex-wrap justify-center gap-gutter w-full">
         {packages.length === 0 ? (
-          <p className="text-center text-[#C4C9AC]">Henüz aktif paket bulunmuyor.</p>
+          <div className="mx-auto mt-12 max-w-xl border border-dashed border-white/15 bg-white/[0.025] px-6 py-12 text-center">
+            <PackageOpen className="mx-auto size-7 text-primary" aria-hidden="true" />
+            <h3 className="mt-4 text-lg font-semibold">Yeni paketler hazırlanıyor</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-white/50">Koçluk paketleri çok yakında burada olacak. Mevcut hesabınla giriş yaparak güncellemeleri takip edebilirsin.</p>
+            <Link href="/giris" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'mt-6 h-11 px-5')}>Hesabıma git</Link>
+          </div>
         ) : (
-          packages.map((pkg, idx) => {
-            // Highlight the first package (or middle if there are 3)
-            const isHighlighted = packages.length === 1 ? true : idx === 0
-            
-            return (
-              <div 
-                key={pkg.id} 
-                className={`w-full max-w-sm p-8 glass-card rounded-2xl relative flex flex-col justify-between ${
-                  isHighlighted ? 'border-2 border-primary-container/50 shadow-[0_0_30px_rgba(171,214,0,0.15)]' : 'border border-outline-variant'
-                }`}
-              >
-                {isHighlighted && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary-container text-on-primary font-label-md text-label-md font-bold rounded-full uppercase tracking-wider text-xs">
-                    EN ÇOK TERCİH EDİLEN
-                  </div>
-                )}
-                
-                <div>
-                  <div className="mb-6">
-                    <h3 className="font-headline-lg text-headline-lg mb-2 text-white">{pkg.name}</h3>
-                    {pkg.description && (
-                      <p className="font-body-md text-body-md text-on-surface-variant">{pkg.description}</p>
-                    )}
-                  </div>
-                  
-                  <div className="mb-6">
-                    <div className="flex items-end gap-1">
-                      <span className="font-display-lg text-display-lg text-primary">{formatPrice(pkg.price)}</span>
-                      <span className="font-label-md text-label-md text-on-surface-variant mb-2">
-                        / {formatDuration(pkg.duration_days)}
-                      </span>
+          <div className="mx-auto mt-12 grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {packages.map((pkg, idx) => {
+              const isHighlighted = packages.length === 1 || idx === Math.min(1, packages.length - 1)
+              return (
+                <Card key={pkg.id} className={cn('relative rounded-xl border-white/[0.08] bg-white/[0.025] py-0 shadow-none', isHighlighted && 'border-primary/45 bg-primary/[0.045]')}>
+                  {isHighlighted && <div className="absolute inset-x-5 top-0 h-px bg-primary" />}
+                  <CardContent className="flex h-full flex-col px-6 py-7 sm:px-7 sm:py-8">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="text-xl font-semibold tracking-tight">{pkg.name}</h3>
+                        {pkg.description && <p className="mt-2 text-sm leading-6 text-white/50">{pkg.description}</p>}
+                      </div>
+                      {isHighlighted && <span className="shrink-0 rounded-full bg-primary/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">Önerilen</span>}
                     </div>
-                  </div>
-                  
-                  {pkg.features && pkg.features.length > 0 && (
-                    <ul className="space-y-4 mb-8">
-                      {pkg.features.map((feature, fIdx) => (
-                        <li key={fIdx} className="flex items-center gap-3">
-                          <span 
-                            className="material-symbols-outlined text-primary-container text-lg"
-                            style={{ fontVariationSettings: "'FILL' 1" }}
-                          >
-                            check_circle
-                          </span>
-                          <span className="font-body-md text-body-md text-on-surface">{feature}</span>
+                    <div className="mt-7 flex items-baseline gap-2 border-b border-white/[0.08] pb-7">
+                      <span className="font-heading text-4xl font-bold tracking-[-0.04em] text-white">{formatPrice(pkg.price)}</span>
+                      <span className="text-xs text-white/42">/ {formatDuration(pkg.duration_days)}</span>
+                    </div>
+                    <ul className="my-7 flex-1 space-y-3.5">
+                      {(pkg.features ?? []).map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex gap-3 text-sm leading-6 text-white/65">
+                          <Check className="mt-1 size-4 shrink-0 text-primary" aria-hidden="true" /> {feature}
                         </li>
                       ))}
                     </ul>
-                  )}
-                </div>
-                
-                <Link
-                  href="/giris"
-                  className={`w-full py-4 text-center font-label-md text-label-md font-bold rounded-xl btn-glow transition-all active:scale-95 flex items-center justify-center ${
-                    isHighlighted 
-                      ? 'bg-primary-container text-on-primary shadow-[0_0_20px_rgba(195,244,0,0.2)]'
-                      : 'border border-outline-variant text-on-surface hover:bg-surface-container-high'
-                  }`}
-                >
-                  Satın Al
-                </Link>
-              </div>
-            )
-          })
+                    <Link href="/giris" className={cn(buttonVariants({ variant: isHighlighted ? 'default' : 'outline', size: 'lg' }), isHighlighted && 'public-primary-button', 'h-11 w-full gap-2')}>
+                      Paketi seç <ArrowRight className="size-4" aria-hidden="true" />
+                    </Link>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
         )}
       </div>
     </section>

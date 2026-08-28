@@ -35,7 +35,7 @@ export default function Error({
           <RotateCcw className="h-4 w-4" />
           Yeniden Dene
         </Button>
-        <a href="mailto:destek@fitcoach.com">
+        <a href="mailto:destek@NexCoach.com">
           <Button variant="outline" className="w-full sm:w-auto border-white/10 bg-white/5 text-white hover:bg-white/10">
             Destek Ekibine Ulaş
           </Button>

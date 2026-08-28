@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/client'
+import { authClient } from '@/lib/auth-client'
 import { getDashboardPath, resolveUserRole } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -43,41 +43,57 @@ export function LoginForm() {
 
   async function onSubmit(values: LoginFormValues) {
     setErrorMessage(null)
-    const supabase = createClient()
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await authClient.signIn.email({
       email: values.email,
       password: values.password,
     })
 
     if (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(error.message || 'Giriş başarısız.')
       return
     }
 
-    if (!data.user) {
+    if (!data?.user) {
       setErrorMessage('Giriş başarısız. Lütfen tekrar deneyin.')
       return
     }
 
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single()
+    let userRole = null;
+    try {
+      const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+      const API_SECRET = 'nexcoach_prod_sec_2026_cf'
+      const res = await fetch(`${WORKER_URL}/api/db/first`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Secret': API_SECRET,
+        },
+        body: JSON.stringify({
+          query: 'SELECT role FROM profiles WHERE id = ?',
+          params: [data.user.id],
+        }),
+      })
+      if (res.ok) {
+        const resJson = await res.json()
+        userRole = resJson?.data?.role
+      }
+    } catch {
+      // Handled below
+    }
 
-    const role = resolveUserRole(profile?.role, data.user.user_metadata?.role)
+    const role = resolveUserRole(userRole, null)
 
-    if (profileError || !role) {
+    if (!role) {
       setErrorMessage(
-        'Profil rolü bulunamadı. Supabase\'de kullanıcı metadata\'sına role: "coach" veya "student" ekleyin.'
+        'Profil rolü bulunamadı. Lütfen yöneticinizle iletişime geçin.'
       )
       return
     }
 
+
     const destination = getDashboardPath(role)
-    router.push(destination)
-    router.refresh()
+    window.location.href = destination
   }
 
   return (

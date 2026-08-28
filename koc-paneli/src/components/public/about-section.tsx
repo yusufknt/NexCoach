@@ -1,65 +1,40 @@
+import { BarChart3, MessageSquareText, Route } from 'lucide-react'
 import type { Profile } from '@/types'
+import { Card, CardContent } from '@/components/ui/card'
 
-type AboutSectionProps = {
-  coach: Profile | null
-}
+type AboutSectionProps = { coach: Profile | null }
+
+const steps = [
+  { icon: Route, number: '01', title: 'Sana özel plan', text: 'Hedefin, geçmişin ve günlük düzenin analiz edilir; uygulanabilir yol haritan oluşturulur.' },
+  { icon: BarChart3, number: '02', title: 'Ölçülebilir ilerleme', text: 'Programını, ölçümlerini ve gelişimini tek panelden takip ederek nerede olduğunu net biçimde görürsün.' },
+  { icon: MessageSquareText, number: '03', title: 'Sürekli iletişim', text: 'Soruların cevapsız kalmaz. Geri bildirimlerle programın ihtiyaçlarına göre güncel tutulur.' },
+]
 
 export function AboutSection({ coach }: AboutSectionProps) {
-  // If coach bio exists, use it, otherwise use default
-  const bio = coach?.bio && coach.bio.trim().length > 0
-    ? coach.bio
-    : 'Yılların deneyimiyle öğrencilerimin hedeflerine ulaşmalarına yardımcı oluyorum. Bilimsel temelli programlar, sürdürülebilir alışkanlıklar ve düzenli takip ile kalıcı sonuçlar elde etmenizi sağlıyorum.'
+  const bio = coach?.bio?.trim() || 'Bilimsel temelli programları düzenli takip ve sürdürülebilir alışkanlıklarla birleştirerek hedeflerinize güvenle ilerlemenize yardımcı oluyoruz.'
 
   return (
-    <section className="py-stack-lg px-margin-x bg-surface-container-lowest" id="hakkimda">
-      <div className="container-max mx-auto">
-        <div className="flex flex-col md:flex-row gap-gutter items-center mb-stack-lg">
-          <div className="md:w-1/2">
-            <span className="font-label-md text-label-md text-primary mb-stack-sm block">Hakkımda</span>
-            <h2 className="font-headline-lg text-headline-lg mb-stack-md">Deneyim ve Yaklaşım</h2>
-            <div className="font-body-md text-body-md text-on-surface-variant max-w-lg mb-stack-md space-y-4">
-              {bio.split('\n').map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
-            </div>
+    <section className="public-section border-y border-white/[0.07] bg-[#0e111a]" id="nasil-calisir">
+      <div className="public-container">
+        <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
+          <div id="hakkimda">
+            <p className="section-eyebrow">Neden NexCoach?</p>
+            <h2 className="section-title mt-4">Koçluğun net, düzenli ve erişilebilir hali.</h2>
+            <p className="mt-6 max-w-xl text-base leading-7 text-white/58">{bio}</p>
           </div>
-          <div className="md:w-1/2 grid grid-cols-2 gap-4 w-full">
-            <div className="p-6 glass-card rounded-xl">
-              <span className="material-symbols-outlined text-primary-container mb-2">verified_user</span>
-              <div className="font-data-num text-data-num text-primary">500+</div>
-              <div className="font-label-md text-label-md text-on-surface-variant uppercase">Saat Birebir Koçluk</div>
-            </div>
-            <div className="p-6 glass-card rounded-xl">
-              <span className="material-symbols-outlined text-primary-container mb-2">military_tech</span>
-              <div className="font-data-num text-data-num text-primary">ULUSLARARASI</div>
-              <div className="font-label-md text-label-md text-on-surface-variant uppercase">Fitness Sertifikaları</div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-          <div className="p-8 bg-surface-container rounded-xl border border-outline-variant hover:border-primary-container/30 transition-all group">
-            <div className="w-12 h-12 bg-primary-container/10 rounded-lg flex items-center justify-center mb-6 text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-              <span className="material-symbols-outlined">fitness_center</span>
-            </div>
-            <h3 className="font-headline-md text-headline-md mb-4">Kişiye Özel Program</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">Her bireyin genetiği ve yaşam tarzı farklıdır. Size en uygun antrenman ve beslenme planını bilimsel verilerle oluşturuyorum.</p>
-          </div>
-          
-          <div className="p-8 bg-surface-container rounded-xl border border-outline-variant hover:border-primary-container/30 transition-all group">
-            <div className="w-12 h-12 bg-primary-container/10 rounded-lg flex items-center justify-center mb-6 text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-              <span className="material-symbols-outlined">monitoring</span>
-            </div>
-            <h3 className="font-headline-md text-headline-md mb-4">Haftalık Takip</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">İlerlemenizi her hafta analiz ediyor, formunuzdaki ve verilerinizdeki değişimlere göre programınızı anlık güncelliyorum.</p>
-          </div>
-          
-          <div className="p-8 bg-surface-container rounded-xl border border-outline-variant hover:border-primary-container/30 transition-all group">
-            <div className="w-12 h-12 bg-primary-container/10 rounded-lg flex items-center justify-center mb-6 text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-              <span className="material-symbols-outlined">psychology_alt</span>
-            </div>
-            <h3 className="font-headline-md text-headline-md mb-4">Sürdürülebilir Yaşam</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">Sadece kısa süreli değişimler değil, hayat boyu koruyabileceğiniz sağlıklı alışkanlıklar ve disiplin kazandırıyorum.</p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {steps.map(({ icon: Icon, number, title, text }) => (
+              <Card key={number} className="rounded-xl border-white/[0.08] bg-white/[0.025] py-0 shadow-none hover:-translate-y-1 hover:border-primary/25 hover:shadow-none">
+                <CardContent className="flex h-full flex-col px-6 py-7">
+                  <div className="flex items-center justify-between">
+                    <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary"><Icon className="size-5" aria-hidden="true" /></span>
+                    <span className="font-heading text-xs font-bold tracking-widest text-white/25">{number}</span>
+                  </div>
+                  <h3 className="mt-8 text-lg font-semibold tracking-tight">{title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-white/52">{text}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>

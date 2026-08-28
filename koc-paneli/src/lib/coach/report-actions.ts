@@ -1,7 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
+import { cfStorage } from '@/lib/cloudflare/storage'
 import { getAuthenticatedCoachId } from '@/lib/coach/auth'
 
 export type MonthlyReport = {
@@ -53,36 +54,46 @@ async function verifyCoachStudent(
   coachStudentId: string,
   studentId: string
 ): Promise<boolean> {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('coach_students')
-    .select('id')
-    .eq('id', coachStudentId)
-    .eq('coach_id', coachId)
-    .eq('student_id', studentId)
-    .single()
-
-  return Boolean(data)
+  const row = await d1.first<{ id: string }>(
+    'SELECT id FROM coach_students WHERE id = ? AND coach_id = ? AND student_id = ? LIMIT 1',
+    [coachStudentId, coachId, studentId]
+  )
+  return Boolean(row)
 }
 
 export async function getMonthlyReports(studentId: string): Promise<MonthlyReport[]> {
   const coachId = await getAuthenticatedCoachId()
   if (!coachId) return []
 
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('monthly_reports')
-    .select('*')
-    .eq('student_id', studentId)
-    .eq('coach_id', coachId)
-    .order('report_month', { ascending: false })
+  try {
+    const data = await d1.query<any>(
+      `SELECT * FROM monthly_reports 
+       WHERE student_id = ? AND coach_id = ? 
+       ORDER BY report_month DESC`,
+      [studentId, coachId]
+    )
 
-  if (error) {
+    return (data ?? []).map((row) => {
+      let metrics = {}
+      if (row.metrics_summary) {
+        try {
+          metrics = typeof row.metrics_summary === 'string'
+            ? JSON.parse(row.metrics_summary)
+            : row.metrics_summary
+        } catch {
+          metrics = {}
+        }
+      }
+      return {
+        ...row,
+        is_published: Boolean(row.is_published),
+        metrics_summary: metrics,
+      }
+    })
+  } catch (error) {
     console.error('Error fetching monthly reports:', error)
     return []
   }
-
-  return (data as MonthlyReport[]) || []
 }
 
 export type SaveMonthlyReportInput = {
@@ -137,7 +148,7 @@ export async function saveMonthlyReport(input: SaveMonthlyReportInput): Promise<
     coachComment,
     isPublished,
     metricsSummary,
-    pdfBase64
+    pdfBase64,
   } = input
 
   if (!coachStudentId || !studentId || !reportMonth) {
@@ -161,70 +172,53 @@ export async function saveMonthlyReport(input: SaveMonthlyReportInput): Promise<
     return { success: false, error: 'PDF verisi okunamadı.' }
   }
 
-  const supabase = await createClient()
-
-  // Generate storage path: coachId/studentId/reportMonth-reportId.pdf
   const filename = `${reportMonth}-${crypto.randomUUID()}.pdf`
   const storagePath = `${coachId}/${studentId}/${filename}`
 
-  // Upload file buffer
-  const { error: uploadError } = await supabase.storage
-    .from('monthly-reports')
-    .upload(storagePath, pdfBuffer, {
-      contentType: 'application/pdf',
-      upsert: true, // Upsert true if replacing
-    })
+  const { error: uploadError } = await cfStorage.upload(
+    'monthly-reports',
+    storagePath,
+    pdfBuffer,
+    'application/pdf'
+  )
 
   if (uploadError) {
     console.error('Error uploading PDF report:', uploadError)
     return { success: false, error: 'PDF dosyası yüklenemedi: ' + uploadError.message }
   }
 
-  // We check if a report already exists for this month/student to update or insert
-  const { data: existingReport } = await supabase
-    .from('monthly_reports')
-    .select('id, pdf_path')
-    .eq('student_id', studentId)
-    .eq('report_month', reportMonth)
-    .single()
+  const existingReport = await d1.first<{ id: string; pdf_path: string | null }>(
+    'SELECT id, pdf_path FROM monthly_reports WHERE student_id = ? AND report_month = ? LIMIT 1',
+    [studentId, reportMonth]
+  )
 
-  const reportData = {
-    student_id: studentId,
-    coach_id: coachId,
-    report_month: reportMonth,
-    coach_comment: coachComment || null,
-    is_published: isPublished,
-    pdf_path: storagePath,
-    metrics_summary: metricsSummary,
-    updated_at: new Date().toISOString(),
-  }
+  const now = new Date().toISOString()
+  const metricsJson = JSON.stringify(metricsSummary || {})
 
-  if (existingReport) {
-    // If there is an existing PDF path, delete it first to save storage space
-    if (existingReport.pdf_path && existingReport.pdf_path !== storagePath) {
-      await supabase.storage.from('monthly-reports').remove([existingReport.pdf_path])
+  try {
+    if (existingReport) {
+      if (existingReport.pdf_path && existingReport.pdf_path !== storagePath) {
+        await cfStorage.remove('monthly-reports', [existingReport.pdf_path])
+      }
+
+      await d1.run(
+        `UPDATE monthly_reports 
+         SET coach_id = ?, coach_comment = ?, is_published = ?, pdf_path = ?, metrics_summary = ?, updated_at = ?
+         WHERE id = ?`,
+        [coachId, coachComment || null, isPublished ? 1 : 0, storagePath, metricsJson, now, existingReport.id]
+      )
+    } else {
+      const id = crypto.randomUUID()
+      await d1.run(
+        `INSERT INTO monthly_reports (id, student_id, coach_id, report_month, coach_comment, is_published, pdf_path, metrics_summary, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, studentId, coachId, reportMonth, coachComment || null, isPublished ? 1 : 0, storagePath, metricsJson, now, now]
+      )
     }
-
-    const { error: updateError } = await supabase
-      .from('monthly_reports')
-      .update(reportData)
-      .eq('id', existingReport.id)
-
-    if (updateError) {
-      console.error('Error updating report database record:', updateError)
-      return { success: false, error: 'Rapor güncellenemedi.' }
-    }
-  } else {
-    const { error: insertError } = await supabase
-      .from('monthly_reports')
-      .insert(reportData)
-
-    if (insertError) {
-      console.error('Error inserting report database record:', insertError)
-      // Clean up uploaded storage file
-      await supabase.storage.from('monthly-reports').remove([storagePath])
-      return { success: false, error: 'Rapor kaydedilemedi.' }
-    }
+  } catch (err: any) {
+    console.error('Error updating report database record:', err)
+    await cfStorage.remove('monthly-reports', [storagePath])
+    return { success: false, error: 'Rapor kaydedilemedi.' }
   }
 
   revalidatePath(`/coach/ogrenciler/${coachStudentId}`)
@@ -240,38 +234,23 @@ export async function deleteMonthlyReport(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
+  const report = await d1.first<{ id: string; pdf_path: string | null; coach_id: string }>(
+    'SELECT id, pdf_path, coach_id FROM monthly_reports WHERE id = ? LIMIT 1',
+    [reportId]
+  )
 
-  // Fetch report details
-  const { data: report, error: fetchError } = await supabase
-    .from('monthly_reports')
-    .select('pdf_path, coach_id')
-    .eq('id', reportId)
-    .single()
-
-  if (fetchError || !report || report.coach_id !== coachId) {
+  if (!report || report.coach_id !== coachId) {
     return { success: false, error: 'Rapor bulunamadı veya yetkiniz yok.' }
   }
 
-  // Delete storage file
   if (report.pdf_path) {
-    const { error: storageError } = await supabase.storage
-      .from('monthly-reports')
-      .remove([report.pdf_path])
-    
-    if (storageError) {
-      console.error('Error deleting report PDF from storage:', storageError)
-    }
+    await cfStorage.remove('monthly-reports', [report.pdf_path])
   }
 
-  // Delete from DB
-  const { error: deleteError } = await supabase
-    .from('monthly_reports')
-    .delete()
-    .eq('id', reportId)
-
-  if (deleteError) {
-    console.error('Error deleting report record:', deleteError)
+  try {
+    await d1.run('DELETE FROM monthly_reports WHERE id = ? AND coach_id = ?', [reportId, coachId])
+  } catch (err: any) {
+    console.error('Error deleting report record:', err)
     return { success: false, error: 'Rapor silinemedi.' }
   }
 
@@ -288,15 +267,13 @@ export async function publishMonthlyReport(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
-  const { error } = await supabase
-    .from('monthly_reports')
-    .update({ is_published: true, updated_at: new Date().toISOString() })
-    .eq('id', reportId)
-    .eq('coach_id', coachId)
-
-  if (error) {
-    console.error('Error publishing report:', error)
+  try {
+    await d1.run(
+      'UPDATE monthly_reports SET is_published = 1, updated_at = ? WHERE id = ? AND coach_id = ?',
+      [new Date().toISOString(), reportId, coachId]
+    )
+  } catch (err: any) {
+    console.error('Error publishing report:', err)
     return { success: false, error: 'Rapor yayınlanamadı.' }
   }
 
@@ -305,23 +282,17 @@ export async function publishMonthlyReport(
 }
 
 export async function getReportSignedUrl(reportId: string): Promise<string | null> {
-  const supabase = await createClient()
-  
-  const { data: report, error } = await supabase
-    .from('monthly_reports')
-    .select('pdf_path')
-    .eq('id', reportId)
-    .single()
+  const report = await d1.first<{ pdf_path: string | null }>(
+    'SELECT pdf_path FROM monthly_reports WHERE id = ? LIMIT 1',
+    [reportId]
+  )
 
-  if (error || !report?.pdf_path) {
+  if (!report?.pdf_path) {
     return null
   }
 
-  const { data, error: signError } = await supabase.storage
-    .from('monthly-reports')
-    .createSignedUrl(report.pdf_path, 60 * 60) // 1 hour expiration
-
-  if (signError || !data?.signedUrl) {
+  const { data, error } = await cfStorage.createSignedUrl('monthly-reports', report.pdf_path, 3600)
+  if (error || !data?.signedUrl) {
     return null
   }
 

@@ -1,20 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
-  AreaChart,
-  Area,
-} from 'recharts'
+import { ResponsiveContainer } from 'recharts'
 import type { ProgressEntry } from '@/types'
 import { formatDate } from '@/lib/coach/format'
+import {
+  BodyAreaChart,
+  LiftsLineChart,
+  LifestyleLineChart,
+  StepsAreaChart,
+  type ChartDataPoint,
+} from './progress-chart-views'
 
 type ProgressChartProps = {
   entries: ProgressEntry[]
@@ -25,8 +21,7 @@ type TabType = 'body' | 'lifts' | 'lifestyle' | 'steps'
 export function ProgressChart({ entries }: ProgressChartProps) {
   const [activeTab, setActiveTab] = useState<TabType>('body')
 
-  // Parse and sort data
-  const chartData = entries
+  const chartData: ChartDataPoint[] = entries
     .map((entry) => {
       const m = entry.custom_metrics || {}
       
@@ -63,7 +58,6 @@ export function ProgressChart({ entries }: ProgressChartProps) {
     )
   }
 
-  // Filter data based on active tab to see if any points exist for chosen metrics
   const hasData = () => {
     switch (activeTab) {
       case 'body':
@@ -135,177 +129,10 @@ export function ProgressChart({ entries }: ProgressChartProps) {
       ) : (
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            {activeTab === 'body' ? (
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ABD600" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#ABD600" stopOpacity={0.0} />
-                  </linearGradient>
-                  <linearGradient id="colorWaist" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00eefc" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#00eefc" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-                <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-                <YAxis
-                  yAxisId="left"
-                  domain={['auto', 'auto']}
-                  tick={{ fill: '#ABD600', fontSize: 10 }}
-                  tickLine={false}
-                  axisLine={false}
-                  unit=" kg"
-                />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  domain={['auto', 'auto']}
-                  tick={{ fill: '#00eefc', fontSize: 10 }}
-                  tickLine={false}
-                  axisLine={false}
-                  unit=" cm"
-                />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#131315', borderColor: '#2C2C2E', borderRadius: '12px' }}
-                  labelStyle={{ color: '#E5E1E4', fontWeight: 'bold', fontSize: '12px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Area
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="weight"
-                  name="Kilo"
-                  stroke="#ABD600"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorWeight)"
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-                <Area
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="waist"
-                  name="Bel Çevresi"
-                  stroke="#00eefc"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorWaist)"
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-              </AreaChart>
-            ) : activeTab === 'lifts' ? (
-              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-                <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} unit=" kg" />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#131315', borderColor: '#2C2C2E', borderRadius: '12px' }}
-                  labelStyle={{ color: '#E5E1E4', fontWeight: 'bold', fontSize: '12px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Line
-                  type="monotone"
-                  dataKey="bench"
-                  name="Bench Press"
-                  stroke="#ffb4ab"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-                <Line
-                  type="monotone"
-                  dataKey="squat"
-                  name="Squat"
-                  stroke="#ABD600"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-                <Line
-                  type="monotone"
-                  dataKey="deadlift"
-                  name="Deadlift"
-                  stroke="#00eefc"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-              </LineChart>
-            ) : activeTab === 'lifestyle' ? (
-              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-                <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} domain={[0, 10]} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#131315', borderColor: '#2C2C2E', borderRadius: '12px' }}
-                  labelStyle={{ color: '#E5E1E4', fontWeight: 'bold', fontSize: '12px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Line
-                  type="monotone"
-                  dataKey="sleep"
-                  name="Uyku (saat)"
-                  stroke="#d2e5f5"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-                <Line
-                  type="monotone"
-                  dataKey="diet"
-                  name="Diyet Skoru"
-                  stroke="#ABD600"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-                <Line
-                  type="monotone"
-                  dataKey="energy"
-                  name="Enerji Seviyesi"
-                  stroke="#00eefc"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-              </LineChart>
-            ) : (
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorSteps" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ABD600" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#ABD600" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-                <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#131315', borderColor: '#2C2C2E', borderRadius: '12px' }}
-                  labelStyle={{ color: '#E5E1E4', fontWeight: 'bold', fontSize: '12px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                  formatter={(value) => [`${Math.round(Number(value)).toLocaleString('tr-TR')} adım`, 'Adım Sayısı']}
-                />
-                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-                <Area
-                  type="monotone"
-                  dataKey="steps"
-                  name="Günlük Ortalama Adım"
-                  stroke="#ABD600"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorSteps)"
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-              </AreaChart>
-            )}
+            {activeTab === 'body' && <BodyAreaChart data={chartData} />}
+            {activeTab === 'lifts' && <LiftsLineChart data={chartData} />}
+            {activeTab === 'lifestyle' && <LifestyleLineChart data={chartData} />}
+            {activeTab === 'steps' && <StepsAreaChart data={chartData} />}
           </ResponsiveContainer>
         </div>
       )}

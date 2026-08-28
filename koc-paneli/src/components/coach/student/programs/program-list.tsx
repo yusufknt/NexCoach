@@ -8,7 +8,7 @@ import {
   getProgramDownloadUrl,
 } from '@/lib/coach/program-actions'
 import { formatDate } from '@/lib/coach/format'
-import type { ProgramListItem } from '@/lib/coach/programs'
+import type { ProgramListItem } from '@/lib/coach/programs.server'
 import { Button } from '@/components/ui/button'
 
 type ProgramListProps = {

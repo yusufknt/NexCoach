@@ -1,79 +1,103 @@
-import { createClient } from '@/lib/supabase/client'
+import { authClient } from '@/lib/auth-client'
+import { cfStorage } from '@/lib/cloudflare/storage'
+import { d1 } from '@/lib/cloudflare/d1'
 import type { NotificationPreferences } from './types'
 
 export async function updateProfile(data: { fullName: string; bio: string }) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return false
+  const { data: session } = await authClient.getSession()
+  if (!session?.user) return false
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ full_name: data.fullName, bio: data.bio })
-    .eq('id', user.id)
+  try {
+    const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+    const API_SECRET = 'nexcoach_prod_sec_2026_cf'
 
-  if (error) {
-    console.error('Error updating profile:', error)
+    const res = await fetch(`${WORKER_URL}/api/db/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Secret': API_SECRET,
+      },
+      body: JSON.stringify({
+        query: 'UPDATE profiles SET full_name = ?, bio = ?, updated_at = ? WHERE id = ?',
+        params: [data.fullName, data.bio, new Date().toISOString(), session.user.id],
+      }),
+    })
+
+    const json = await res.json()
+    return Boolean(json.success)
+  } catch (error) {
+    console.error('Error updating profile in D1:', error)
     return false
   }
-  return true
 }
 
 export async function uploadAvatar(file: File): Promise<string | null> {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
+  const { data: session } = await authClient.getSession()
+  if (!session?.user) return null
 
-  const fileExt = file.name.split('.').pop()
-  const filePath = `${user.id}/avatar.${fileExt}`
+  const fileExt = file.name.split('.').pop() || 'jpg'
+  const filePath = `${session.user.id}/avatar.${fileExt}`
 
-  const { error: uploadError } = await supabase.storage
-    .from('avatars')
-    .upload(filePath, file, { upsert: true })
+  const { error } = await cfStorage.upload('avatars', filePath, file, file.type);
+  if (error) return null;
+  const publicUrl = cfStorage.getPublicUrl('avatars', filePath).data.publicUrl;
+  
 
-  if (uploadError) {
-    console.error('Error uploading avatar:', uploadError)
-    return null
+  try {
+    const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+    const API_SECRET = 'nexcoach_prod_sec_2026_cf'
+
+    await fetch(`${WORKER_URL}/api/db/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Secret': API_SECRET,
+      },
+      body: JSON.stringify({
+        query: 'UPDATE profiles SET avatar_url = ?, updated_at = ? WHERE id = ?',
+        params: [publicUrl, new Date().toISOString(), session.user.id],
+      }),
+    })
+  } catch (error) {
+    console.error('Failed to update avatar_url in profiles:', error)
   }
-
-  const { data: { publicUrl } } = supabase.storage
-    .from('avatars')
-    .getPublicUrl(filePath)
-
-  // Update profile with avatar URL
-  await supabase
-    .from('profiles')
-    .update({ avatar_url: publicUrl })
-    .eq('id', user.id)
 
   return publicUrl
 }
 
 export async function changePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  // Supabase doesn't have a "verify old password" method on the client,
-  // so we just update the password directly
-  const { error } = await supabase.auth.updateUser({ password: newPassword })
-
+  const { error } = await authClient.changePassword({ newPassword, currentPassword })
+  
   if (error) {
-    return { success: false, error: error.message }
+    return { success: false, error: error.message || 'Şifre güncellenirken bir hata oluştu' }
   }
   return { success: true }
 }
 
 export async function updateNotificationPreferences(prefs: NotificationPreferences) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return false
+  const { data: session } = await authClient.getSession()
+  if (!session?.user) return false
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ notification_preferences: prefs })
-    .eq('id', user.id)
+  try {
+    const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+    const API_SECRET = 'nexcoach_prod_sec_2026_cf'
 
-  if (error) {
+    const res = await fetch(`${WORKER_URL}/api/db/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Secret': API_SECRET,
+      },
+      body: JSON.stringify({
+        query: 'UPDATE profiles SET notification_preferences = ?, updated_at = ? WHERE id = ?',
+        params: [JSON.stringify(prefs), new Date().toISOString(), session.user.id],
+      }),
+    })
+
+    const json = await res.json()
+    return Boolean(json.success)
+  } catch (error) {
     console.error('Error updating notification preferences:', error)
     return false
   }
-  return true
 }

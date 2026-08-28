@@ -1,4 +1,12 @@
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  Users,
+  MessageSquare,
+  Calendar,
+  Activity,
+  ArrowUpRight,
+  Sparkles,
+} from 'lucide-react'
 import type { DashboardStats } from '@/lib/coach/types'
 
 type DashboardStatsProps = {
@@ -14,72 +22,116 @@ export function DashboardStatsCards({
 }: DashboardStatsProps) {
   const items = [
     {
-      title: 'Aktif Öğrenci',
+      title: 'Aktif Danışan',
       value: stats.activeStudentCount,
-      description: 'Devam eden koçluk ilişkisi',
-      meta: '+',
-      highlight: false,
+      trend: '+12.5%',
+      trendLabel: 'geçen aya göre',
+      trendPositive: true,
+      icon: Users,
+      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-50',
+      bars: [30, 45, 60, 40, 75, 100, 65, 80, 90, 50],
+      activeBarColor: 'bg-blue-600',
     },
     {
       title: 'Okunmamış Mesaj',
       value: stats.unreadMessageCount,
-      description: 'Yanıt bekleyen mesajlar',
-      meta: stats.unreadMessageCount > 0 ? 'YENİ' : 'TEMİZ',
-      highlight: true,
+      trend: stats.unreadMessageCount > 0 ? 'Bekliyor' : 'Tümü okundu',
+      trendLabel: 'gelen kutusu',
+      trendPositive: stats.unreadMessageCount === 0,
+      icon: MessageSquare,
+      iconColor: 'text-emerald-600',
+      iconBg: 'bg-emerald-50',
+      bars: [20, 50, 30, 70, 40, 85, 100, 45, 60, 35],
+      activeBarColor: 'bg-emerald-500',
     },
     {
       title: 'Yaklaşan Randevu',
       value: appointmentCount,
-      description: 'Bugün ve yarın planlanan',
-      meta: '48 SA',
-      highlight: false,
+      trend: '48 Saat',
+      trendLabel: 'planlanan görüşmeler',
+      trendPositive: true,
+      icon: Calendar,
+      iconColor: 'text-amber-600',
+      iconBg: 'bg-amber-50',
+      bars: [40, 25, 60, 80, 50, 90, 100, 70, 55, 45],
+      activeBarColor: 'bg-amber-500',
     },
     {
-      title: 'Son Aktivite',
+      title: 'Haftalık Aktivite',
       value: activityCount,
-      description: 'Akışta listelenen kayıt',
-      meta: 'CANLI',
-      highlight: false,
+      trend: '+18.4%',
+      trendLabel: 'bu hafta canlı',
+      trendPositive: true,
+      icon: Activity,
+      iconColor: 'text-indigo-600',
+      iconBg: 'bg-indigo-50',
+      bars: [35, 55, 40, 70, 90, 65, 100, 80, 75, 60],
+      activeBarColor: 'bg-indigo-600',
     },
   ]
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {items.map((item) => (
-        <Card
-          key={item.title}
-          className="group border-[#27272A] bg-[#18181B]/80 backdrop-blur-xl transition-all duration-300 hover:border-[#ABD600]/40 hover:shadow-[0_0_20px_rgba(171,214,0,0.10)]"
-        >
-          <CardContent className="p-5 sm:p-6">
-            <div className="mb-4 flex items-start justify-between gap-3">
-              <CardTitle className="text-sm font-semibold text-[#C4C9AC]">
-                {item.title}
-              </CardTitle>
-              <span
-                className={
-                  item.highlight
-                    ? 'rounded-full bg-[#C3F400] px-2 py-0.5 text-[10px] font-extrabold text-[#283500]'
-                    : 'text-xs font-bold text-[#ABD600]'
-                }
-              >
-                {item.meta}
-              </span>
-            </div>
-            <p
-              className={
-                item.highlight
-                  ? 'text-5xl font-extrabold tracking-tight text-[#ABD600]'
-                  : 'text-5xl font-extrabold tracking-tight text-[#E5E1E4]'
-              }
-            >
-              {item.value}
-            </p>
-            <p className="mt-2 text-xs text-[#C4C9AC]/80">
-              {item.description}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
+      {items.map((item) => {
+        const Icon = item.icon
+        return (
+          <Card
+            key={item.title}
+            className="relative overflow-hidden rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-md"
+          >
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${item.iconBg}`}>
+                    <Icon className={`h-4 w-4 ${item.iconColor}`} />
+                  </div>
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {item.title}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <div className="text-3xl font-bold tracking-tight text-foreground">
+                    {item.value}
+                  </div>
+                  <div className="mt-1 flex items-center gap-1 text-[11px]">
+                    <span
+                      className={`inline-flex items-center font-medium ${
+                        item.trendPositive ? 'text-emerald-600' : 'text-amber-600'
+                      }`}
+                    >
+                      {item.trendPositive ? (
+                        <ArrowUpRight className="mr-0.5 h-3 w-3" />
+                      ) : null}
+                      {item.trend}
+                    </span>
+                    <span className="text-muted-foreground">{item.trendLabel}</span>
+                  </div>
+                </div>
+
+                {/* Mini Sparkline Bar Chart from Reference Image */}
+                <div className="flex h-10 items-end gap-[3px] pb-1">
+                  {item.bars.map((heightPercent, idx) => {
+                    const isPeak = heightPercent === 100
+                    return (
+                      <div
+                        key={idx}
+                        className={`w-1 rounded-full transition-all duration-300 ${
+                          isPeak ? item.activeBarColor : 'bg-muted-foreground/15'
+                        }`}
+                        style={{ height: `${Math.max(15, heightPercent)}%` }}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })}
     </div>
   )
 }

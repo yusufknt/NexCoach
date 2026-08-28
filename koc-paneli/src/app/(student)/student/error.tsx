@@ -33,7 +33,7 @@ export default function StudentError({
           <RotateCcw className="h-4 w-4" />
           Yeniden Dene
         </Button>
-        <a href="mailto:koc@fitcoach.com">
+        <a href="mailto:koc@NexCoach.com">
           <Button variant="outline" className="w-full sm:w-auto border-[#444933] bg-[#2A2A2C] text-[#E5E1E4] hover:bg-[#353437] flex items-center justify-center gap-2">
             <Mail className="h-4 w-4" />
             Koça E-posta Gönder

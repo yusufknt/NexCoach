@@ -3,18 +3,12 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { submitOnboarding } from '@/lib/student/onboarding-actions'
-import { User, Ruler, Heart, ChevronRight, ChevronLeft, Loader2, Camera, X } from 'lucide-react'
-
-const STEPS = [
-  { id: 1, title: 'Kişisel Bilgiler', icon: User },
-  { id: 2, title: 'Başlangıç Ölçüleri', icon: Ruler },
-  { id: 3, title: 'Sağlık & Fotoğraflar', icon: Heart },
-] as const
-
-type PhotoPreview = {
-  file: File
-  url: string
-}
+import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
+import { ONBOARDING_STEPS, type PhotoPreview } from './onboarding/onboarding-common'
+import { OnboardingStepper } from './onboarding/onboarding-stepper'
+import { StepPersonalInfo } from './onboarding/step-personal-info'
+import { StepMeasurements } from './onboarding/step-measurements'
+import { StepHealthPhotos } from './onboarding/step-health-photos'
 
 export function OnboardingClient() {
   const router = useRouter()
@@ -183,366 +177,85 @@ export function OnboardingClient() {
       </div>
 
       {/* Step indicator */}
-      <div className="flex items-center justify-center gap-2 sm:gap-3">
-        {STEPS.map((step, i) => (
-          <div key={step.id} className="flex items-center gap-2 sm:gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                if (step.id < currentStep) {
-                  setError(null)
-                  setCurrentStep(step.id)
-                }
-              }}
-              className={`
-                flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300
-                ${
-                  currentStep === step.id
-                    ? 'border-[#ABD600] bg-[#ABD600] text-[#283500] shadow-[0_0_16px_rgba(171,214,0,0.4)]'
-                    : currentStep > step.id
-                    ? 'border-[#ABD600]/60 bg-[#ABD600]/20 text-[#ABD600]'
-                    : 'border-[#444933] bg-[#18181B] text-[#C4C9AC]'
-                }
-              `}
-            >
-              <step.icon className="h-4 w-4" />
-            </button>
-            {i < STEPS.length - 1 && (
-              <div
-                className={`h-0.5 w-8 rounded-full transition-all duration-300 sm:w-12 ${
-                  currentStep > step.id ? 'bg-[#ABD600]' : 'bg-[#444933]'
-                }`}
-              />
-            )}
-          </div>
-        ))}
-      </div>
+      <OnboardingStepper
+        currentStep={currentStep}
+        onStepClick={(stepId) => {
+          setError(null)
+          setCurrentStep(stepId)
+        }}
+      />
 
       {/* Step title */}
       <div className="text-center">
         <h2 className="text-lg font-bold text-[#E5E1E4]">
-          {STEPS[currentStep - 1].title}
+          {ONBOARDING_STEPS[currentStep - 1].title}
         </h2>
       </div>
 
       {/* Form card */}
       <div className="surface-card p-6 sm:p-8">
-        {/* Step 1: Personal Info */}
         {currentStep === 1 && (
-          <div className="space-y-5">
-            <FormField label="Boy (cm) *" htmlFor="heightCm">
-              <input
-                id="heightCm"
-                type="number"
-                className="input-surface w-full px-4 py-2.5"
-                placeholder="175"
-                value={heightCm}
-                onChange={(e) => setHeightCm(e.target.value)}
-                min={100}
-                max={250}
-              />
-            </FormField>
-
-            <FormField label="Doğum Tarihi *" htmlFor="birthDate">
-              <input
-                id="birthDate"
-                type="date"
-                className="input-surface w-full px-4 py-2.5"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-              />
-            </FormField>
-
-            <FormField label="Cinsiyet *" htmlFor="gender">
-              <div className="grid grid-cols-2 gap-3">
-                <SelectButton
-                  selected={gender === 'male'}
-                  onClick={() => setGender('male')}
-                  label="Erkek"
-                />
-                <SelectButton
-                  selected={gender === 'female'}
-                  onClick={() => setGender('female')}
-                  label="Kadın"
-                />
-              </div>
-            </FormField>
-
-            <FormField label="Antrenman Deneyimi *" htmlFor="experience">
-              <div className="grid grid-cols-3 gap-3">
-                <SelectButton
-                  selected={experience === 'beginner'}
-                  onClick={() => setExperience('beginner')}
-                  label="Yeni Başlayan"
-                />
-                <SelectButton
-                  selected={experience === '1-3years'}
-                  onClick={() => setExperience('1-3years')}
-                  label="1-3 Yıl"
-                />
-                <SelectButton
-                  selected={experience === '3plus'}
-                  onClick={() => setExperience('3plus')}
-                  label="3+ Yıl"
-                />
-              </div>
-            </FormField>
-
-            <FormField label="Hedef *" htmlFor="goal">
-              <div className="grid grid-cols-2 gap-3">
-                <SelectButton
-                  selected={goal === 'muscle_gain'}
-                  onClick={() => setGoal('muscle_gain')}
-                  label="Kas Kazanımı"
-                />
-                <SelectButton
-                  selected={goal === 'fat_loss'}
-                  onClick={() => setGoal('fat_loss')}
-                  label="Yağ Yakımı"
-                />
-                <SelectButton
-                  selected={goal === 'recomposition'}
-                  onClick={() => setGoal('recomposition')}
-                  label="Rekomposizyon"
-                />
-                <SelectButton
-                  selected={goal === 'strength'}
-                  onClick={() => setGoal('strength')}
-                  label="Güç"
-                />
-              </div>
-            </FormField>
-          </div>
+          <StepPersonalInfo
+            heightCm={heightCm}
+            setHeightCm={setHeightCm}
+            birthDate={birthDate}
+            setBirthDate={setBirthDate}
+            gender={gender}
+            setGender={setGender}
+            experience={experience}
+            setExperience={setExperience}
+            goal={goal}
+            setGoal={setGoal}
+          />
         )}
 
-        {/* Step 2: Measurements */}
         {currentStep === 2 && (
-          <div className="space-y-5">
-            <FormField label="Kilo (kg) *" htmlFor="initialWeight">
-              <input
-                id="initialWeight"
-                type="number"
-                className="input-surface w-full px-4 py-2.5"
-                placeholder="80"
-                value={initialWeight}
-                onChange={(e) => setInitialWeight(e.target.value)}
-                min={30}
-                max={300}
-                step="0.1"
-              />
-            </FormField>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="Göğüs (cm)" htmlFor="chestCm">
-                <input
-                  id="chestCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="100"
-                  value={chestCm}
-                  onChange={(e) => setChestCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-              <FormField label="Bel (cm)" htmlFor="waistCm">
-                <input
-                  id="waistCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="85"
-                  value={waistCm}
-                  onChange={(e) => setWaistCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="Kalça (cm)" htmlFor="hipCm">
-                <input
-                  id="hipCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="100"
-                  value={hipCm}
-                  onChange={(e) => setHipCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-              <FormField label="Boyun (cm)" htmlFor="neckCm">
-                <input
-                  id="neckCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="38"
-                  value={neckCm}
-                  onChange={(e) => setNeckCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-            </div>
-
-            <p className="text-xs font-medium uppercase tracking-wider text-[#ABD600]">
-              Kol Ölçüleri
-            </p>
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="Sağ Üst Kol (cm)" htmlFor="rightUpperArmCm">
-                <input
-                  id="rightUpperArmCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="35"
-                  value={rightUpperArmCm}
-                  onChange={(e) => setRightUpperArmCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-              <FormField label="Sol Üst Kol (cm)" htmlFor="leftUpperArmCm">
-                <input
-                  id="leftUpperArmCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="34"
-                  value={leftUpperArmCm}
-                  onChange={(e) => setLeftUpperArmCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-            </div>
-
-            <p className="text-xs font-medium uppercase tracking-wider text-[#ABD600]">
-              Bacak Ölçüleri
-            </p>
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="Sağ Uyluk (cm)" htmlFor="rightThighCm">
-                <input
-                  id="rightThighCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="58"
-                  value={rightThighCm}
-                  onChange={(e) => setRightThighCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-              <FormField label="Sol Uyluk (cm)" htmlFor="leftThighCm">
-                <input
-                  id="leftThighCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="57"
-                  value={leftThighCm}
-                  onChange={(e) => setLeftThighCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField label="Sağ Baldır (cm)" htmlFor="rightCalfCm">
-                <input
-                  id="rightCalfCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="38"
-                  value={rightCalfCm}
-                  onChange={(e) => setRightCalfCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-              <FormField label="Sol Baldır (cm)" htmlFor="leftCalfCm">
-                <input
-                  id="leftCalfCm"
-                  type="number"
-                  className="input-surface w-full px-4 py-2.5"
-                  placeholder="37"
-                  value={leftCalfCm}
-                  onChange={(e) => setLeftCalfCm(e.target.value)}
-                  step="0.1"
-                />
-              </FormField>
-            </div>
-
-            <FormField label="Vücut Yağ Oranı (%)" htmlFor="bodyFatPercentage">
-              <input
-                id="bodyFatPercentage"
-                type="number"
-                className="input-surface w-full px-4 py-2.5"
-                placeholder="15"
-                value={bodyFatPercentage}
-                onChange={(e) => setBodyFatPercentage(e.target.value)}
-                min={3}
-                max={60}
-                step="0.1"
-              />
-              <p className="mt-1 text-xs text-[#C4C9AC]/70">
-                Bilmiyorsanız boş bırakabilirsiniz.
-              </p>
-            </FormField>
-          </div>
+          <StepMeasurements
+            initialWeight={initialWeight}
+            setInitialWeight={setInitialWeight}
+            chestCm={chestCm}
+            setChestCm={setChestCm}
+            waistCm={waistCm}
+            setWaistCm={setWaistCm}
+            hipCm={hipCm}
+            setHipCm={setHipCm}
+            neckCm={neckCm}
+            setNeckCm={setNeckCm}
+            rightUpperArmCm={rightUpperArmCm}
+            setRightUpperArmCm={setRightUpperArmCm}
+            leftUpperArmCm={leftUpperArmCm}
+            setLeftUpperArmCm={setLeftUpperArmCm}
+            rightThighCm={rightThighCm}
+            setRightThighCm={setRightThighCm}
+            leftThighCm={leftThighCm}
+            setLeftThighCm={setLeftThighCm}
+            rightCalfCm={rightCalfCm}
+            setRightCalfCm={setRightCalfCm}
+            leftCalfCm={leftCalfCm}
+            setLeftCalfCm={setLeftCalfCm}
+            bodyFatPercentage={bodyFatPercentage}
+            setBodyFatPercentage={setBodyFatPercentage}
+          />
         )}
 
-        {/* Step 3: Health & Photos */}
         {currentStep === 3 && (
-          <div className="space-y-6">
-            <FormField label="Sakatlık / Kısıtlama" htmlFor="injuries">
-              <textarea
-                id="injuries"
-                className="input-surface w-full resize-none px-4 py-2.5"
-                rows={3}
-                placeholder="Varsa sakatlık veya fiziksel kısıtlamalarınızı belirtin..."
-                value={injuries}
-                onChange={(e) => setInjuries(e.target.value)}
-              />
-            </FormField>
-
-            <FormField label="Kullandığınız Supplement'ler" htmlFor="supplements">
-              <textarea
-                id="supplements"
-                className="input-surface w-full resize-none px-4 py-2.5"
-                rows={3}
-                placeholder="Protein tozu, kreatin, vitamin D vb."
-                value={supplements}
-                onChange={(e) => setSupplements(e.target.value)}
-              />
-            </FormField>
-
-            <div>
-              <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[#ABD600]">
-                Başlangıç Fotoğrafları (opsiyonel)
-              </p>
-              <p className="mb-4 text-xs text-[#C4C9AC]/70">
-                Ön, yan ve arka fotoğraflarınızı yükleyin. İlerlemenizi takip etmek için çok faydalı olacaktır.
-              </p>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <PhotoUpload
-                  label="Ön"
-                  preview={photoFront}
-                  inputRef={frontInputRef}
-                  onChange={(e) => handlePhotoChange(e, setPhotoFront)}
-                  onRemove={() => removePhoto(setPhotoFront, frontInputRef)}
-                  inputId="photoFront"
-                />
-                <PhotoUpload
-                  label="Yan"
-                  preview={photoSide}
-                  inputRef={sideInputRef}
-                  onChange={(e) => handlePhotoChange(e, setPhotoSide)}
-                  onRemove={() => removePhoto(setPhotoSide, sideInputRef)}
-                  inputId="photoSide"
-                />
-                <PhotoUpload
-                  label="Arka"
-                  preview={photoBack}
-                  inputRef={backInputRef}
-                  onChange={(e) => handlePhotoChange(e, setPhotoBack)}
-                  onRemove={() => removePhoto(setPhotoBack, backInputRef)}
-                  inputId="photoBack"
-                />
-              </div>
-            </div>
-          </div>
+          <StepHealthPhotos
+            injuries={injuries}
+            setInjuries={setInjuries}
+            supplements={supplements}
+            setSupplements={setSupplements}
+            photoFront={photoFront}
+            setPhotoFront={setPhotoFront}
+            photoSide={photoSide}
+            setPhotoSide={setPhotoSide}
+            photoBack={photoBack}
+            setPhotoBack={setPhotoBack}
+            frontInputRef={frontInputRef}
+            sideInputRef={sideInputRef}
+            backInputRef={backInputRef}
+            onPhotoChange={handlePhotoChange}
+            onRemovePhoto={removePhoto}
+          />
         )}
       </div>
 
@@ -595,112 +308,6 @@ export function OnboardingClient() {
           </button>
         )}
       </div>
-    </div>
-  )
-}
-
-// --- Sub-components ---
-
-function FormField({
-  label,
-  htmlFor,
-  children,
-}: {
-  label: string
-  htmlFor: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="space-y-1.5">
-      <label
-        htmlFor={htmlFor}
-        className="block text-sm font-medium text-[#C4C9AC]"
-      >
-        {label}
-      </label>
-      {children}
-    </div>
-  )
-}
-
-function SelectButton({
-  selected,
-  onClick,
-  label,
-}: {
-  selected: boolean
-  onClick: () => void
-  label: string
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`
-        rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200
-        ${
-          selected
-            ? 'border-[#ABD600] bg-[#ABD600]/15 text-[#ABD600] shadow-[0_0_12px_rgba(171,214,0,0.15)]'
-            : 'border-[#444933] bg-[#0E0E10] text-[#C4C9AC] hover:border-[#ABD600]/40 hover:text-[#E5E1E4]'
-        }
-      `}
-    >
-      {label}
-    </button>
-  )
-}
-
-function PhotoUpload({
-  label,
-  preview,
-  inputRef,
-  onChange,
-  onRemove,
-  inputId,
-}: {
-  label: string
-  preview: PhotoPreview | null
-  inputRef: React.RefObject<HTMLInputElement | null>
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onRemove: () => void
-  inputId: string
-}) {
-  return (
-    <div className="space-y-2">
-      <p className="text-center text-xs font-medium text-[#C4C9AC]">{label}</p>
-      {preview ? (
-        <div className="group relative">
-          <img
-            src={preview.url}
-            alt={`${label} fotoğrafı`}
-            className="h-48 w-full rounded-xl border border-[#444933] object-cover"
-          />
-          <button
-            type="button"
-            onClick={onRemove}
-            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#09090B]/80 text-[#C4C9AC] opacity-0 transition-all duration-200 hover:text-red-400 group-hover:opacity-100"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="flex h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#444933] bg-[#0E0E10]/50 transition-all duration-200 hover:border-[#ABD600]/50 hover:bg-[#ABD600]/5"
-        >
-          <Camera className="h-6 w-6 text-[#C4C9AC]/60" />
-          <span className="text-xs text-[#C4C9AC]/60">Yükle</span>
-        </button>
-      )}
-      <input
-        ref={inputRef}
-        id={inputId}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={onChange}
-      />
     </div>
   )
 }

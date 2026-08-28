@@ -1,0 +1,142 @@
+{
+    "wallTime": 216,
+    "cpuTime": 123,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "493429bd-cd01-4e53-9b1b-81002efa7b5e"
+    },
+    "scriptName": "nexcoach-api",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [
+        {
+            "message": [
+                "2026-08-23T17:38:09.933Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET should be at least 32 characters long for adequate security. Generate one with `npx auth secret` or `openssl rand -base64 32`."
+            ],
+            "level": "warn",
+            "timestamp": 1787506689933
+        },
+        {
+            "message": [
+                "2026-08-23T17:38:09.933Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET appears low-entropy. Use a randomly generated secret for production."
+            ],
+            "level": "warn",
+            "timestamp": 1787506689933
+        },
+        {
+            "message": [
+                "2026-08-23T17:38:10.027Z ERROR [Better Auth]: D1_ERROR: table account has no column named issuer: SQLITE_ERROR"
+            ],
+            "level": "error",
+            "timestamp": 1787506690027
+        },
+        {
+            "errorInfo": [
+                null,
+                {
+                    "name": "Error",
+                    "message": "D1_ERROR: table account has no column named issuer: SQLITE_ERROR",
+                    "stack": "    at D1DatabaseSessionAlwaysPrimary._sendOrThrow (cloudflare-internal:d1-api:188:19)\n    at async cloudflare-internal:d1-api:497:19\n    at async D1SqliteConnection.executeQuery (index.js:26218:25)\n    at async index.js:12559:20\n    at async DefaultConnectionProvider.provideConnection (index.js:20379:18)\n    at async _DefaultQueryExecutor.executeQuery (index.js:12558:26)\n    at async InsertQueryBuilder.execute (index.js:9708:24)\n    at async InsertQueryBuilder.executeTakeFirst (index.js:9719:26)\n    at async withReturning (index.js:26532:20)\n    at async Object.create (index.js:26673:22)"
+                }
+            ],
+            "message": [
+                "# SERVER_ERROR: ",
+                "Error: D1_ERROR: table account has no column named issuer: SQLITE_ERROR"
+            ],
+            "level": "error",
+            "timestamp": 1787506690027
+        }
+    ],
+    "eventTimestamp": 1787506689933,
+    "event": {
+        "request": {
+            "url": "https://nexcoach-api.yusufk6509.workers.dev/api/auth/sign-up/email",
+            "method": "POST",
+            "headers": {
+                "accept": "*/*",
+                "accept-encoding": "gzip, br",
+                "accept-language": "*",
+                "cf-connecting-ip": "159.146.60.73",
+                "cf-ipcountry": "TR",
+                "cf-ray": "a2fbe3abba77edd2",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "content-length": "89",
+                "content-type": "application/json",
+                "host": "nexcoach-api.yusufk6509.workers.dev",
+                "origin": "http://localhost:3000",
+                "sec-fetch-mode": "cors",
+                "user-agent": "node",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "159.146.60.73"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/1.1",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 50,
+                "clientQuicRtt": 0,
+                "colo": "MXP",
+                "asn": 12735,
+                "asOrganization": "TurkNet-DSL",
+                "country": "TR",
+                "isEUCountry": false,
+                "city": "Samsun",
+                "continent": "AS",
+                "region": "Samsun",
+                "regionCode": "55",
+                "timezone": "Europe/Istanbul",
+                "longitude": "36.3361",
+                "latitude": "41.27976",
+                "postalCode": "55080",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES256-GCM-SHA384",
+                "tlsClientRandom": "M/w9d28f4S8cB2pHzA2siAgDrxzBtPgEEflTIEHKRng=",
+                "tlsClientCiphersSha1": "kXrN3VEKDdzz2cPKTQaKzpxVTxQ=",
+                "tlsClientExtensionsSha1": "1eY97BUYYO8vDaTfHQywB1pcNdM=",
+                "tlsClientExtensionsSha1Le": "u4wtEMFQBY18l3BzHAvORm+KGRw=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "89d5d6b3f4b5c156c1ce1264ca1f1e2a71e02e5c4113d759969d9577fbc6f8c09075dc6b71314aff77feea481484f90b",
+                    "serverHandshake": "7a3cdd39cef31a1455f178a2760758578773744260f02c0e9aac773889d37ce4317b56354ca28a2df6beff2ae5035de1",
+                    "clientFinished": "f1a095c2aec4d6ec8d919a076527e9b02ae8aad4386641f0f981a6fa1ac7c4ff0786d7b1b70afb39b4b333a4372d0f6f",
+                    "serverFinished": "539a7aadd268a0041c30a530e278c418e070ffcb88b76a92d0324ae030e2685c8b6956ca732862166f98fb7bb87e83f2"
+                },
+                "tlsClientHelloLength": "1618",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 81527
+                }
+            }
+        },
+        "response": {
+            "status": 500
+        }
+    }
+}

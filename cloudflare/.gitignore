@@ -1,0 +1,5 @@
+# Cloudflare NexCoach Worker
+
+cloudflare/node_modules/
+cloudflare/.wrangler/
+.dev.vars

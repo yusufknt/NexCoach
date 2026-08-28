@@ -1,7 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
+import { cfStorage } from '@/lib/cloudflare/storage'
 import { getAuthenticatedStudentId } from '@/lib/student/auth'
 
 type OnboardingResult = {
@@ -16,8 +17,6 @@ export async function submitOnboarding(
   if (!studentId) {
     return { success: false, error: 'Oturum bulunamadı.' }
   }
-
-  const supabase = await createClient()
 
   // Parse form fields
   const heightCm = parseFloat(String(formData.get('heightCm') ?? ''))
@@ -71,68 +70,87 @@ export async function submitOnboarding(
   const sidePhoto = formData.get('photoSide')
   const backPhoto = formData.get('photoBack')
 
-  const photoFrontPath = await uploadOnboardingPhoto(supabase, studentId, frontPhoto, 'front')
-  const photoSidePath = await uploadOnboardingPhoto(supabase, studentId, sidePhoto, 'side')
-  const photoBackPath = await uploadOnboardingPhoto(supabase, studentId, backPhoto, 'back')
+  const photoFrontPath = await uploadOnboardingPhoto(studentId, frontPhoto, 'front')
+  const photoSidePath = await uploadOnboardingPhoto(studentId, sidePhoto, 'side')
+  const photoBackPath = await uploadOnboardingPhoto(studentId, backPhoto, 'back')
 
   if (photoFrontPath === false || photoSidePath === false || photoBackPath === false) {
     return { success: false, error: 'Fotoğraf yüklenirken bir hata oluştu.' }
   }
 
-  // Check if profile already exists (update vs insert)
-  const { data: existing } = await supabase
-    .from('student_profiles')
-    .select('id')
-    .eq('student_id', studentId)
-    .single()
+  // Check if profile already exists
+  const existing = await d1.first<{ id: string }>(
+    'SELECT id FROM student_profiles WHERE student_id = ? LIMIT 1',
+    [studentId]
+  )
 
-  const profileData = {
-    student_id: studentId,
-    height_cm: heightCm,
-    birth_date: birthDate,
-    gender,
-    experience,
-    goal,
-    initial_weight: initialWeight,
-    chest_cm: chestCm,
-    waist_cm: waistCm,
-    hip_cm: hipCm,
-    neck_cm: neckCm,
-    right_upper_arm_cm: rightUpperArmCm,
-    left_upper_arm_cm: leftUpperArmCm,
-    right_thigh_cm: rightThighCm,
-    left_thigh_cm: leftThighCm,
-    right_calf_cm: rightCalfCm,
-    left_calf_cm: leftCalfCm,
-    body_fat_percentage: bodyFatPercentage,
-    photo_front_path: photoFrontPath || null,
-    photo_side_path: photoSidePath || null,
-    photo_back_path: photoBackPath || null,
-    injuries,
-    supplements,
-    onboarding_completed: true,
-    updated_at: new Date().toISOString(),
-  }
+  const now = new Date().toISOString()
 
-  if (existing) {
-    const { error } = await supabase
-      .from('student_profiles')
-      .update(profileData)
-      .eq('student_id', studentId)
-
-    if (error) {
-      console.error('Error updating student profile:', error)
-      return { success: false, error: 'Profil güncellenirken bir hata oluştu.' }
+  try {
+    if (existing) {
+      await d1.run(
+        `UPDATE student_profiles SET
+          height_cm = ?,
+          birth_date = ?,
+          gender = ?,
+          experience = ?,
+          goal = ?,
+          initial_weight = ?,
+          chest_cm = ?,
+          waist_cm = ?,
+          hip_cm = ?,
+          neck_cm = ?,
+          right_upper_arm_cm = ?,
+          left_upper_arm_cm = ?,
+          right_thigh_cm = ?,
+          left_thigh_cm = ?,
+          right_calf_cm = ?,
+          left_calf_cm = ?,
+          body_fat_percentage = ?,
+          photo_front_path = COALESCE(?, photo_front_path),
+          photo_side_path = COALESCE(?, photo_side_path),
+          photo_back_path = COALESCE(?, photo_back_path),
+          injuries = ?,
+          supplements = ?,
+          onboarding_completed = 1,
+          updated_at = ?
+        WHERE student_id = ?`,
+        [
+          heightCm, birthDate, gender, experience, goal, initialWeight,
+          chestCm, waistCm, hipCm, neckCm, rightUpperArmCm, leftUpperArmCm,
+          rightThighCm, leftThighCm, rightCalfCm, leftCalfCm, bodyFatPercentage,
+          photoFrontPath || null, photoSidePath || null, photoBackPath || null,
+          injuries, supplements, now, studentId
+        ]
+      )
+    } else {
+      const id = crypto.randomUUID()
+      await d1.run(
+        `INSERT INTO student_profiles (
+          id, student_id, height_cm, birth_date, gender, experience, goal, initial_weight,
+          chest_cm, waist_cm, hip_cm, neck_cm, right_upper_arm_cm, left_upper_arm_cm,
+          right_thigh_cm, left_thigh_cm, right_calf_cm, left_calf_cm, body_fat_percentage,
+          photo_front_path, photo_side_path, photo_back_path, injuries, supplements,
+          onboarding_completed, created_at, updated_at
+        ) VALUES (
+          ?, ?, ?, ?, ?, ?, ?, ?,
+          ?, ?, ?, ?, ?, ?,
+          ?, ?, ?, ?, ?,
+          ?, ?, ?, ?, ?,
+          1, ?, ?
+        )`,
+        [
+          id, studentId, heightCm, birthDate, gender, experience, goal, initialWeight,
+          chestCm, waistCm, hipCm, neckCm, rightUpperArmCm, leftUpperArmCm,
+          rightThighCm, leftThighCm, rightCalfCm, leftCalfCm, bodyFatPercentage,
+          photoFrontPath || null, photoSidePath || null, photoBackPath || null, injuries, supplements,
+          now, now
+        ]
+      )
     }
-  } else {
-    const { error } = await supabase
-      .from('student_profiles')
-      .insert(profileData)
-
-    if (error) {
-      console.error('Error creating student profile:', error)
-      return { success: false, error: 'Profil oluşturulurken bir hata oluştu.' }
-    }
+  } catch (error: any) {
+    console.error('Error saving student profile:', error)
+    return { success: false, error: error.message || 'Profil kaydedilirken bir hata oluştu.' }
   }
 
   revalidatePath('/student/dashboard')
@@ -141,20 +159,18 @@ export async function submitOnboarding(
 }
 
 async function uploadOnboardingPhoto(
-  supabase: Awaited<ReturnType<typeof createClient>>,
   studentId: string,
   fileValue: FormDataEntryValue | null,
   kind: 'front' | 'side' | 'back'
 ): Promise<string | null | false> {
   if (!(fileValue instanceof File) || fileValue.size === 0) {
-    return null // No file provided — that's OK (optional)
+    return null
   }
 
   if (!fileValue.type.startsWith('image/')) {
-    return false // Invalid file type
+    return false
   }
 
-  // Max 10MB
   if (fileValue.size > 10 * 1024 * 1024) {
     return false
   }
@@ -163,12 +179,8 @@ async function uploadOnboardingPhoto(
   const safeExtension = extension.replace(/[^a-z0-9]/g, '').slice(0, 8) || 'jpg'
   const path = `${studentId}/${crypto.randomUUID()}-${kind}.${safeExtension}`
 
-  const { error } = await supabase.storage
-    .from('progress-photos')
-    .upload(path, fileValue, {
-      contentType: fileValue.type,
-      upsert: false,
-    })
+  const buffer = await fileValue.arrayBuffer()
+  const { error } = await cfStorage.upload('progress-photos', path, buffer, fileValue.type)
 
   if (error) {
     console.error(`Error uploading onboarding photo (${kind}):`, error)
@@ -187,37 +199,30 @@ export async function updateStudentOnboardingPhoto(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
-
   const photoFile = formData.get('photo')
   if (!photoFile) {
     return { success: false, error: 'Dosya seçilmedi.' }
   }
 
-  const photoPath = await uploadOnboardingPhoto(supabase, studentId, photoFile, kind)
+  const photoPath = await uploadOnboardingPhoto(studentId, photoFile, kind)
   if (photoPath === false) {
     return { success: false, error: 'Fotoğraf yüklenirken bir hata oluştu (Geçersiz format veya >10MB).' }
   }
 
   const dbColumn = `photo_${kind}_path`
-  const { error: dbError } = await supabase
-    .from('student_profiles')
-    .update({
-      [dbColumn]: photoPath,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('student_id', studentId)
-
-  if (dbError) {
+  try {
+    await d1.run(
+      `UPDATE student_profiles SET ${dbColumn} = ?, updated_at = ? WHERE student_id = ?`,
+      [photoPath, new Date().toISOString(), studentId]
+    )
+  } catch (dbError) {
     console.error('Error updating student profile photo path:', dbError)
     return { success: false, error: 'Veritabanı güncellenirken hata oluştu.' }
   }
 
   let signedUrl: string | null = null
   if (photoPath) {
-    const { data } = await supabase.storage
-      .from('progress-photos')
-      .createSignedUrl(photoPath, 3600)
+    const { data } = await cfStorage.createSignedUrl('progress-photos', photoPath, 3600)
     signedUrl = data?.signedUrl ?? null
   }
 
@@ -235,18 +240,13 @@ export async function deleteStudentOnboardingPhoto(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
-
   const dbColumn = `photo_${kind}_path`
-  const { error: dbError } = await supabase
-    .from('student_profiles')
-    .update({
-      [dbColumn]: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('student_id', studentId)
-
-  if (dbError) {
+  try {
+    await d1.run(
+      `UPDATE student_profiles SET ${dbColumn} = NULL, updated_at = ? WHERE student_id = ?`,
+      [new Date().toISOString(), studentId]
+    )
+  } catch (dbError) {
     console.error('Error deleting student profile photo path:', dbError)
     return { success: false, error: 'Fotoğraf silinirken veritabanı hatası oluştu.' }
   }
@@ -256,4 +256,3 @@ export async function deleteStudentOnboardingPhoto(
 
   return { success: true }
 }
-

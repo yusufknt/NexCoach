@@ -1,9 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { d1 } from '@/lib/cloudflare/d1'
+import { cfStorage } from '@/lib/cloudflare/storage'
 import { getAuthenticatedCoachId } from '@/lib/coach/auth'
-import { buildProgramStoragePath } from '@/lib/coach/programs'
+import { buildProgramStoragePath } from '@/lib/coach/programs.server'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -14,16 +15,11 @@ async function verifyCoachStudent(
   coachStudentId: string,
   studentId: string
 ): Promise<boolean> {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('coach_students')
-    .select('id')
-    .eq('id', coachStudentId)
-    .eq('coach_id', coachId)
-    .eq('student_id', studentId)
-    .single()
-
-  return Boolean(data)
+  const row = await d1.first<{ id: string }>(
+    'SELECT id FROM coach_students WHERE id = ? AND coach_id = ? AND student_id = ? LIMIT 1',
+    [coachStudentId, coachId, studentId]
+  )
+  return Boolean(row)
 }
 
 export async function uploadProgram(formData: FormData): Promise<ActionResult> {
@@ -60,31 +56,29 @@ export async function uploadProgram(formData: FormData): Promise<ActionResult> {
   }
 
   const storagePath = buildProgramStoragePath(coachId, studentId, file.name)
-  const supabase = await createClient()
+  const fileBuffer = await file.arrayBuffer()
 
-  const { error: uploadError } = await supabase.storage
-    .from('programs')
-    .upload(storagePath, file, {
-      contentType: 'application/pdf',
-      upsert: false,
-    })
+  const { error: uploadError } = await cfStorage.upload(
+    'programs',
+    storagePath,
+    fileBuffer,
+    'application/pdf'
+  )
 
   if (uploadError) {
     return { success: false, error: uploadError.message }
   }
 
-  const { error: insertError } = await supabase.from('programs').insert({
-    coach_id: coachId,
-    student_id: studentId,
-    title,
-    description: description || null,
-    file_url: storagePath,
-    file_name: file.name,
-  })
-
-  if (insertError) {
-    await supabase.storage.from('programs').remove([storagePath])
-    return { success: false, error: insertError.message }
+  const id = crypto.randomUUID()
+  try {
+    await d1.run(
+      `INSERT INTO programs (id, coach_id, student_id, title, description, file_url, file_name)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, coachId, studentId, title, description || null, storagePath, file.name]
+    )
+  } catch (err: any) {
+    await cfStorage.remove('programs', [storagePath])
+    return { success: false, error: err.message || 'Veritabanı kaydı oluşturulamadı.' }
   }
 
   revalidatePath(`/coach/ogrenciler/${coachStudentId}`)
@@ -100,34 +94,24 @@ export async function deleteProgram(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
-  const { data: program, error: fetchError } = await supabase
-    .from('programs')
-    .select('id, file_url')
-    .eq('id', programId)
-    .eq('coach_id', coachId)
-    .single()
+  const program = await d1.first<{ id: string; file_url: string }>(
+    'SELECT id, file_url FROM programs WHERE id = ? AND coach_id = ? LIMIT 1',
+    [programId, coachId]
+  )
 
-  if (fetchError || !program) {
+  if (!program) {
     return { success: false, error: 'Program bulunamadı.' }
   }
 
-  const { error: storageError } = await supabase.storage
-    .from('programs')
-    .remove([program.file_url])
-
+  const { error: storageError } = await cfStorage.remove('programs', [program.file_url])
   if (storageError) {
     return { success: false, error: storageError.message }
   }
 
-  const { error: deleteError } = await supabase
-    .from('programs')
-    .delete()
-    .eq('id', programId)
-    .eq('coach_id', coachId)
-
-  if (deleteError) {
-    return { success: false, error: deleteError.message }
+  try {
+    await d1.run('DELETE FROM programs WHERE id = ? AND coach_id = ?', [programId, coachId])
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Program silinemedi.' }
   }
 
   revalidatePath(`/coach/ogrenciler/${coachStudentId}`)
@@ -142,21 +126,20 @@ export async function getProgramDownloadUrl(
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const supabase = await createClient()
-  const { data: program, error } = await supabase
-    .from('programs')
-    .select('file_url, file_name')
-    .eq('id', programId)
-    .eq('coach_id', coachId)
-    .single()
+  const program = await d1.first<{ file_url: string; file_name: string }>(
+    'SELECT file_url, file_name FROM programs WHERE id = ? AND coach_id = ? LIMIT 1',
+    [programId, coachId]
+  )
 
-  if (error || !program) {
+  if (!program) {
     return { success: false, error: 'Program bulunamadı.' }
   }
 
-  const { data: signed, error: signError } = await supabase.storage
-    .from('programs')
-    .createSignedUrl(program.file_url, 120)
+  const { data: signed, error: signError } = await cfStorage.createSignedUrl(
+    'programs',
+    program.file_url,
+    120
+  )
 
   if (signError || !signed?.signedUrl) {
     return { success: false, error: signError?.message ?? 'İndirme linki oluşturulamadı.' }

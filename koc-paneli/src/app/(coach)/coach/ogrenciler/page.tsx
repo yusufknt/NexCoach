@@ -1,14 +1,17 @@
 import { redirect } from 'next/navigation'
-import { getCoachStudents } from '@/lib/coach/students'
-import { StudentList } from '@/components/coach/student-list'
+import { getAuthenticatedCoachId } from '@/lib/coach/auth'
+import { getCoachPackages } from '@/lib/coach/invite.server'
 import { CoachPageHeader } from '@/components/coach/page-header'
+import { InviteStudentButton } from '@/components/coach/students/invite-student-button'
+import { CoachStudentsClient } from '@/components/coach/students-client'
 
 export default async function CoachStudentsPage() {
-  const students = await getCoachStudents()
-
-  if (students === null) {
+  const coachId = await getAuthenticatedCoachId()
+  if (!coachId) {
     redirect('/giris')
   }
+
+  const packages = await getCoachPackages()
 
   return (
     <div className="coach-page">
@@ -16,8 +19,9 @@ export default async function CoachStudentsPage() {
         <CoachPageHeader
           title="Öğrencilerim"
           description="Tüm öğrencilerinizi görüntüleyin ve yönetin."
+          action={<InviteStudentButton packages={packages} />}
         />
-        <StudentList students={students} />
+        <CoachStudentsClient />
       </div>
     </div>
   )

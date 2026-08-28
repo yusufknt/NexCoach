@@ -2,30 +2,34 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { BrandLockup } from '@/components/public/brand-lockup'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export function PublicHeader() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center h-16 px-margin-x bg-surface/80 backdrop-blur-xl border-b border-outline-variant">
-      <Link href="/" className="font-headline-md text-headline-md font-bold text-on-surface tracking-tight uppercase hover:opacity-85 transition-opacity">
-        KİNETİK PERFORMANCE
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-[#0b0d14]/82 backdrop-blur-xl">
+      <div className="public-container flex h-[4.5rem] items-center justify-between">
+      <Link href="/" className="rounded-md outline-none transition-opacity hover:opacity-85 focus-visible:ring-2 focus-visible:ring-primary" aria-label="NexCoach ana sayfa">
+        <BrandLockup compact showName />
       </Link>
       
       {/* Desktop Navigation */}
-      <nav className="hidden md:flex items-center gap-stack-lg">
-        <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#hakkimda">
+      <nav className="hidden items-center gap-7 md:flex" aria-label="Ana menü">
+        <a className="text-sm font-medium text-white/65 transition-colors hover:text-white" href="#hakkimda">
           Hakkımda
         </a>
-        <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#paketler">
+        <a className="text-sm font-medium text-white/65 transition-colors hover:text-white" href="#paketler">
           Paketler
         </a>
-        <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#referanslar">
+        <a className="text-sm font-medium text-white/65 transition-colors hover:text-white" href="#referanslar">
           Referanslar
         </a>
         <Link
           href="/giris"
-          className="px-6 py-2 bg-surface-container-highest text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-bright transition-all active:opacity-70"
+          className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'h-10 px-5')}
         >
           Giriş Yap
         </Link>
@@ -34,32 +38,33 @@ export function PublicHeader() {
       {/* Mobile Toggle Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)} 
-        className="md:hidden text-on-surface hover:text-[#abd600] transition-colors p-1"
+        className="flex size-10 items-center justify-center rounded-lg text-white/75 transition-colors hover:bg-white/[0.07] hover:text-white md:hidden"
         aria-label="Menüyü aç/kapat"
+        aria-expanded={isOpen}
       >
         <span className="material-symbols-outlined">{isOpen ? 'close' : 'menu'}</span>
       </button>
 
       {/* Mobile Menu Panel */}
       {isOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-surface border-b border-outline-variant flex flex-col p-6 gap-4 md:hidden shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute inset-x-0 top-[4.5rem] flex flex-col gap-2 border-b border-white/[0.08] bg-[#0b0d14] p-5 shadow-2xl md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <a 
             onClick={() => setIsOpen(false)} 
-            className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b border-outline-variant/35" 
+            className="rounded-lg px-3 py-3 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white" 
             href="#hakkimda"
           >
             Hakkımda
           </a>
           <a 
             onClick={() => setIsOpen(false)} 
-            className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b border-outline-variant/35" 
+            className="rounded-lg px-3 py-3 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white" 
             href="#paketler"
           >
             Paketler
           </a>
           <a 
             onClick={() => setIsOpen(false)} 
-            className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors py-2 border-b border-outline-variant/35" 
+            className="rounded-lg px-3 py-3 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white" 
             href="#referanslar"
           >
             Referanslar
@@ -67,12 +72,13 @@ export function PublicHeader() {
           <Link
             onClick={() => setIsOpen(false)}
             href="/giris"
-            className="px-6 py-3 bg-primary-container text-on-primary font-label-md text-label-md font-bold rounded-lg text-center hover:opacity-90 active:scale-95 transition-all mt-2"
+            className={cn(buttonVariants({ size: 'lg' }), 'public-primary-button mt-2 h-11 w-full')}
           >
             Giriş Yap
           </Link>
         </div>
       )}
+      </div>
     </header>
   )
 }

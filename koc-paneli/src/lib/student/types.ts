@@ -1,5 +1,8 @@
-// --- Dashboard ---
+// ============================================
+// STUDENT TYPES - Öğrenci paneline özel UI tipleri
+// ============================================
 
+// --- Dashboard Types ---
 export type StudentDashboardData = {
   coachName: string
   coachAvatarUrl: string | null
@@ -25,8 +28,7 @@ export type StudentDashboardData = {
   unreadMessageCount: number
 }
 
-// --- Programs ---
-
+// --- Programs Types ---
 export type StudentProgram = {
   id: string
   title: string
@@ -37,8 +39,7 @@ export type StudentProgram = {
   isNew: boolean // within 3 days
 }
 
-// --- Progress ---
-
+// --- Progress Types ---
 export type ProgressSummary = {
   startWeight: number | null
   currentWeight: number | null
@@ -62,8 +63,7 @@ export type ProgressEntryItem = {
   customMetrics?: Record<string, string | number | boolean | null | undefined>
 }
 
-// --- Messages ---
-
+// --- Message Types ---
 export type StudentMessage = {
   id: string
   sender_id: string
@@ -80,8 +80,7 @@ export type CoachInfo = {
   bio: string | null
 }
 
-// --- Calendar ---
-
+// --- Calendar Types ---
 export type StudentCalendarEvent = {
   id: string
   title: string
@@ -93,8 +92,7 @@ export type StudentCalendarEvent = {
   studentName: string | null
 }
 
-// --- Sidebar ---
-
+// --- Sidebar Types ---
 export type SidebarBadges = {
   unreadMessages: number
   hasNewProgram: boolean
@@ -102,8 +100,7 @@ export type SidebarBadges = {
   coachAvatarUrl: string | null
 }
 
-// --- Onboarding ---
-
+// --- Onboarding Types ---
 export type OnboardingFormData = {
   // Kişisel
   heightCm: number
