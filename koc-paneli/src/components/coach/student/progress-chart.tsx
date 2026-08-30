@@ -75,13 +75,13 @@ export function ProgressChart({ entries }: ProgressChartProps) {
         <div className="surface-card space-y-4 p-5 backdrop-blur-xl">
       {/* Chart Tabs Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
-        <div className="flex flex-wrap gap-1 bg-[#0E0E10] border border-border p-1 rounded-xl">
+        <div className="flex flex-wrap gap-1 bg-muted/50 border border-border p-1 rounded-xl">
           <button
             onClick={() => setActiveTab('body')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'body'
-                ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-muted-foreground hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Kilo & Bel
@@ -90,8 +90,8 @@ export function ProgressChart({ entries }: ProgressChartProps) {
             onClick={() => setActiveTab('lifts')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'lifts'
-                ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-muted-foreground hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Güç Gelişimi
@@ -100,8 +100,8 @@ export function ProgressChart({ entries }: ProgressChartProps) {
             onClick={() => setActiveTab('lifestyle')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'lifestyle'
-                ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-muted-foreground hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Yaşam Tarzı
@@ -110,8 +110,8 @@ export function ProgressChart({ entries }: ProgressChartProps) {
             onClick={() => setActiveTab('steps')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'steps'
-                ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-muted-foreground hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Günlük Adım

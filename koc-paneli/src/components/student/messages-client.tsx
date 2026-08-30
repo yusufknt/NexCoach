@@ -90,22 +90,22 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] min-h-[620px] flex-col rounded-xl border border-[#27272A] bg-[#18181B]/80 backdrop-blur-xl">
+    <div className="flex h-[calc(100vh-8rem)] min-h-[620px] flex-col rounded-xl border border-border bg-muted/30 backdrop-blur-xl">
       {/* Header — Coach Profile */}
-      <div className="flex shrink-0 items-center gap-4 border-b border-[#444933] p-4">
-        <Avatar className="h-11 w-11 border border-[#444933]">
+      <div className="flex shrink-0 items-center gap-4 border-b border-border/60 p-4">
+        <Avatar className="h-11 w-11 border border-border/60">
           {coach.avatarUrl && <AvatarImage src={coach.avatarUrl} />}
-          <AvatarFallback className="bg-[#353437] text-[#E5E1E4]">
+          <AvatarFallback className="bg-muted text-foreground">
             {coach.fullName.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div>
-          <h2 className="font-semibold text-[#E5E1E4]">{coach.fullName}</h2>
-          {coach.bio && <p className="line-clamp-1 text-xs text-[#C4C9AC]">{coach.bio}</p>}
+          <h2 className="font-semibold text-foreground">{coach.fullName}</h2>
+          {coach.bio && <p className="line-clamp-1 text-xs text-muted-foreground">{coach.bio}</p>}
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <span className="flex h-2 w-2 rounded-full bg-[#ABD600]" />
-          <span className="text-xs text-[#C4C9AC]">Aktif</span>
+          <span className="flex h-2 w-2 rounded-full bg-primary" />
+          <span className="text-xs text-muted-foreground">Aktif</span>
         </div>
       </div>
 
@@ -113,10 +113,10 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-[#C3F400]/10">
-              <MessageSquare className="h-8 w-8 text-[#ABD600]" />
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <MessageSquare className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-sm text-[#C4C9AC]">
+            <p className="text-sm text-muted-foreground">
               Koçunuzla mesajlaşmaya başlayın!
             </p>
           </div>
@@ -131,16 +131,16 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
                 <div className={cn(
                   'px-4 py-2.5 rounded-2xl whitespace-pre-wrap break-words',
                   isStudent
-                    ? 'rounded-br-sm bg-[#C3F400] text-[#283500]'
-                    : 'rounded-bl-sm bg-[#2A2A2C] text-[#E5E1E4]'
+                    ? 'rounded-br-sm bg-primary text-primary-foreground'
+                    : 'rounded-bl-sm bg-muted text-foreground'
                 )}>
                   {msg.content}
                 </div>
-                <div className="flex items-center gap-1 px-1 text-[11px] text-[#C4C9AC]/75">
+                <div className="flex items-center gap-1 px-1 text-[11px] text-muted-foreground">
                   <span>{formatTime(msg.created_at)}</span>
                   {isStudent && (
                     msg.is_read
-                      ? <CheckCheck className="h-3 w-3 text-[#ABD600]" />
+                      ? <CheckCheck className="h-3 w-3 text-primary" />
                       : <Check className="h-3 w-3" />
                   )}
                 </div>
@@ -151,7 +151,7 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
       </div>
 
       {/* Input */}
-      <div className="shrink-0 border-t border-[#444933] bg-[#0E0E10]/70 p-4">
+      <div className="shrink-0 border-t border-border/60 bg-[#0E0E10]/70 p-4">
         <div className="flex items-end gap-2">
           <Textarea
             value={input}
@@ -162,7 +162,7 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
             autoFocus
           />
           <Button onClick={handleSend} disabled={!input.trim()} size="icon"
-            className="h-[56px] w-[56px] shrink-0 bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+            className="h-[56px] w-[56px] shrink-0 bg-primary text-primary-foreground hover:bg-primary">
             <Send className="h-5 w-5" />
           </Button>
         </div>

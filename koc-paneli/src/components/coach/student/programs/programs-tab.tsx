@@ -17,7 +17,7 @@ export function ProgramsTab({
     <div className="space-y-8">
       <ProgramUpload coachStudentId={coachStudentId} studentId={studentId} />
       <section className="space-y-4">
-        <h2 className="text-lg font-bold text-white">Yüklü Programlar</h2>
+        <h2 className="text-lg font-bold text-foreground">Yüklü Programlar</h2>
         <ProgramList programs={programs} coachStudentId={coachStudentId} />
       </section>
     </div>

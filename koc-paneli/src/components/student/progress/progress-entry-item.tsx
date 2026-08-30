@@ -56,14 +56,14 @@ export function ProgressEntryItemRow({
       <div className="flex items-center justify-between gap-4">
         {/* Left: Date & Weight */}
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-[#ABD600]/10 text-[#ABD600]">
+          <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
             <Calendar className="h-5 w-5" />
           </div>
           <div>
-            <span className="text-[10px] text-[#C4C9AC] block font-semibold uppercase tracking-wider">
+            <span className="text-[10px] text-muted-foreground block font-semibold uppercase tracking-wider">
               {formatDate(entry.date)}
             </span>
-            <span className="text-base font-extrabold text-[#E5E1E4]">
+            <span className="text-base font-extrabold text-foreground">
               {entry.weight !== null ? `${Number(entry.weight).toFixed(1)} kg` : '—'}
             </span>
           </div>
@@ -73,12 +73,12 @@ export function ProgressEntryItemRow({
         <div className="flex-1 min-w-0 hidden md:block">
           <div className="flex flex-wrap gap-1.5 items-center">
             {isWeekly && (
-              <span className="text-[10px] px-2 py-0.5 rounded bg-[#ABD600]/10 text-[#ABD600] border border-[#ABD600]/20 font-medium">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-medium">
                 Haftalık Detaylı
               </span>
             )}
             {!isWeekly && entry.note && (
-              <p className="text-xs text-[#C4C9AC] italic truncate max-w-xs">
+              <p className="text-xs text-muted-foreground italic truncate max-w-xs">
                 &ldquo;{entry.note}&rdquo;
               </p>
             )}
@@ -107,7 +107,7 @@ export function ProgressEntryItemRow({
               variant="ghost"
               size="sm"
               onClick={onToggleExpand}
-              className="text-[#C4C9AC] hover:text-[#E5E1E4] hover:bg-[#2A2A2C]"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               {isExpanded ? (
                 <>Gizle <ChevronUp className="ml-1 h-4 w-4" /></>
@@ -120,7 +120,7 @@ export function ProgressEntryItemRow({
             variant="ghost"
             size="icon"
             onClick={onDelete}
-            className="text-[#C4C9AC] hover:text-red-400 hover:bg-red-500/10 h-8 w-8"
+            className="text-muted-foreground hover:text-red-400 hover:bg-red-500/10 h-8 w-8"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -129,56 +129,56 @@ export function ProgressEntryItemRow({
 
       {/* Expandable Weekly Metrics */}
       {isWeekly && isExpanded && (
-        <div className="mt-4 pl-14 space-y-4 border-l border-[#27272A]/50">
+        <div className="mt-4 pl-14 space-y-4 border-l border-border">
           {entry.note && (
-            <div className="text-xs text-[#C4C9AC] bg-[#18181B]/40 p-2.5 rounded-lg border border-[#27272A]/50">
-              <span className="font-semibold text-[#E5E1E4] block mb-1">Haftalık Yorum:</span>
+            <div className="text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border">
+              <span className="font-semibold text-foreground block mb-1">Haftalık Yorum:</span>
               &ldquo;{entry.note}&rdquo;
             </div>
           )}
 
           <div className="grid gap-4 sm:grid-cols-3 text-xs">
             {/* Body Measurements */}
-            <div className="space-y-2 p-3 rounded-lg bg-[#18181B]/30 border border-[#27272A]/30">
+            <div className="space-y-2 p-3 rounded-lg bg-muted/30 border border-border">
               <div className="flex items-center gap-1.5 text-[#00eefc] font-semibold mb-1">
                 <Ruler className="h-3.5 w-3.5" />
                 <span>Vücut Ölçüleri</span>
               </div>
-              <div className="space-y-1 text-[#C4C9AC]">
-                <div className="flex justify-between"><span>Bel:</span> <span className="text-[#E5E1E4] font-medium">{waist ? `${waist} cm` : '—'}</span></div>
-                <div className="flex justify-between"><span>Göğüs:</span> <span className="text-[#E5E1E4] font-medium">{chest ? `${chest} cm` : '—'}</span></div>
-                <div className="flex justify-between"><span>Sağ Kol:</span> <span className="text-[#E5E1E4] font-medium">{rightArm ? `${rightArm} cm` : '—'}</span></div>
-                <div className="flex justify-between"><span>Sol Kol:</span> <span className="text-[#E5E1E4] font-medium">{leftArm ? `${leftArm} cm` : '—'}</span></div>
-                <div className="flex justify-between"><span>Sağ Uyluk:</span> <span className="text-[#E5E1E4] font-medium">{rightThigh ? `${rightThigh} cm` : '—'}</span></div>
-                <div className="flex justify-between"><span>Sol Uyluk:</span> <span className="text-[#E5E1E4] font-medium">{leftThigh ? `${leftThigh} cm` : '—'}</span></div>
+              <div className="space-y-1 text-muted-foreground">
+                <div className="flex justify-between"><span>Bel:</span> <span className="text-foreground font-medium">{waist ? `${waist} cm` : '—'}</span></div>
+                <div className="flex justify-between"><span>Göğüs:</span> <span className="text-foreground font-medium">{chest ? `${chest} cm` : '—'}</span></div>
+                <div className="flex justify-between"><span>Sağ Kol:</span> <span className="text-foreground font-medium">{rightArm ? `${rightArm} cm` : '—'}</span></div>
+                <div className="flex justify-between"><span>Sol Kol:</span> <span className="text-foreground font-medium">{leftArm ? `${leftArm} cm` : '—'}</span></div>
+                <div className="flex justify-between"><span>Sağ Uyluk:</span> <span className="text-foreground font-medium">{rightThigh ? `${rightThigh} cm` : '—'}</span></div>
+                <div className="flex justify-between"><span>Sol Uyluk:</span> <span className="text-foreground font-medium">{leftThigh ? `${leftThigh} cm` : '—'}</span></div>
               </div>
             </div>
 
             {/* Lifts */}
-            <div className="space-y-2 p-3 rounded-lg bg-[#18181B]/30 border border-[#27272A]/30">
+            <div className="space-y-2 p-3 rounded-lg bg-muted/30 border border-border">
               <div className="flex items-center gap-1.5 text-yellow-400 font-semibold mb-1">
                 <Dumbbell className="h-3.5 w-3.5" />
                 <span>Güç Limitleri</span>
               </div>
-              <div className="space-y-1 text-[#C4C9AC]">
-                <div className="flex justify-between"><span>Bench Press:</span> <span className="text-[#E5E1E4] font-medium">{bench ? `${bench} kg` : '—'}</span></div>
-                <div className="flex justify-between"><span>Squat:</span> <span className="text-[#E5E1E4] font-medium">{squat ? `${squat} kg` : '—'}</span></div>
-                <div className="flex justify-between"><span>Deadlift:</span> <span className="text-[#E5E1E4] font-medium">{deadlift ? `${deadlift} kg` : '—'}</span></div>
+              <div className="space-y-1 text-muted-foreground">
+                <div className="flex justify-between"><span>Bench Press:</span> <span className="text-foreground font-medium">{bench ? `${bench} kg` : '—'}</span></div>
+                <div className="flex justify-between"><span>Squat:</span> <span className="text-foreground font-medium">{squat ? `${squat} kg` : '—'}</span></div>
+                <div className="flex justify-between"><span>Deadlift:</span> <span className="text-foreground font-medium">{deadlift ? `${deadlift} kg` : '—'}</span></div>
               </div>
             </div>
 
             {/* Lifestyle */}
-            <div className="space-y-2 p-3 rounded-lg bg-[#18181B]/30 border border-[#27272A]/30">
+            <div className="space-y-2 p-3 rounded-lg bg-muted/30 border border-border">
               <div className="flex items-center gap-1.5 text-pink-400 font-semibold mb-1">
                 <Smile className="h-3.5 w-3.5" />
                 <span>Yaşam Tarzı & Uyum</span>
               </div>
-              <div className="space-y-1 text-[#C4C9AC]">
-                <div className="flex justify-between"><span>Ort. Uyku:</span> <span className="text-[#E5E1E4] font-medium">{sleep ? `${sleep} sa` : '—'}</span></div>
-                <div className="flex justify-between"><span>Ort. Adım:</span> <span className="text-[#E5E1E4] font-medium">{steps ? Math.round(Number(steps)).toLocaleString('tr-TR') : '—'}</span></div>
-                <div className="flex justify-between"><span>Antrenman:</span> <span className="text-[#E5E1E4] font-medium">{workoutsCompleted && workoutsTarget ? `${workoutsCompleted}/${workoutsTarget} gün` : '—'}</span></div>
-                <div className="flex justify-between"><span>Diyet Uyumu:</span> <span className="text-[#E5E1E4] font-medium">{diet ? `${diet}/10` : '—'}</span></div>
-                <div className="flex justify-between"><span>Enerji Seviyesi:</span> <span className="text-[#E5E1E4] font-medium">{energy ? `${energy}/10` : '—'}</span></div>
+              <div className="space-y-1 text-muted-foreground">
+                <div className="flex justify-between"><span>Ort. Uyku:</span> <span className="text-foreground font-medium">{sleep ? `${sleep} sa` : '—'}</span></div>
+                <div className="flex justify-between"><span>Ort. Adım:</span> <span className="text-foreground font-medium">{steps ? Math.round(Number(steps)).toLocaleString('tr-TR') : '—'}</span></div>
+                <div className="flex justify-between"><span>Antrenman:</span> <span className="text-foreground font-medium">{workoutsCompleted && workoutsTarget ? `${workoutsCompleted}/${workoutsTarget} gün` : '—'}</span></div>
+                <div className="flex justify-between"><span>Diyet Uyumu:</span> <span className="text-foreground font-medium">{diet ? `${diet}/10` : '—'}</span></div>
+                <div className="flex justify-between"><span>Enerji Seviyesi:</span> <span className="text-foreground font-medium">{energy ? `${energy}/10` : '—'}</span></div>
               </div>
             </div>
           </div>
@@ -186,8 +186,8 @@ export function ProgressEntryItemRow({
           {/* Weekly Photo Slot */}
           {entry.beforePhotoUrl && (
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-[#E5E1E4] uppercase tracking-wider">Haftalık Gelişim Fotoğrafı</h4>
-              <div className="relative w-40 aspect-[3/4] rounded-lg overflow-hidden border border-[#27272A] bg-black/20 shrink-0">
+              <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Haftalık Gelişim Fotoğrafı</h4>
+              <div className="relative w-40 aspect-[3/4] rounded-lg overflow-hidden border border-border bg-black/20 shrink-0">
                 <Image
                   src={entry.beforePhotoUrl}
                   alt="Haftalık Gelişim Fotoğrafı"

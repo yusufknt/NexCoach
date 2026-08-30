@@ -16,9 +16,9 @@ type ProgressTooltipProps = {
 function CustomTooltip({ active, payload, label }: ProgressTooltipProps) {
   if (active && payload?.[0]) {
     return (
-      <div className="rounded-lg border border-[#444933] bg-[#131315] px-3 py-2 text-xs shadow-lg">
-        <p className="text-[#C4C9AC]">{label}</p>
-        <p className="font-medium text-[#E5E1E4]">{payload[0].value} kg</p>
+      <div className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-xs shadow-lg">
+        <p className="text-muted-foreground">{label}</p>
+        <p className="font-medium text-foreground">{payload[0].value} kg</p>
       </div>
     )
   }
@@ -37,16 +37,16 @@ export function ProgressWeightChart({
   setTimeRange,
 }: ProgressWeightChartProps) {
   return (
-    <Card className="coach-card">
+    <Card className="surface-card">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-semibold text-[#C4C9AC]">Kilo Değişimi</CardTitle>
+        <CardTitle className="text-sm font-semibold text-muted-foreground">Kilo Değişimi</CardTitle>
         <div className="flex items-center gap-1">
           {(['1w', '1m', 'all'] as TimeRange[]).map((r) => (
             <button
               key={r}
               onClick={() => setTimeRange(r)}
               className={`rounded-lg px-3 py-1 text-xs font-medium transition ${
-                timeRange === r ? 'bg-[#C3F400] text-[#283500]' : 'text-[#C4C9AC] hover:text-[#E5E1E4]'
+                timeRange === r ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {r === '1w' ? '1 Hafta' : r === '1m' ? '1 Ay' : 'Tümü'}
@@ -66,7 +66,7 @@ export function ProgressWeightChart({
                 <Line
                   type="monotone"
                   dataKey="weight"
-                  stroke="#ABD600"
+                  stroke="var(--primary)"
                   strokeWidth={2.5}
                   dot={{ fill: '#ABD600', strokeWidth: 0, r: 4 }}
                   activeDot={{ fill: '#C3F400', strokeWidth: 0, r: 6 }}
@@ -75,7 +75,7 @@ export function ProgressWeightChart({
             </ResponsiveContainer>
           </div>
         ) : (
-          <p className="py-8 text-center text-sm text-[#C4C9AC]">Henüz veri yok.</p>
+          <p className="py-8 text-center text-sm text-muted-foreground">Henüz veri yok.</p>
         )}
       </CardContent>
     </Card>

@@ -63,7 +63,7 @@ export const ReportPdfTemplate = forwardRef<HTMLDivElement, ReportPdfTemplatePro
                     <th className="py-2.5 px-3 font-bold text-center bg-primary/10 text-white">AYLIK NET FARK</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2C2C2E] text-foreground">
+                <tbody className="divide-y divide-border text-foreground">
                   {/* Kilo */}
                   <tr>
                     <td className="py-2 px-4 font-medium border-r border-border text-muted-foreground">Ortalama Kilo</td>

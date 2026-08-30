@@ -108,10 +108,10 @@ export function ProgressEntryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="w-full max-w-lg rounded-2xl border border-[#27272A] bg-[#18181B] p-5 sm:p-6 shadow-2xl my-8">
+      <div className="w-full max-w-lg rounded-2xl border border-border bg-muted/30 p-5 sm:p-6 shadow-2xl my-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-[#E5E1E4]">Yeni Kayıt Ekle</h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-[#C4C9AC] hover:bg-[#2A2A2C]">
+          <h2 className="text-lg font-bold text-foreground">Yeni Kayıt Ekle</h2>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -127,7 +127,7 @@ export function ProgressEntryModal({
             type="button"
             onClick={() => setEntryType('daily')}
             className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
-              entryType === 'daily' ? 'bg-[#C3F400] text-[#283500]' : 'text-[#C4C9AC] hover:text-[#E5E1E4]'
+              entryType === 'daily' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Günlük Kilo Girişi
@@ -136,7 +136,7 @@ export function ProgressEntryModal({
             type="button"
             onClick={() => setEntryType('weekly')}
             className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
-              entryType === 'weekly' ? 'bg-[#C3F400] text-[#283500]' : 'text-[#C4C9AC] hover:text-[#E5E1E4]'
+              entryType === 'weekly' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Haftalık Detaylı Giriş
@@ -146,11 +146,11 @@ export function ProgressEntryModal({
         <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label className="text-[#C4C9AC] text-xs">Tarih</Label>
+              <Label className="text-muted-foreground text-xs">Tarih</Label>
               <Input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="coach-input mt-1" />
             </div>
             <div>
-              <Label className="text-[#C4C9AC] text-xs">Kilo (kg) *</Label>
+              <Label className="text-muted-foreground text-xs">Kilo (kg) *</Label>
               <Input type="number" step="0.1" value={newWeight} onChange={(e) => setNewWeight(e.target.value)} placeholder="Ör: 75.5" className="coach-input mt-1" required />
             </div>
           </div>
@@ -158,65 +158,65 @@ export function ProgressEntryModal({
           {entryType === 'weekly' && (
             <>
               {/* Part 1: Body Measurements */}
-              <div className="border-t border-[#27272A] pt-4">
-                <h3 className="mb-3 text-xs font-bold text-[#ABD600] uppercase tracking-wider">Vücut Ölçüleri (Cm)</h3>
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-3 text-xs font-bold text-primary uppercase tracking-wider">Vücut Ölçüleri (Cm)</h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Bel Çevresi (En Kritik Derece)</Label>
+                    <Label className="text-muted-foreground text-xs">Bel Çevresi (En Kritik Derece)</Label>
                     <Input type="number" step="0.1" value={waistCm} onChange={(e) => setWaistCm(e.target.value)} placeholder="Ör: 82" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Göğüs Çevresi</Label>
+                    <Label className="text-muted-foreground text-xs">Göğüs Çevresi</Label>
                     <Input type="number" step="0.1" value={chestCm} onChange={(e) => setChestCm(e.target.value)} placeholder="Ör: 96" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Sağ Üst Kol Çevresi</Label>
+                    <Label className="text-muted-foreground text-xs">Sağ Üst Kol Çevresi</Label>
                     <Input type="number" step="0.1" value={rightUpperArmCm} onChange={(e) => setRightUpperArmCm(e.target.value)} placeholder="Ör: 36.5" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Sol Üst Kol Çevresi</Label>
+                    <Label className="text-muted-foreground text-xs">Sol Üst Kol Çevresi</Label>
                     <Input type="number" step="0.1" value={leftUpperArmCm} onChange={(e) => setLeftUpperArmCm(e.target.value)} placeholder="Ör: 36" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Sağ Uyluk (Üst Bacak)</Label>
+                    <Label className="text-muted-foreground text-xs">Sağ Uyluk (Üst Bacak)</Label>
                     <Input type="number" step="0.1" value={rightThighCm} onChange={(e) => setRightThighCm(e.target.value)} placeholder="Ör: 58" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Sol Uyluk (Üst Bacak)</Label>
+                    <Label className="text-muted-foreground text-xs">Sol Uyluk (Üst Bacak)</Label>
                     <Input type="number" step="0.1" value={leftThighCm} onChange={(e) => setLeftThighCm(e.target.value)} placeholder="Ör: 57.5" className="coach-input mt-1" />
                   </div>
                 </div>
               </div>
 
               {/* Part 2: Best Lifts */}
-              <div className="border-t border-[#27272A] pt-4">
-                <h3 className="mb-3 text-xs font-bold text-[#ABD600] uppercase tracking-wider">Haftalık En İyi Kaldırışlar (Kg)</h3>
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-3 text-xs font-bold text-primary uppercase tracking-wider">Haftalık En İyi Kaldırışlar (Kg)</h3>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Bench Press</Label>
+                    <Label className="text-muted-foreground text-xs">Bench Press</Label>
                     <Input type="number" step="0.5" value={benchPressMax} onChange={(e) => setBenchPressMax(e.target.value)} placeholder="Ör: 80" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Squat</Label>
+                    <Label className="text-muted-foreground text-xs">Squat</Label>
                     <Input type="number" step="0.5" value={squatMax} onChange={(e) => setSquatMax(e.target.value)} placeholder="Ör: 100" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Deadlift</Label>
+                    <Label className="text-muted-foreground text-xs">Deadlift</Label>
                     <Input type="number" step="0.5" value={deadliftMax} onChange={(e) => setDeadliftMax(e.target.value)} placeholder="Ör: 120" className="coach-input mt-1" />
                   </div>
                 </div>
               </div>
 
               {/* Part 3: Lifestyle */}
-              <div className="border-t border-[#27272A] pt-4">
-                <h3 className="mb-3 text-xs font-bold text-[#ABD600] uppercase tracking-wider">Yaşam Tarzı ve Performans</h3>
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-3 text-xs font-bold text-primary uppercase tracking-wider">Yaşam Tarzı ve Performans</h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Tamamlanan Antrenman Günü</Label>
+                    <Label className="text-muted-foreground text-xs">Tamamlanan Antrenman Günü</Label>
                     <select
                       value={workoutDaysCompleted}
                       onChange={(e) => setWorkoutDaysCompleted(e.target.value)}
-                      className="coach-input mt-1 w-full bg-[#131315] text-[#E5E1E4]"
+                      className="coach-input mt-1 w-full bg-muted/30 text-foreground"
                     >
                       {[0, 1, 2, 3, 4, 5, 6, 7].map((num) => (
                         <option key={num} value={num}>{num} Gün</option>
@@ -224,11 +224,11 @@ export function ProgressEntryModal({
                     </select>
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Hedef Antrenman Günü</Label>
+                    <Label className="text-muted-foreground text-xs">Hedef Antrenman Günü</Label>
                     <select
                       value={workoutDaysTarget}
                       onChange={(e) => setWorkoutDaysTarget(e.target.value)}
-                      className="coach-input mt-1 w-full bg-[#131315] text-[#E5E1E4]"
+                      className="coach-input mt-1 w-full bg-muted/30 text-foreground"
                     >
                       {[1, 2, 3, 4, 5, 6, 7].map((num) => (
                         <option key={num} value={num}>{num} Gün</option>
@@ -236,17 +236,17 @@ export function ProgressEntryModal({
                     </select>
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Ortalama Uyku Süresi (Saat)</Label>
+                    <Label className="text-muted-foreground text-xs">Ortalama Uyku Süresi (Saat)</Label>
                     <Input type="number" step="0.5" value={sleepHoursAvg} onChange={(e) => setSleepHoursAvg(e.target.value)} placeholder="Ör: 7.5" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs">Günlük Ortalama Adım (Opsiyonel)</Label>
+                    <Label className="text-muted-foreground text-xs">Günlük Ortalama Adım (Opsiyonel)</Label>
                     <Input type="number" step="1" value={stepsAvg} onChange={(e) => setStepsAvg(e.target.value)} placeholder="Ör: 8000" className="coach-input mt-1" />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs flex justify-between">
+                    <Label className="text-muted-foreground text-xs flex justify-between">
                       <span>Enerji Seviyesi (1-10)</span>
-                      <span className="font-semibold text-[#ABD600]">{energyLevel}/10</span>
+                      <span className="font-semibold text-primary">{energyLevel}/10</span>
                     </Label>
                     <input
                       type="range" min="1" max="10" step="1"
@@ -255,9 +255,9 @@ export function ProgressEntryModal({
                     />
                   </div>
                   <div>
-                    <Label className="text-[#C4C9AC] text-xs flex justify-between">
+                    <Label className="text-muted-foreground text-xs flex justify-between">
                       <span>Diyet Uyumu (1-10)</span>
-                      <span className="font-semibold text-[#ABD600]">{dietCompliance}/10</span>
+                      <span className="font-semibold text-primary">{dietCompliance}/10</span>
                     </Label>
                     <input
                       type="range" min="1" max="10" step="1"
@@ -269,25 +269,25 @@ export function ProgressEntryModal({
               </div>
 
               {/* Part 4: Photo */}
-              <div className="border-t border-[#27272A] pt-4">
-                <h3 className="mb-2 text-xs font-bold text-[#ABD600] uppercase tracking-wider">Haftalık Progress Fotoğrafı</h3>
-                <div className="mt-1 flex items-center justify-center rounded-xl border border-dashed border-[#444933] p-4 text-center bg-[#0E0E10]/40">
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-2 text-xs font-bold text-primary uppercase tracking-wider">Haftalık Progress Fotoğrafı</h3>
+                <div className="mt-1 flex items-center justify-center rounded-xl border border-dashed border-border/60 p-4 text-center bg-[#0E0E10]/40">
                   {photoPreview ? (
                     <div className="relative group max-w-[200px] overflow-hidden rounded-lg">
                       <Image src={photoPreview} alt="Fotoğraf Önizleme" width={200} height={150} className="aspect-[4/3] object-cover" />
                       <button
                         type="button"
                         onClick={onRemovePhoto}
-                        className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/90"
+                        className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-foreground hover:bg-black/90"
                       >
                         <X className="h-4.5 w-4.5" />
                       </button>
                     </div>
                   ) : (
                     <label className="flex cursor-pointer flex-col items-center justify-center">
-                      <Camera className="mb-2 h-8 w-8 text-[#C4C9AC]" />
-                      <span className="text-xs font-semibold text-[#ABD600]">Fotoğraf Seç veya Sürükle</span>
-                      <span className="text-[10px] text-[#C4C9AC] mt-1">PNG, JPG (Max 10MB)</span>
+                      <Camera className="mb-2 h-8 w-8 text-muted-foreground" />
+                      <span className="text-xs font-semibold text-primary">Fotoğraf Seç veya Sürükle</span>
+                      <span className="text-[10px] text-muted-foreground mt-1">PNG, JPG (Max 10MB)</span>
                       <input type="file" accept="image/*" onChange={onPhotoChange} className="hidden" />
                     </label>
                   )}
@@ -296,8 +296,8 @@ export function ProgressEntryModal({
             </>
           )}
 
-          <div className="border-t border-[#27272A] pt-4">
-            <Label className="text-[#C4C9AC] text-xs">
+          <div className="border-t border-border pt-4">
+            <Label className="text-muted-foreground text-xs">
               {entryType === 'weekly' ? 'Haftalık Değerlendirme & Yorum' : 'Günlük Not'}
             </Label>
             <Textarea
@@ -309,9 +309,9 @@ export function ProgressEntryModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-[#27272A] mt-4">
-          <Button variant="ghost" onClick={onClose} className="text-[#C4C9AC] hover:bg-[#2A2A2C]">İptal</Button>
-          <Button onClick={onSubmit} disabled={saving} className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border mt-4">
+          <Button variant="ghost" onClick={onClose} className="text-muted-foreground hover:bg-muted">İptal</Button>
+          <Button onClick={onSubmit} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary">
             {saving ? 'Kaydediliyor...' : 'Kaydet'}
           </Button>
         </div>

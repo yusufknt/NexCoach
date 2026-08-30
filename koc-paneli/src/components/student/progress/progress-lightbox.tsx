@@ -18,7 +18,7 @@ export function ProgressLightbox({ url, onClose }: ProgressLightboxProps) {
     >
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"
+        className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-foreground transition hover:bg-white/20"
       >
         <X className="h-6 w-6" />
       </button>

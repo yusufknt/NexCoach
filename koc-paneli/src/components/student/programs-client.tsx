@@ -44,12 +44,12 @@ export function ProgramsClient({ programs }: ProgramsClientProps) {
 
   if (programs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#444933] bg-[#18181B]/60 p-16 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#C3F400]/10">
-          <Inbox className="h-8 w-8 text-[#ABD600]" />
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 bg-muted/30 p-16 text-center">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+          <Inbox className="h-8 w-8 text-primary" />
         </div>
-        <h3 className="text-lg font-semibold text-[#E5E1E4]">Henüz program yüklenmedi</h3>
-        <p className="mt-2 max-w-sm text-sm text-[#C4C9AC]">
+        <h3 className="text-lg font-semibold text-foreground">Henüz program yüklenmedi</h3>
+        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
           Koçunuz yakında antrenman veya beslenme programınızı buraya yükleyecek.
         </p>
       </div>
@@ -60,43 +60,43 @@ export function ProgramsClient({ programs }: ProgramsClientProps) {
     <>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {programs.map((p) => (
-          <Card key={p.id} className="coach-card">
+          <Card key={p.id} className="surface-card">
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#C3F400]/15">
-                    <FileText className="h-5 w-5 text-[#ABD600]" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
+                    <FileText className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-[#E5E1E4]">{p.title}</p>
+                      <p className="font-medium text-foreground">{p.title}</p>
                       {p.isNew && (
-                        <Badge className="bg-[#C3F400]/20 px-1.5 py-0 text-[10px] text-[#ABD600]">
+                        <Badge className="bg-primary/20 px-1.5 py-0 text-[10px] text-primary">
                           Yeni
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-[#C4C9AC]">{formatDate(p.createdAt)}</p>
+                    <p className="text-xs text-muted-foreground">{formatDate(p.createdAt)}</p>
                   </div>
                 </div>
               </div>
 
               {p.description && (
-                <p className="mt-3 line-clamp-2 text-sm text-[#C4C9AC]">{p.description}</p>
+                <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>
               )}
 
               <div className="mt-4 flex gap-2">
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-[#C4C9AC] hover:bg-[#2A2A2C] hover:text-[#E5E1E4]"
+                  className="text-muted-foreground hover:bg-muted hover:text-foreground"
                   onClick={() => handleOpenModal(p)}
                 >
                   <Eye className="mr-1.5 h-3.5 w-3.5" />
                   Görüntüle
                 </Button>
                 <a href={p.fileUrl} download={p.fileName} target="_blank" rel="noopener noreferrer">
-                  <Button size="sm" variant="ghost" className="text-[#C4C9AC] hover:bg-[#2A2A2C] hover:text-[#E5E1E4]">
+                  <Button size="sm" variant="ghost" className="text-muted-foreground hover:bg-muted hover:text-foreground">
                     <Download className="mr-1.5 h-3.5 w-3.5" />
                     İndir
                   </Button>
@@ -110,23 +110,23 @@ export function ProgramsClient({ programs }: ProgramsClientProps) {
       {/* PDF Preview Modal */}
       {selectedProgram && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm sm:p-6">
-          <div className="relative flex h-full max-h-[90vh] w-full max-w-4xl flex-col rounded-2xl border border-[#27272A] bg-[#18181B] shadow-2xl">
+          <div className="relative flex h-full max-h-[90vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-muted/30 shadow-2xl">
             {/* Modal Header */}
-            <div className="flex shrink-0 items-center justify-between border-b border-[#444933] p-4 sm:p-6">
+            <div className="flex shrink-0 items-center justify-between border-b border-border/60 p-4 sm:p-6">
               <div>
-                <h3 className="font-bold text-[#E5E1E4]">{selectedProgram.title}</h3>
-                <p className="text-sm text-[#C4C9AC]">{selectedProgram.fileName}</p>
+                <h3 className="font-bold text-foreground">{selectedProgram.title}</h3>
+                <p className="text-sm text-muted-foreground">{selectedProgram.fileName}</p>
               </div>
               <div className="flex items-center gap-2">
                 <a href={selectedProgram.fileUrl} download={selectedProgram.fileName} target="_blank" rel="noopener noreferrer">
-                  <Button variant="secondary" size="sm" className="hidden bg-[#2A2A2C] text-[#E5E1E4] hover:bg-[#353437] sm:flex">
+                  <Button variant="secondary" size="sm" className="hidden bg-muted text-foreground hover:bg-muted sm:flex">
                     <Download className="mr-2 h-4 w-4" />
                     İndir
                   </Button>
                 </a>
                 <button
                   onClick={handleCloseModal}
-                  className="rounded-lg p-2 text-[#C4C9AC] transition-colors hover:bg-[#2A2A2C] hover:text-[#E5E1E4]"
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -139,7 +139,7 @@ export function ProgramsClient({ programs }: ProgramsClientProps) {
                 file={selectedProgram.fileUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
                 loading={
-                  <div className="flex flex-col items-center justify-center py-20 text-[#ABD600]">
+                  <div className="flex flex-col items-center justify-center py-20 text-primary">
                     <Loader2 className="mb-4 h-8 w-8 animate-spin" />
                     <p>PDF Yükleniyor...</p>
                   </div>
@@ -164,19 +164,19 @@ export function ProgramsClient({ programs }: ProgramsClientProps) {
 
             {/* Modal Footer / Pagination */}
             {numPages && (
-              <div className="flex shrink-0 items-center justify-between border-t border-[#444933] p-4">
+              <div className="flex shrink-0 items-center justify-between border-t border-border/60 p-4">
                 <div className="flex items-center gap-2 sm:gap-4">
                   <Button
                     variant="outline"
                     size="icon"
                     onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
                     disabled={pageNumber <= 1}
-                    className="h-8 w-8 rounded-lg border-[#444933] bg-[#2A2A2C] text-[#E5E1E4] hover:bg-[#353437] disabled:opacity-50"
+                    className="h-8 w-8 rounded-lg border-border/60 bg-muted text-foreground hover:bg-muted disabled:opacity-50"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   
-                  <span className="min-w-[80px] text-center text-sm font-medium text-[#E5E1E4]">
+                  <span className="min-w-[80px] text-center text-sm font-medium text-foreground">
                     {pageNumber} / {numPages}
                   </span>
                   
@@ -185,14 +185,14 @@ export function ProgramsClient({ programs }: ProgramsClientProps) {
                     size="icon"
                     onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages))}
                     disabled={pageNumber >= numPages}
-                    className="h-8 w-8 rounded-lg border-[#444933] bg-[#2A2A2C] text-[#E5E1E4] hover:bg-[#353437] disabled:opacity-50"
+                    className="h-8 w-8 rounded-lg border-border/60 bg-muted text-foreground hover:bg-muted disabled:opacity-50"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
                 
                 <a href={selectedProgram.fileUrl} download={selectedProgram.fileName} target="_blank" rel="noopener noreferrer" className="sm:hidden">
-                  <Button variant="ghost" size="sm" className="h-8 text-[#C4C9AC] hover:bg-[#2A2A2C]">
+                  <Button variant="ghost" size="sm" className="h-8 text-muted-foreground hover:bg-muted">
                     <Download className="mr-1.5 h-3.5 w-3.5" />
                     İndir
                   </Button>

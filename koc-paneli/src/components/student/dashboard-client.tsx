@@ -71,33 +71,33 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
       {/* Unread message banner */}
       {data.unreadMessageCount > 0 && (
         <Link href="/student/mesajlar">
-          <div className="flex items-center justify-between rounded-xl border border-[#ABD600]/25 bg-[#ABD600]/10 px-5 py-3 transition-all hover:bg-[#ABD600]/15">
+          <div className="flex items-center justify-between rounded-xl border border-primary/25 bg-primary/10 px-5 py-3 transition-all hover:bg-primary/15">
             <div className="flex items-center gap-3">
-              <MessageSquare className="h-5 w-5 text-[#ABD600]" />
-              <span className="text-sm font-medium text-[#E5E1E4]">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-foreground">
                 Koçunuzdan {data.unreadMessageCount} yeni mesaj var
               </span>
             </div>
-            <ArrowRight className="h-4 w-4 text-[#ABD600]" />
+            <ArrowRight className="h-4 w-4 text-primary" />
           </div>
         </Link>
       )}
 
       {/* Welcome + Coach Card */}
-      <Card className="coach-card">
+      <Card className="surface-card">
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16 border-2 border-[#444933]">
+            <Avatar className="h-16 w-16 border-2 border-border/60">
               {data.coachAvatarUrl && <AvatarImage src={data.coachAvatarUrl} />}
-              <AvatarFallback className="bg-[#353437] text-xl text-[#E5E1E4]">
+              <AvatarFallback className="bg-muted text-xl text-foreground">
                 {data.coachName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="text-sm text-[#C4C9AC]">Koçun</p>
-              <p className="text-lg font-bold text-[#E5E1E4]">{data.coachName}</p>
+              <p className="text-sm text-muted-foreground">Koçun</p>
+              <p className="text-lg font-bold text-foreground">{data.coachName}</p>
               {data.packageName && (
-                <p className="mt-0.5 text-sm text-[#ABD600]">{data.packageName}</p>
+                <p className="mt-0.5 text-sm text-primary">{data.packageName}</p>
               )}
             </div>
           </div>
@@ -105,13 +105,13 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
           {/* Progress bar */}
           {progressPercent != null && (
             <div className="mt-4">
-              <div className="mb-1.5 flex items-center justify-between text-xs text-[#C4C9AC]">
+              <div className="mb-1.5 flex items-center justify-between text-xs text-muted-foreground">
                 <span>Paket süresi</span>
                 <span>{data.daysRemaining} gün kaldı</span>
               </div>
-              <div className="h-2 w-full rounded-full bg-[#353437]">
+              <div className="h-2 w-full rounded-full bg-muted">
                 <div
-                  className="h-2 rounded-full bg-[#ABD600] transition-all"
+                  className="h-2 rounded-full bg-primary transition-all"
                   style={{ width: `${Math.min(progressPercent, 100)}%` }}
                 />
               </div>
@@ -122,15 +122,15 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
 
       {/* Physical Profile Card */}
       {profile && (
-        <Card className="coach-card overflow-hidden">
+        <Card className="surface-card overflow-hidden">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#C4C9AC]">
-              <User className="h-4 w-4 text-[#ABD600]" />
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+              <User className="h-4 w-4 text-primary" />
               Başlangıç Fiziksel Profilim
             </CardTitle>
             <Link
               href="/student/profil"
-              className="text-xs text-[#ABD600] hover:underline flex items-center gap-1"
+              className="text-xs text-primary hover:underline flex items-center gap-1"
             >
               Tüm Profilim
               <ArrowRight className="h-3 w-3" />
@@ -138,39 +138,39 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
           </CardHeader>
           <CardContent className="pt-2">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
-              <div className="rounded-lg bg-[#1E1E20] p-3 text-center border border-[#2A2A2C] hover:border-[#ABD600]/30 transition-all">
-                <p className="text-xs text-[#C4C9AC]">Boy</p>
-                <p className="mt-1 text-lg font-bold text-[#E5E1E4]">
+              <div className="rounded-lg bg-muted/30 p-3 text-center border border-border/40 hover:border-primary/30 transition-all">
+                <p className="text-xs text-muted-foreground">Boy</p>
+                <p className="mt-1 text-lg font-bold text-foreground">
                   {profile.height_cm ? `${profile.height_cm} cm` : '-'}
                 </p>
               </div>
-              <div className="rounded-lg bg-[#1E1E20] p-3 text-center border border-[#2A2A2C] hover:border-[#ABD600]/30 transition-all">
-                <p className="text-xs text-[#C4C9AC]">Başlangıç Kilo</p>
-                <p className="mt-1 text-lg font-bold text-[#E5E1E4]">
+              <div className="rounded-lg bg-muted/30 p-3 text-center border border-border/40 hover:border-primary/30 transition-all">
+                <p className="text-xs text-muted-foreground">Başlangıç Kilo</p>
+                <p className="mt-1 text-lg font-bold text-foreground">
                   {profile.initial_weight ? `${profile.initial_weight} kg` : '-'}
                 </p>
               </div>
-              <div className="rounded-lg bg-[#1E1E20] p-3 text-center border border-[#2A2A2C] hover:border-[#ABD600]/30 transition-all">
-                <p className="text-xs text-[#C4C9AC]">Yaş</p>
-                <p className="mt-1 text-lg font-bold text-[#E5E1E4]">
+              <div className="rounded-lg bg-muted/30 p-3 text-center border border-border/40 hover:border-primary/30 transition-all">
+                <p className="text-xs text-muted-foreground">Yaş</p>
+                <p className="mt-1 text-lg font-bold text-foreground">
                   {calculateAge(profile.birth_date)}
                 </p>
               </div>
-              <div className="rounded-lg bg-[#1E1E20] p-3 text-center border border-[#2A2A2C] hover:border-[#ABD600]/30 transition-all">
-                <p className="text-xs text-[#C4C9AC]">Yağ Oranı</p>
-                <p className="mt-1 text-lg font-bold text-[#E5E1E4]">
+              <div className="rounded-lg bg-muted/30 p-3 text-center border border-border/40 hover:border-primary/30 transition-all">
+                <p className="text-xs text-muted-foreground">Yağ Oranı</p>
+                <p className="mt-1 text-lg font-bold text-foreground">
                   {profile.body_fat_percentage ? `%${profile.body_fat_percentage}` : '-'}
                 </p>
               </div>
-              <div className="rounded-lg bg-[#1E1E20] p-3 text-center border border-[#2A2A2C] hover:border-[#ABD600]/30 transition-all col-span-1">
-                <p className="text-xs text-[#C4C9AC]">Hedef</p>
-                <p className="mt-1 text-sm font-bold text-[#ABD600] truncate">
+              <div className="rounded-lg bg-muted/30 p-3 text-center border border-border/40 hover:border-primary/30 transition-all col-span-1">
+                <p className="text-xs text-muted-foreground">Hedef</p>
+                <p className="mt-1 text-sm font-bold text-primary truncate">
                   {goalMap[profile.goal || ''] || profile.goal || '-'}
                 </p>
               </div>
-              <div className="rounded-lg bg-[#1E1E20] p-3 text-center border border-[#2A2A2C] hover:border-[#ABD600]/30 transition-all col-span-1">
-                <p className="text-xs text-[#C4C9AC]">Deneyim</p>
-                <p className="mt-1 text-sm font-bold text-[#E5E1E4] truncate">
+              <div className="rounded-lg bg-muted/30 p-3 text-center border border-border/40 hover:border-primary/30 transition-all col-span-1">
+                <p className="text-xs text-muted-foreground">Deneyim</p>
+                <p className="mt-1 text-sm font-bold text-foreground truncate">
                   {experienceMap[profile.experience || ''] || profile.experience || '-'}
                 </p>
               </div>
@@ -183,14 +183,14 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
       {/* Streak + Quick Weight */}
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Streak */}
-        <Card className="coach-card">
+        <Card className="surface-card">
           <CardContent className="flex items-center gap-4 p-5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#C3F400]/15">
-              <Flame className="h-6 w-6 text-[#ABD600]" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15">
+              <Flame className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <p className="text-3xl font-bold text-[#E5E1E4]">{data.streak}</p>
-              <p className="text-sm text-[#C4C9AC]">
+              <p className="text-3xl font-bold text-foreground">{data.streak}</p>
+              <p className="text-sm text-muted-foreground">
                 {data.streak > 0 ? 'Gün serisi! Devam et' : 'Bugün kayıt ekle!'}
               </p>
             </div>
@@ -198,11 +198,11 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
         </Card>
 
         {/* Quick weight */}
-        <Card className="coach-card">
+        <Card className="surface-card">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Scale className="h-4 w-4 text-[#C4C9AC]" />
-              <p className="text-sm font-medium text-[#C4C9AC]">Hızlı Kilo Girişi</p>
+              <Scale className="h-4 w-4 text-muted-foreground" />
+              <p className="text-sm font-medium text-muted-foreground">Hızlı Kilo Girişi</p>
             </div>
             <div className="flex gap-2">
               <Input
@@ -217,7 +217,7 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
               <Button
                 onClick={handleQuickWeight}
                 disabled={saving || weightSaved || !weight}
-                className={weightSaved ? 'bg-emerald-600 text-white' : 'bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]'}
+                className={weightSaved ? 'bg-emerald-600 text-white' : 'bg-primary text-primary-foreground hover:bg-primary'}
                 size="icon"
               >
                 {weightSaved ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
@@ -230,18 +230,18 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
       {/* Session + Program */}
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Upcoming session */}
-        <Card className="coach-card">
+        <Card className="surface-card">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#C4C9AC]">
-              <Calendar className="h-4 w-4 text-[#ABD600]" />
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+              <Calendar className="h-4 w-4 text-primary" />
               Yaklaşan Randevu
             </CardTitle>
           </CardHeader>
           <CardContent>
             {data.upcomingSession ? (
               <div>
-                <p className="font-medium text-[#E5E1E4]">{data.upcomingSession.title}</p>
-                <p className="mt-1 text-sm text-[#C4C9AC]">
+                <p className="font-medium text-foreground">{data.upcomingSession.title}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
                   {formatDateTime(data.upcomingSession.startTime)}
                 </p>
                 {data.upcomingSession.meetingUrl && (
@@ -249,7 +249,7 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
                     href={data.upcomingSession.meetingUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#C3F400]/15 px-3 py-1.5 text-xs font-medium text-[#ABD600] transition hover:bg-[#C3F400]/25"
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary/15 px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/25"
                   >
                     <Video className="h-3.5 w-3.5" />
                     Görüşmeye Katıl
@@ -257,36 +257,36 @@ export function StudentDashboardClient({ data, studentId, profile }: StudentDash
                 )}
               </div>
             ) : (
-              <p className="text-sm text-[#C4C9AC]">Yaklaşan randevu yok.</p>
+              <p className="text-sm text-muted-foreground">Yaklaşan randevu yok.</p>
             )}
           </CardContent>
         </Card>
 
         {/* Latest program */}
-        <Card className="coach-card">
+        <Card className="surface-card">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#C4C9AC]">
-              <FileText className="h-4 w-4 text-[#ABD600]" />
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+              <FileText className="h-4 w-4 text-primary" />
               Son Program
             </CardTitle>
           </CardHeader>
           <CardContent>
             {data.latestProgram ? (
               <div>
-                <p className="font-medium text-[#E5E1E4]">{data.latestProgram.title}</p>
-                <p className="mt-1 text-sm text-[#C4C9AC]">
+                <p className="font-medium text-foreground">{data.latestProgram.title}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
                   {formatDate(data.latestProgram.createdAt)}
                 </p>
                 <Link
                   href="/student/programlar"
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#2A2A2C] px-3 py-1.5 text-xs font-medium text-[#E5E1E4] transition hover:bg-[#353437]"
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted"
                 >
                   Görüntüle
                   <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
             ) : (
-              <p className="text-sm text-[#C4C9AC]">Henüz program yüklenmedi.</p>
+              <p className="text-sm text-muted-foreground">Henüz program yüklenmedi.</p>
             )}
           </CardContent>
         </Card>

@@ -51,7 +51,7 @@ export function StudentSidebarClient({ badges }: StudentSidebarClientProps) {
       {/* Brand Header */}
       <div className="flex items-center justify-between border-b border-border/70 px-5 py-4.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-xs">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-foreground shadow-xs">
             <svg
               className="h-5 w-5 fill-none stroke-current stroke-[2.2]"
               viewBox="0 0 24 24"
@@ -114,7 +114,7 @@ export function StudentSidebarClient({ badges }: StudentSidebarClientProps) {
               />
               <span className="whitespace-nowrap md:flex-1">{item.label}</span>
               {showBadge && badgeCount > 0 && (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-white">
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
                   {badgeCount}
                 </span>
               )}

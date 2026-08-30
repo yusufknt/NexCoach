@@ -119,7 +119,7 @@ export function ReportWizardModal({
                             <th className="py-2 px-3 font-semibold text-center">4. Hafta</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#27272A]/50 text-foreground">
+                        <tbody className="divide-y divide-border text-foreground">
                           <tr>
                             <td className="py-2 px-3 text-muted-foreground font-medium">Ort. Kilo</td>
                             {stats.weeklyBreakdown.map((w, idx) => (
@@ -219,7 +219,7 @@ export function ReportWizardModal({
               id="isPublished"
               checked={isPublished}
               onChange={(e) => setIsPublished(e.target.checked)}
-              className="accent-[#C3F400] h-4 w-4 rounded border-border/60 bg-muted/30"
+              className="accent-primary h-4 w-4 rounded border-border/60 bg-muted/30"
             />
             <Label htmlFor="isPublished" className="text-foreground cursor-pointer">
               Direkt Öğrenciye Yayınla (Görünür Kıl)
@@ -234,7 +234,7 @@ export function ReportWizardModal({
           <Button
             onClick={onSubmit}
             disabled={generatingPdf || !selectedMonth}
-            className="bg-[#C3F400] text-[#283500] hover:bg-primary"
+            className="bg-primary text-primary-foreground hover:bg-primary"
           >
             {generatingPdf ? 'PDF Hazırlanıyor...' : 'Kaydet ve PDF Üret'}
           </Button>

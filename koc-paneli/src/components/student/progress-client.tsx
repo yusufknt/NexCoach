@@ -211,17 +211,17 @@ export function ProgressClient({ summary, initialEntries, studentId, coachId }: 
 
       {/* Add entry button */}
       <div className="flex justify-end">
-        <Button onClick={() => setModalOpen(true)} className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+        <Button onClick={() => setModalOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary">
           <Plus className="mr-2 h-4 w-4" /> Yeni Kayıt Ekle
         </Button>
       </div>
 
       {/* Entry list */}
-      <Card className="coach-card">
-        <CardHeader><CardTitle className="text-base text-[#E5E1E4]">Kayıt Geçmişi</CardTitle></CardHeader>
+      <Card className="surface-card">
+        <CardHeader><CardTitle className="text-base text-foreground">Kayıt Geçmişi</CardTitle></CardHeader>
         <CardContent>
           {entries.length === 0 ? (
-            <p className="text-sm text-[#C4C9AC]">Henüz kayıt yok.</p>
+            <p className="text-sm text-muted-foreground">Henüz kayıt yok.</p>
           ) : (
             <div className="divide-y divide-[#27272A]/50">
               {entries.map((e) => (

@@ -107,7 +107,7 @@ export function LoginForm() {
         </p>
       </div>
 
-      <Card className="w-full border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
+      <Card className="surface-card w-full">
         <CardHeader>
           <CardTitle>Giriş Yap</CardTitle>
           <CardDescription>

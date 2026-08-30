@@ -165,13 +165,13 @@ export function OnboardingClient() {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col items-center text-center">
-        <h1 className="font-heading text-3xl font-extrabold uppercase tracking-tight text-[#E5E1E4]">
+        <h1 className="font-heading text-3xl font-extrabold uppercase tracking-tight text-foreground">
           Hoş Geldiniz
         </h1>
-        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#ABD600]">
+        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Kinetic Performance
         </p>
-        <p className="mt-3 text-sm text-[#C4C9AC]">
+        <p className="mt-3 text-sm text-muted-foreground">
           Başlamadan önce sizi daha iyi tanımamız gerekiyor.
         </p>
       </div>
@@ -187,7 +187,7 @@ export function OnboardingClient() {
 
       {/* Step title */}
       <div className="text-center">
-        <h2 className="text-lg font-bold text-[#E5E1E4]">
+        <h2 className="text-lg font-bold text-foreground">
           {ONBOARDING_STEPS[currentStep - 1].title}
         </h2>
       </div>
@@ -272,7 +272,7 @@ export function OnboardingClient() {
           <button
             type="button"
             onClick={prevStep}
-            className="flex items-center gap-2 rounded-xl border border-[#444933] px-5 py-2.5 text-sm font-medium text-[#C4C9AC] transition-all duration-200 hover:border-[#ABD600]/40 hover:text-[#E5E1E4]"
+            className="flex items-center gap-2 rounded-xl border border-border/60 px-5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-primary/40 hover:text-foreground"
           >
             <ChevronLeft className="h-4 w-4" />
             Geri

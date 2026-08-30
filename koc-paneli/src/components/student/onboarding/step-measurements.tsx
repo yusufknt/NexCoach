@@ -121,7 +121,7 @@ export function StepMeasurements({
         </FormField>
       </div>
 
-      <p className="text-xs font-medium uppercase tracking-wider text-[#ABD600]">
+      <p className="text-xs font-medium uppercase tracking-wider text-primary">
         Kol Ölçüleri
       </p>
       <div className="grid grid-cols-2 gap-4">
@@ -149,7 +149,7 @@ export function StepMeasurements({
         </FormField>
       </div>
 
-      <p className="text-xs font-medium uppercase tracking-wider text-[#ABD600]">
+      <p className="text-xs font-medium uppercase tracking-wider text-primary">
         Bacak Ölçüleri
       </p>
       <div className="grid grid-cols-2 gap-4">
@@ -214,7 +214,7 @@ export function StepMeasurements({
           max={60}
           step="0.1"
         />
-        <p className="mt-1 text-xs text-[#C4C9AC]/70">
+        <p className="mt-1 text-xs text-muted-foreground">
           Bilmiyorsanız boş bırakabilirsiniz.
         </p>
       </FormField>

@@ -29,7 +29,7 @@ export function getWeeklyDiff(
   if (Math.abs(diff) < 0.05) return null
   const isGood = isWeightOrWaist ? diff < 0 : diff > 0
   const sign = diff > 0 ? '+' : ''
-  const color = isGood ? '#ABD600' : '#F87171'
+  const color = isGood ? '#0066FF' : '#EF4444'
   return { diff, sign, color }
 }
 

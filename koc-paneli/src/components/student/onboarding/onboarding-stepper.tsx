@@ -23,10 +23,10 @@ export function OnboardingStepper({ currentStep, onStepClick }: OnboardingSteppe
               flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300
               ${
                 currentStep === step.id
-                  ? 'border-[#ABD600] bg-[#ABD600] text-[#283500] shadow-[0_0_16px_rgba(171,214,0,0.4)]'
+                  ? 'border-primary bg-primary text-primary-foreground shadow-[0_0_16px_rgba(171,214,0,0.4)]'
                   : currentStep > step.id
-                  ? 'border-[#ABD600]/60 bg-[#ABD600]/20 text-[#ABD600]'
-                  : 'border-[#444933] bg-[#18181B] text-[#C4C9AC]'
+                  ? 'border-primary/60 bg-primary/20 text-primary'
+                  : 'border-border/60 bg-muted/30 text-muted-foreground'
               }
             `}
           >
@@ -35,7 +35,7 @@ export function OnboardingStepper({ currentStep, onStepClick }: OnboardingSteppe
           {i < ONBOARDING_STEPS.length - 1 && (
             <div
               className={`h-0.5 w-8 rounded-full transition-all duration-300 sm:w-12 ${
-                currentStep > step.id ? 'bg-[#ABD600]' : 'bg-[#444933]'
+                currentStep > step.id ? 'bg-primary' : 'bg-[#444933]'
               }`}
             />
           )}

@@ -110,21 +110,21 @@ export function StudentCalendarClient({ events }: CalendarClientProps) {
 
       {/* Sidebar */}
       <div className="w-full shrink-0 lg:w-72">
-        <Card className="coach-card">
+        <Card className="surface-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-[#C4C9AC]">Bu Haftaki Seanslar</CardTitle>
+            <CardTitle className="text-sm font-semibold text-muted-foreground">Bu Haftaki Seanslar</CardTitle>
           </CardHeader>
           <CardContent>
             {thisWeekSessions.length === 0 ? (
-              <p className="text-sm text-[#C4C9AC]">Bu hafta seans yok.</p>
+              <p className="text-sm text-muted-foreground">Bu hafta seans yok.</p>
             ) : (
               <ul className="space-y-3">
                 {thisWeekSessions.map((s) => (
                   <li key={s.id} className="flex items-start gap-3">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#ABD600]" />
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
                     <div>
-                      <p className="text-sm font-medium text-[#E5E1E4]">{s.title}</p>
-                      <div className="mt-0.5 flex items-center gap-1 text-xs text-[#C4C9AC]">
+                      <p className="text-sm font-medium text-foreground">{s.title}</p>
+                      <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
                         <span>{formatDateTime(s.start)}</span>
                       </div>
@@ -140,27 +140,27 @@ export function StudentCalendarClient({ events }: CalendarClientProps) {
       {/* Event Detail Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-[#27272A] bg-[#18181B] p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-muted/30 p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-[#E5E1E4]">{selectedEvent.title}</h2>
-              <button onClick={() => setSelectedEvent(null)} className="rounded-lg p-1.5 text-[#C4C9AC] hover:bg-[#2A2A2C]">
+              <h2 className="text-lg font-bold text-foreground">{selectedEvent.title}</h2>
+              <button onClick={() => setSelectedEvent(null)} className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-2 text-[#C4C9AC]">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>{formatDateTime(selectedEvent.start)} – {formatTime(selectedEvent.end)}</span>
               </div>
               {selectedEvent.description && (
-                <p className="text-[#C4C9AC]">{selectedEvent.description}</p>
+                <p className="text-muted-foreground">{selectedEvent.description}</p>
               )}
               {selectedEvent.meetingUrl && (
                 <a
                   href={selectedEvent.meetingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-2 rounded-xl bg-[#C3F400] px-4 py-2.5 text-sm font-medium text-[#283500] transition hover:bg-[#ABD600]"
+                  className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary"
                 >
                   <Video className="h-4 w-4" />
                   Görüşmeye Katıl

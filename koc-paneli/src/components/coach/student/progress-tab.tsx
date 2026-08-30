@@ -101,7 +101,7 @@ export function ProgressTab({
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Kilo Durumu</span>
-              <h3 className="text-xl font-bold text-white mt-1">
+              <h3 className="text-xl font-bold text-foreground mt-1">
                 {latestWeight ? `${latestWeight.toFixed(1)} kg` : '—'}
               </h3>
             </div>
@@ -124,7 +124,7 @@ export function ProgressTab({
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Bel Ölçüsü</span>
-              <h3 className="text-xl font-bold text-white mt-1">
+              <h3 className="text-xl font-bold text-foreground mt-1">
                 {latestWaist ? `${latestWaist.toFixed(1)} cm` : '—'}
               </h3>
             </div>
@@ -147,7 +147,7 @@ export function ProgressTab({
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Kaldırış Gücü (Max)</span>
-              <div className="grid grid-cols-3 gap-2 mt-1.5 text-[10px] font-semibold text-white">
+              <div className="grid grid-cols-3 gap-2 mt-1.5 text-[10px] font-semibold text-foreground">
                 <div>
                   <span className="block text-[8px] text-muted-foreground uppercase">Bench</span>
                   {maxBench ? `${maxBench} kg` : '—'}
@@ -176,7 +176,7 @@ export function ProgressTab({
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Yaşam Ortalamaları</span>
-              <div className="grid grid-cols-3 gap-1.5 mt-1.5 text-[9px] font-semibold text-white">
+              <div className="grid grid-cols-3 gap-1.5 mt-1.5 text-[9px] font-semibold text-foreground">
                 <div>
                   <span className="block text-[7px] text-muted-foreground uppercase">Uyku</span>
                   {avgSleep ? `${avgSleep.toFixed(1)} sa` : '—'}

@@ -24,7 +24,7 @@ export function FormField({
     <div className="space-y-1.5">
       <label
         htmlFor={htmlFor}
-        className="block text-sm font-medium text-[#C4C9AC]"
+        className="block text-sm font-medium text-muted-foreground"
       >
         {label}
       </label>
@@ -50,8 +50,8 @@ export function SelectButton({
         rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200
         ${
           selected
-            ? 'border-[#ABD600] bg-[#ABD600]/15 text-[#ABD600] shadow-[0_0_12px_rgba(171,214,0,0.15)]'
-            : 'border-[#444933] bg-[#0E0E10] text-[#C4C9AC] hover:border-[#ABD600]/40 hover:text-[#E5E1E4]'
+            ? 'border-primary bg-primary/15 text-primary shadow-[0_0_12px_rgba(171,214,0,0.15)]'
+            : 'border-border/60 bg-[#0E0E10] text-muted-foreground hover:border-primary/40 hover:text-foreground'
         }
       `}
     >
@@ -77,19 +77,19 @@ export function PhotoUploadField({
 }) {
   return (
     <div className="space-y-2">
-      <p className="text-center text-xs font-medium text-[#C4C9AC]">{label}</p>
+      <p className="text-center text-xs font-medium text-muted-foreground">{label}</p>
       {preview ? (
         <div className="group relative">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={preview.url}
             alt={`${label} fotoğrafı`}
-            className="h-48 w-full rounded-xl border border-[#444933] object-cover"
+            className="h-48 w-full rounded-xl border border-border/60 object-cover"
           />
           <button
             type="button"
             onClick={onRemove}
-            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#09090B]/80 text-[#C4C9AC] opacity-0 transition-all duration-200 hover:text-red-400 group-hover:opacity-100"
+            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-card/80 text-muted-foreground opacity-0 transition-all duration-200 hover:text-red-400 group-hover:opacity-100"
           >
             <X className="h-4 w-4" />
           </button>
@@ -98,10 +98,10 @@ export function PhotoUploadField({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#444933] bg-[#0E0E10]/50 transition-all duration-200 hover:border-[#ABD600]/50 hover:bg-[#ABD600]/5"
+          className="flex h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/60 bg-[#0E0E10]/50 transition-all duration-200 hover:border-primary/50 hover:bg-primary/5"
         >
-          <Camera className="h-6 w-6 text-[#C4C9AC]/60" />
-          <span className="text-xs text-[#C4C9AC]/60">Yükle</span>
+          <Camera className="h-6 w-6 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">Yükle</span>
         </button>
       )}
       <input

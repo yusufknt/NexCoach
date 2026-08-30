@@ -64,7 +64,7 @@ export function ProgramList({ programs, coachStudentId }: ProgramListProps) {
   return (
     <div className="space-y-3">
       {error && <p className="text-sm text-red-400">{error}</p>}
-      <ul className="divide-y divide-[#444933] overflow-hidden rounded-2xl border border-border bg-muted/30">
+      <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-muted/30">
         {programs.map((program) => (
           <li
             key={program.id}

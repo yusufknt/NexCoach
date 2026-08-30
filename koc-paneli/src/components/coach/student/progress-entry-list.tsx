@@ -120,27 +120,27 @@ function ProgressEntryCard({
         <div className="flex flex-wrap gap-1.5 items-center">
           {/* Body measurements */}
           {waist && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-ring/25 text-ring bg-ring/5">
               Bel: {waist} cm
             </span>
           )}
           {chest && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-ring/25 text-ring bg-ring/5">
               Göğüs: {chest} cm
             </span>
           )}
           {(rightArm || leftArm) && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-ring/25 text-ring bg-ring/5">
               Kol: {rightArm ?? '—'}/{leftArm ?? '—'} cm
             </span>
           )}
           {(rightThigh || leftThigh) && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-ring/25 text-ring bg-ring/5">
               Uyluk: {rightThigh ?? '—'}/{leftThigh ?? '—'} cm
             </span>
           )}
           {bodyFat && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-ring/25 text-ring bg-ring/5">
               Yağ %: {bodyFat}%
             </span>
           )}

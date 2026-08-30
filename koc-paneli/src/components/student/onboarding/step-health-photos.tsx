@@ -62,10 +62,10 @@ export function StepHealthPhotos({
       </FormField>
 
       <div>
-        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[#ABD600]">
+        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-primary">
           Başlangıç Fotoğrafları (opsiyonel)
         </p>
-        <p className="mb-4 text-xs text-[#C4C9AC]/70">
+        <p className="mb-4 text-xs text-muted-foreground">
           Ön, yan ve arka fotoğraflarınızı yükleyin. İlerlemenizi takip etmek için çok faydalı olacaktır.
         </p>
 
