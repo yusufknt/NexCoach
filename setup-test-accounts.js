@@ -1,4 +1,4 @@
-const WORKER_URL = 'http://localhost:8787';
+const WORKER_URL = 'https://nexcoach-api.yusufk6509.workers.dev';
 const API_SECRET = 'nexcoach_prod_sec_2026_cf';
 
 async function createAccount(email, password, name, role) {

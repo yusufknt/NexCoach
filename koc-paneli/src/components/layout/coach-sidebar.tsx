@@ -37,7 +37,7 @@ export function CoachSidebar() {
   }
 
   return (
-    <aside className="flex w-full shrink-0 flex-col border-b border-border/80 bg-card text-card-foreground md:min-h-screen md:w-64 md:border-b-0 md:border-r">
+    <aside className="flex w-full shrink-0 flex-col border-b border-border/80 bg-card text-card-foreground md:h-screen md:sticky md:top-0 md:w-64 md:border-b-0 md:border-r">
       {/* Brand Header */}
       <div className="flex items-center justify-between border-b border-border/70 px-5 py-4.5">
         <div className="flex items-center gap-3">
@@ -66,7 +66,7 @@ export function CoachSidebar() {
       </div>
 
       {/* Nav items */}
-      <nav className="flex flex-1 gap-1 overflow-x-auto p-3 md:flex-col md:overflow-visible">
+      <nav className="flex flex-1 gap-1 overflow-x-auto p-3 md:flex-col md:overflow-y-auto">
         <div className="hidden px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80 md:block">
           Menü
         </div>
