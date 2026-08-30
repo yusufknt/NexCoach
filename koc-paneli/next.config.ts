@@ -1,31 +1,16 @@
 import type { NextConfig } from 'next'
 
-const supabaseHostname = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
-  : undefined
+import path from 'path'
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '25mb',
     },
   },
-  images: supabaseHostname
-    ? {
-        remotePatterns: [
-          {
-            protocol: 'https',
-            hostname: supabaseHostname,
-            pathname: '/storage/v1/object/public/**',
-          },
-          {
-            protocol: 'https',
-            hostname: supabaseHostname,
-            pathname: '/storage/v1/object/sign/**',
-          },
-        ],
-      }
-    : undefined,
 }
 
 export default nextConfig

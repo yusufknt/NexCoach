@@ -140,7 +140,7 @@ export function MessageLayout({ coachId, initialSummaries }: MessageLayoutProps)
   const selectedSummary = summaries.find(s => s.studentId === selectedStudentId) || null
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] min-h-[620px] w-full overflow-hidden rounded-xl border border-[#27272A] bg-[#18181B]/80 shadow-black/20 backdrop-blur-xl">
+    <div className="flex h-[calc(100vh-8rem)] min-h-[620px] w-full overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm">
       {/* Left Panel */}
       <div 
         className={cn(

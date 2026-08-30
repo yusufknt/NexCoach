@@ -23,7 +23,6 @@ Next.js 16 (Turbopack, App Router) + Cloudflare Workers (D1, R2) + Better Auth f
   - `email/`: Resend email integration and templates
   - `utils/`: Common formatting and cn utility
 - `koc-paneli/src/proxy.ts`: Next.js 16 Proxy Middleware for route protection and role-based redirect
-- `koc-paneli/supabase/migrations/`: Legacy PostgreSQL schema (preserved for rollback)
 
 ## Cloudflare Infrastructure (Production)
 - `cloudflare/`: Cloudflare Workers + D1 + R2 altyapısı
@@ -32,4 +31,3 @@ Next.js 16 (Turbopack, App Router) + Cloudflare Workers (D1, R2) + Better Auth f
   - `src/auth.ts`: Better Auth Worker config
   - `d1/migrations/`: SQLite-compatible D1 schema ve Better Auth tabloları
   - `wrangler.toml`: Worker, D1, R2 configuration
-- Supabase runtime dependency = 0. Eski Supabase verileri yalnızca rollback amacıyla korunuyor.

@@ -12,7 +12,7 @@ export default function StudentCalendarLoading() {
       <div className="flex flex-col gap-6 lg:flex-row">
         {/* Calendar Main Grid Skeleton */}
         <div className="flex-1 min-w-0">
-          <div className="rounded-xl border coach-card p-4">
+      <div className="surface-card p-4">
             <div className="flex justify-between mb-4">
               <Skeleton className="h-10 w-32 rounded-lg" />
               <Skeleton className="h-8 w-48 rounded-lg" />

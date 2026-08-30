@@ -50,7 +50,7 @@ export async function PackagesSection() {
                         </li>
                       ))}
                     </ul>
-                    <Link href="/giris" className={cn(buttonVariants({ variant: isHighlighted ? 'default' : 'outline', size: 'lg' }), isHighlighted && 'public-primary-button', 'h-11 w-full gap-2')}>
+                    <Link href="/giris" className={cn(buttonVariants({ variant: isHighlighted ? 'default' : 'outline', size: 'lg' }), 'h-11 w-full gap-2')}>
                       Paketi seç <ArrowRight className="size-4" aria-hidden="true" />
                     </Link>
                   </CardContent>

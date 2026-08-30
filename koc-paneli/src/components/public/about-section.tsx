@@ -14,7 +14,7 @@ export function AboutSection({ coach }: AboutSectionProps) {
   const bio = coach?.bio?.trim() || 'Bilimsel temelli programları düzenli takip ve sürdürülebilir alışkanlıklarla birleştirerek hedeflerinize güvenle ilerlemenize yardımcı oluyoruz.'
 
   return (
-    <section className="public-section border-y border-white/[0.07] bg-[#0e111a]" id="nasil-calisir">
+    <section className="public-section border-y border-border bg-card" id="nasil-calisir">
       <div className="public-container">
         <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
           <div id="hakkimda">

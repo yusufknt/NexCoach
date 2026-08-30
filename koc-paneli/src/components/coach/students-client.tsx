@@ -4,7 +4,11 @@ import { useCoachStudents } from '@/hooks/use-coach-students'
 import { StudentList } from './student-list'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export function CoachStudentsClient() {
+type CoachStudentsClientProps = {
+  initialQuery?: string
+}
+
+export function CoachStudentsClient({ initialQuery = '' }: CoachStudentsClientProps) {
   const { students, isLoading, error } = useCoachStudents()
 
   if (isLoading) {
@@ -25,5 +29,5 @@ export function CoachStudentsClient() {
     )
   }
 
-  return <StudentList students={students} />
+  return <StudentList students={students} initialQuery={initialQuery} />
 }

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Send, Check, CheckCheck, MessageSquare } from 'lucide-react'
 import { formatTime } from '@/lib/coach/format'
-import { sendMessage, markAsRead } from '@/lib/student/messages.client'
+import { sendMessage, markAsRead, getMessages } from '@/lib/student/messages.client'
 import { sendNewMessageNotification } from '@/lib/email/send'
 import { cn } from '@/lib/utils'
 import type { StudentMessage, CoachInfo } from '@/lib/student/types'
@@ -37,7 +37,6 @@ export function MessagesClient({ studentId, coach, initialMessages }: MessagesCl
     let isSubscribed = true
     const pollMessages = async () => {
       try {
-        const { getMessages } = await import('@/lib/student/messages.client')
         const newMessages = await getMessages(studentId, coach.id)
         if (!isSubscribed) return
         

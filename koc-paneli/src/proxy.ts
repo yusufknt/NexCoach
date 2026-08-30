@@ -13,6 +13,11 @@ export async function proxy(request: NextRequest) {
 
   const response = NextResponse.next({ request })
 
+  // Only run session verification on protected routes or login/register
+  if (!isCoachRoute && !isStudentRoute && !isLoginRoute && !isRegisterRoute) {
+    return response
+  }
+
   const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
   const API_SECRET = process.env.CLOUDFLARE_API_SECRET || 'nexcoach_prod_sec_2026_cf'
   
@@ -32,7 +37,8 @@ export async function proxy(request: NextRequest) {
       headers: {
         cookie,
       },
-      cache: 'no-store'
+      cache: 'no-store',
+      signal: AbortSignal.timeout(5000),
     });
     if (res.ok) {
       const data = await res.json();
@@ -42,7 +48,7 @@ export async function proxy(request: NextRequest) {
       }
     }
   } catch (e) {
-    console.error("Better Auth fetch error", e);
+    console.error("Better Auth fetch error:", e instanceof Error ? e.message : e);
   }
 
   // Get user role from DB if logged in
@@ -60,6 +66,7 @@ export async function proxy(request: NextRequest) {
           params: [user.id],
         }),
         cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
       });
       if (res.ok) {
         const json = await res.json();
@@ -114,6 +121,7 @@ export async function proxy(request: NextRequest) {
           params: [user.id],
         }),
         cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
       })
       if (res.ok) {
         const json = await res.json()
@@ -134,6 +142,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/coach/:path*',
+    '/student/:path*',
+    '/giris',
+    '/kayit',
   ],
 }

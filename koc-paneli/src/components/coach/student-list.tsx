@@ -12,18 +12,21 @@ import { Search } from 'lucide-react'
 
 type StudentListProps = {
   students: CoachStudentListItem[]
+  initialQuery?: string
 }
 
-export function StudentList({ students }: StudentListProps) {
-  const [query, setQuery] = useState('')
+export function StudentList({ students, initialQuery = '' }: StudentListProps) {
+  const [query, setQuery] = useState(initialQuery)
 
   const filteredStudents = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase('tr')
     if (!normalized) return students
 
-    return students.filter((student) =>
-      student.fullName.toLocaleLowerCase('tr').includes(normalized)
-    )
+    return students.filter((student) => {
+      const fullName = student.fullName.toLocaleLowerCase('tr')
+      const packageName = student.packageName?.toLocaleLowerCase('tr') ?? ''
+      return fullName.includes(normalized) || packageName.includes(normalized)
+    })
   }, [query, students])
 
   return (
@@ -40,7 +43,7 @@ export function StudentList({ students }: StudentListProps) {
       </div>
 
       {filteredStudents.length === 0 ? (
-        <p className="coach-card border-dashed p-8 text-center text-sm text-muted-foreground">
+        <p className="surface-card border-dashed p-8 text-center text-sm text-muted-foreground">
           {students.length === 0
             ? 'Henüz öğrenci bulunmuyor.'
             : 'Aramanızla eşleşen öğrenci yok.'}

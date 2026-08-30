@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import {
   BarChart,
   Bar,
@@ -14,7 +14,7 @@ import {
   CartesianGrid,
   Cell,
 } from 'recharts'
-import { ArrowUpRight, TrendingUp } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, TrendingDown, TrendingUp } from 'lucide-react'
 import type { MonthlyRevenue, MonthlyStudentGrowth } from '@/lib/coach/types'
 
 type DashboardChartsProps = {
@@ -54,10 +54,23 @@ const CustomChartTooltip = ({
 export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
   const [activeTab, setActiveTab] = useState<'month' | 'year'>('month')
 
-  // Calculate total latest revenue
-  const totalRevenue = revenue.reduce((acc, curr) => acc + (curr.revenue || 0), 0)
-  const latestRevenue = revenue[revenue.length - 1]?.revenue || 0
-  const latestGrowth = growth[growth.length - 1]?.count || 0
+  const latestYear = revenue[revenue.length - 1]?.period.slice(0, 4)
+    ?? growth[growth.length - 1]?.period.slice(0, 4)
+  const selectedRevenue = activeTab === 'month'
+    ? revenue.slice(-6)
+    : revenue.filter((item) => item.period.startsWith(latestYear ?? ''))
+  const selectedGrowth = activeTab === 'month'
+    ? growth.slice(-6)
+    : growth.filter((item) => item.period.startsWith(latestYear ?? ''))
+
+  const latestRevenue = selectedRevenue[selectedRevenue.length - 1]?.revenue ?? 0
+  const previousRevenue = selectedRevenue[selectedRevenue.length - 2]?.revenue ?? 0
+  const revenueChange = previousRevenue === 0
+    ? null
+    : ((latestRevenue - previousRevenue) / previousRevenue) * 100
+  const latestGrowth = selectedGrowth[selectedGrowth.length - 1]?.count ?? 0
+  const previousGrowth = selectedGrowth[selectedGrowth.length - 2]?.count ?? 0
+  const growthDifference = latestGrowth - previousGrowth
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -72,17 +85,22 @@ export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
               <span className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
                 ₺{latestRevenue.toLocaleString('tr-TR')}
               </span>
-              <span className="inline-flex items-center text-xs font-semibold text-emerald-600">
-                <ArrowUpRight className="mr-0.5 h-3.5 w-3.5" />
-                21.8%
+              <span className={`inline-flex items-center text-xs font-semibold ${
+                revenueChange !== null && revenueChange < 0 ? 'text-rose-600' : 'text-emerald-600'
+              }`}>
+                {revenueChange !== null && revenueChange < 0
+                  ? <ArrowDownRight className="mr-0.5 h-3.5 w-3.5" />
+                  : <ArrowUpRight className="mr-0.5 h-3.5 w-3.5" />}
+                {revenueChange === null ? 'Karşılaştırma yok' : `${Math.abs(revenueChange).toFixed(1)}%`}
               </span>
-              <span className="text-xs text-muted-foreground">bu ay</span>
+              <span className="text-xs text-muted-foreground">önceki aya göre</span>
             </div>
           </div>
 
           {/* Segmented Filter Pills */}
           <div className="flex items-center rounded-xl bg-muted/70 p-1 text-xs font-semibold">
             <button
+              type="button"
               onClick={() => setActiveTab('month')}
               className={`rounded-lg px-3 py-1.5 transition-all ${
                 activeTab === 'month'
@@ -93,6 +111,7 @@ export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
               Son 6 Ay
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('year')}
               className={`rounded-lg px-3 py-1.5 transition-all ${
                 activeTab === 'year'
@@ -107,7 +126,7 @@ export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
 
         <div className="mt-6 h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={revenue} barSize={34} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+            <BarChart data={selectedRevenue} barSize={34} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
               <CartesianGrid vertical={false} stroke="#E2E8F0" strokeDasharray="4 4" opacity={0.6} />
               <XAxis
                 dataKey="month"
@@ -127,10 +146,10 @@ export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
                 content={<CustomChartTooltip isCurrency />}
               />
               <Bar dataKey="revenue" radius={[8, 8, 8, 8]}>
-                {revenue.map((_, index) => (
+                {selectedRevenue.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={index === revenue.length - 1 ? '#0066FF' : '#E2E8F0'}
+                    fill={index === selectedRevenue.length - 1 ? '#0066FF' : '#E2E8F0'}
                     className="transition-colors hover:fill-blue-500"
                   />
                 ))}
@@ -149,24 +168,30 @@ export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
             </div>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-                {latestGrowth} Aktif Üye
+                {latestGrowth} Yeni Danışan
               </span>
-              <span className="inline-flex items-center text-xs font-semibold text-blue-600">
-                <TrendingUp className="mr-1 h-3.5 w-3.5" />
-                İstikrarlı Artış
+              <span className={`inline-flex items-center text-xs font-semibold ${
+                growthDifference < 0 ? 'text-rose-600' : 'text-blue-600'
+              }`}>
+                {growthDifference < 0
+                  ? <TrendingDown className="mr-1 h-3.5 w-3.5" />
+                  : <TrendingUp className="mr-1 h-3.5 w-3.5" />}
+                {growthDifference === 0
+                  ? 'Değişmedi'
+                  : `${Math.abs(growthDifference)} ${growthDifference > 0 ? 'artış' : 'azalış'}`}
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-            <span className="text-xs font-medium text-muted-foreground">Aktif Danışan</span>
+            <span className="text-xs font-medium text-muted-foreground">Yeni Danışan</span>
           </div>
         </div>
 
         <div className="mt-6 h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={growth} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={selectedGrowth} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="growthGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#0066FF" stopOpacity={0.18} />

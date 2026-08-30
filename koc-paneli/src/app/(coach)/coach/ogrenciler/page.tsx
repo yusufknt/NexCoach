@@ -5,13 +5,18 @@ import { CoachPageHeader } from '@/components/coach/page-header'
 import { InviteStudentButton } from '@/components/coach/students/invite-student-button'
 import { CoachStudentsClient } from '@/components/coach/students-client'
 
-export default async function CoachStudentsPage() {
+type CoachStudentsPageProps = {
+  searchParams: Promise<{ q?: string }>
+}
+
+export default async function CoachStudentsPage({ searchParams }: CoachStudentsPageProps) {
   const coachId = await getAuthenticatedCoachId()
   if (!coachId) {
     redirect('/giris')
   }
 
   const packages = await getCoachPackages()
+  const { q = '' } = await searchParams
 
   return (
     <div className="coach-page">
@@ -21,7 +26,7 @@ export default async function CoachStudentsPage() {
           description="Tüm öğrencilerinizi görüntüleyin ve yönetin."
           action={<InviteStudentButton packages={packages} />}
         />
-        <CoachStudentsClient />
+        <CoachStudentsClient initialQuery={q} />
       </div>
     </div>
   )

@@ -1,11 +1,57 @@
+'use client'
+
+import { useSyncExternalStore } from 'react'
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardTitle } from '@/components/ui/card'
 import { Calendar, ArrowUpRight } from 'lucide-react'
-import { formatDateTime } from '@/lib/coach/format'
 import type { UpcomingAppointment } from '@/lib/coach/types'
 
 type UpcomingAppointmentsProps = {
   appointments: UpcomingAppointment[]
+}
+
+function LocalAppointmentDate({
+  value,
+  part,
+}: {
+  value: string
+  part: 'date' | 'time'
+}) {
+  const isClient = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  )
+  const date = isClient ? new Date(value) : null
+
+  if (!date) {
+    return part === 'date' ? (
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[10px] text-blue-500">
+        --
+      </div>
+    ) : (
+      <span className="shrink-0 rounded-lg bg-muted px-2 py-1 text-[11px] text-muted-foreground">
+        --:--
+      </span>
+    )
+  }
+
+  if (part === 'date') {
+    return (
+      <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <span className="text-sm font-bold leading-none">{date.getDate()}</span>
+        <span className="text-[9px] font-semibold uppercase tracking-wider text-blue-500">
+          {date.toLocaleDateString('tr-TR', { month: 'short' })}
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <span className="shrink-0 rounded-lg bg-muted px-2 py-1 text-[11px] font-medium text-muted-foreground">
+      {date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+    </span>
+  )
 }
 
 export function UpcomingAppointments({
@@ -41,22 +87,12 @@ export function UpcomingAppointments({
           </div>
         ) : (
           <ul className="space-y-2.5">
-            {appointments.map((appointment) => {
-              const appDate = new Date(appointment.startTime)
-              return (
+            {appointments.map((appointment) => (
                 <li
                   key={appointment.id}
                   className="flex items-center gap-3 rounded-xl border border-border/50 bg-muted/20 p-3 transition-colors hover:bg-muted/60"
                 >
-                  {/* Date tile */}
-                  <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                    <span className="text-sm font-bold leading-none">
-                      {appDate.getDate()}
-                    </span>
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-blue-500">
-                      {appDate.toLocaleDateString('tr-TR', { month: 'short' })}
-                    </span>
-                  </div>
+                  <LocalAppointmentDate value={appointment.startTime} part="date" />
 
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-foreground">
@@ -69,12 +105,9 @@ export function UpcomingAppointments({
                     )}
                   </div>
 
-                  <span className="shrink-0 rounded-lg bg-muted px-2 py-1 text-[11px] font-medium text-muted-foreground">
-                    {appDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  <LocalAppointmentDate value={appointment.startTime} part="time" />
                 </li>
-              )
-            })}
+              ))}
           </ul>
         )}
       </div>

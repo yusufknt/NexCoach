@@ -215,19 +215,19 @@ function truncate(text: string, maxLength: number): string {
 const MONTH_NAMES = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara']
 
 async function getMonthlyRevenue(coachId: string): Promise<MonthlyRevenue[]> {
-  const sixMonthsAgo = new Date()
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
-  sixMonthsAgo.setDate(1)
+  const twelveMonthsAgo = new Date()
+  twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11)
+  twelveMonthsAgo.setDate(1)
 
   const payments = await d1.query<PaymentRow>(
     "SELECT amount, created_at FROM payments WHERE coach_id = ? AND status = 'success' AND created_at >= ?",
-    [coachId, sixMonthsAgo.toISOString()]
+    [coachId, twelveMonthsAgo.toISOString()]
   )
 
   const result: MonthlyRevenue[] = []
   const now = new Date()
 
-  for (let i = 5; i >= 0; i--) {
+  for (let i = 11; i >= 0; i--) {
     const month = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const nextMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 1)
 
@@ -239,6 +239,7 @@ async function getMonthlyRevenue(coachId: string): Promise<MonthlyRevenue[]> {
       .reduce((sum, p) => sum + (p.amount ?? 0), 0)
 
     result.push({
+      period: `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`,
       month: MONTH_NAMES[month.getMonth()],
       revenue: total,
     })
@@ -248,19 +249,19 @@ async function getMonthlyRevenue(coachId: string): Promise<MonthlyRevenue[]> {
 }
 
 async function getMonthlyStudentGrowth(coachId: string): Promise<MonthlyStudentGrowth[]> {
-  const sixMonthsAgo = new Date()
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
-  sixMonthsAgo.setDate(1)
+  const twelveMonthsAgo = new Date()
+  twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11)
+  twelveMonthsAgo.setDate(1)
 
   const students = await d1.query<{ id: string; created_at: string }>(
     'SELECT id, created_at FROM coach_students WHERE coach_id = ? AND created_at >= ?',
-    [coachId, sixMonthsAgo.toISOString()]
+    [coachId, twelveMonthsAgo.toISOString()]
   )
 
   const result: MonthlyStudentGrowth[] = []
   const now = new Date()
 
-  for (let i = 5; i >= 0; i--) {
+  for (let i = 11; i >= 0; i--) {
     const month = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const nextMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 1)
 
@@ -270,6 +271,7 @@ async function getMonthlyStudentGrowth(coachId: string): Promise<MonthlyStudentG
     }).length
 
     result.push({
+      period: `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`,
       month: MONTH_NAMES[month.getMonth()],
       count,
     })

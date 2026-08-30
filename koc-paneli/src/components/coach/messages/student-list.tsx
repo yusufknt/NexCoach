@@ -26,12 +26,12 @@ export function StudentList({
   )
 
   return (
-    <div className="flex h-full flex-col border-r border-[#444933] bg-[#0E0E10]/70">
-      <div className="border-b border-[#444933] p-4">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ABD600]">İletişim</p>
-        <h2 className="mb-4 mt-1 text-2xl font-extrabold text-[#E5E1E4]">Mesajlar</h2>
+    <div className="flex h-full flex-col border-r border-border/80 bg-card">
+      <div className="border-b border-border/80 p-4">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">İletişim</p>
+        <h2 className="mb-4 mt-1 text-2xl font-extrabold text-foreground">Mesajlar</h2>
         <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-[#C4C9AC]" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Öğrenci ara..."
@@ -44,7 +44,7 @@ export function StudentList({
 
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <div className="p-4 text-center text-sm text-[#C4C9AC]">
+          <div className="p-4 text-center text-sm text-muted-foreground">
             Öğrenci bulunamadı.
           </div>
         ) : (
@@ -58,13 +58,13 @@ export function StudentList({
                   key={summary.studentId}
                   onClick={() => onSelectStudent(summary.studentId)}
                   className={cn(
-                    'flex items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-[#2A2A2C]',
-                    isActive && 'bg-[#C3F400] text-[#283500]'
+                    'flex items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-muted/70',
+                    isActive && 'bg-primary/10 text-primary'
                   )}
                 >
-                  <Avatar className="h-12 w-12 border border-[#444933]">
+                  <Avatar className="h-12 w-12 border border-border">
                     {summary.avatarUrl && <AvatarImage src={summary.avatarUrl} />}
-                    <AvatarFallback className={cn(isActive ? 'bg-[#283500] text-[#C3F400]' : 'bg-[#353437] text-[#E5E1E4]')}>
+                    <AvatarFallback className={cn(isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground')}>
                       {summary.fullName.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -74,13 +74,13 @@ export function StudentList({
                       <span
                         className={cn(
                           'truncate font-medium',
-                          hasUnread && !isActive ? 'font-bold text-[#E5E1E4]' : isActive ? 'text-[#283500]' : 'text-[#E5E1E4]/80'
+                          hasUnread && !isActive ? 'font-bold text-foreground' : isActive ? 'text-primary' : 'text-foreground/80'
                         )}
                       >
                         {summary.fullName}
                       </span>
                       {summary.lastMessage && (
-                        <span className={cn("ml-2 shrink-0 text-xs", isActive ? 'text-[#283500]/70' : 'text-[#C4C9AC]/70')}>
+                        <span className={cn("ml-2 shrink-0 text-xs", isActive ? 'text-primary/70' : 'text-muted-foreground')}>
                           {formatRelativeTime(summary.lastMessage.createdAt)}
                         </span>
                       )}
@@ -89,13 +89,13 @@ export function StudentList({
                     <div className="flex items-center justify-between mt-1 gap-2">
                       <p className={cn(
                         "truncate text-sm",
-                        hasUnread && !isActive ? "font-medium text-[#E5E1E4]" : isActive ? "text-[#283500]/80" : "text-[#C4C9AC]"
+                        hasUnread && !isActive ? "font-medium text-foreground" : isActive ? "text-primary/80" : "text-muted-foreground"
                       )}>
                         {summary.lastMessage?.content || 'Henüz mesaj yok'}
                       </p>
                       
                       {hasUnread && (
-                        <span className={cn("flex h-2 w-2 shrink-0 rounded-full", isActive ? 'bg-[#283500]' : 'bg-[#ABD600]')} />
+                        <span className={cn("flex h-2 w-2 shrink-0 rounded-full", isActive ? 'bg-primary' : 'bg-success')} />
                       )}
                     </div>
                   </div>

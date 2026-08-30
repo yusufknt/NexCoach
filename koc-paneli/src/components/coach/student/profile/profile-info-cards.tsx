@@ -56,7 +56,7 @@ export function SectionCard({
   className?: string
 }) {
   return (
-    <div className={`coach-card p-5 border border-[#27272A] hover:border-[#ABD600]/40 transition duration-300 ${className}`}>
+    <div className={`surface-card p-5 ${className}`}>
       <div className="flex items-center gap-2 mb-4">
         <div className="p-1.5 rounded-lg bg-[#ABD600]/10 text-[#ABD600]">
           {icon}

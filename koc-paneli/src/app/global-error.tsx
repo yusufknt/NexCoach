@@ -11,7 +11,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="tr" className="dark">
-      <body className="min-h-screen bg-[#0F0F13] text-white antialiased">
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <main className="flex min-h-screen flex-col items-center justify-center p-4 text-center">
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10">
             <AlertTriangle className="h-10 w-10 text-red-400" />
@@ -22,12 +22,12 @@ export default function GlobalError({
             sayfasından panele dönebilirsiniz.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={() => reset()} className="btn-primary-glow gap-2">
+          <Button onClick={() => reset()} className="gap-2">
               <RotateCcw className="h-4 w-4" />
               Yeniden Dene
             </Button>
             <a href="/giris">
-              <Button variant="outline" className="w-full border-white/10 bg-white/5 text-white hover:bg-white/10">
+              <Button variant="outline" className="w-full">
                 Giriş Sayfası
               </Button>
             </a>

@@ -5,11 +5,11 @@ import { ArrowLeft } from 'lucide-react'
 
 export default function CoachStudentDetailLoading() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#09090B]">
-      <div className="flex shrink-0 items-center gap-4 border-b border-[#444933] bg-[#0E0E10] p-4">
+    <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex shrink-0 items-center gap-4 border-b border-border/80 bg-card p-4">
         <Link
           href="/coach/ogrenciler"
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#444933] bg-[#18181B] text-[#C4C9AC] transition-colors hover:bg-[#2A2A2C] hover:text-[#E5E1E4]"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
@@ -24,7 +24,7 @@ export default function CoachStudentDetailLoading() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar Skeleton (Tabs) */}
-        <div className="hidden w-64 shrink-0 overflow-y-auto border-r border-[#444933] bg-[#0E0E10] p-4 md:block">
+        <div className="hidden w-64 shrink-0 overflow-y-auto border-r border-border/80 bg-card p-4 md:block">
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-10 w-full rounded-xl" />

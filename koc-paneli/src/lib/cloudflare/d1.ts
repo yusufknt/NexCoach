@@ -15,27 +15,35 @@ type QueryResult<T> = {
 
 async function request<T>(endpoint: string, body: any): Promise<T> {
   const url = `${WORKER_URL}/api/db/${endpoint}`
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-Secret': API_SECRET,
-    },
-    body: JSON.stringify(body),
-    cache: 'no-store',
-  })
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Secret': API_SECRET,
+      },
+      body: JSON.stringify(body),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(8000),
+    })
 
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`D1 API error [${response.status}]: ${text}`)
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(`D1 API error [${response.status}]: ${text}`)
+    }
+
+    const json = (await response.json()) as QueryResult<T>
+    if (!json.success) {
+      throw new Error(`D1 query failed: ${json.error}`)
+    }
+
+    return json.data as T
+  } catch (error: any) {
+    if (error?.name === 'TimeoutError') {
+      throw new Error(`D1 API request timed out connecting to ${url}`)
+    }
+    throw error
   }
-
-  const json = (await response.json()) as QueryResult<T>
-  if (!json.success) {
-    throw new Error(`D1 query failed: ${json.error}`)
-  }
-
-  return json.data as T
 }
 
 export const d1 = {

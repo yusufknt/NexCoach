@@ -16,7 +16,7 @@ export function InviteStudentButton({ packages }: InviteStudentButtonProps) {
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="btn-primary-glow flex items-center gap-2"
+        className="flex items-center gap-2"
       >
         <UserPlus className="h-4 w-4" />
         Öğrenci Davet Et

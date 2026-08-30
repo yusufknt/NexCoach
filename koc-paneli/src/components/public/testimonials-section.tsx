@@ -9,7 +9,7 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section className="public-section border-y border-white/[0.07] bg-[#0e111a]" id="referanslar">
+    <section className="public-section border-y border-border bg-card" id="referanslar">
       <div className="public-container">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div className="max-w-2xl">

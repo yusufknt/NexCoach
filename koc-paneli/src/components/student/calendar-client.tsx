@@ -56,7 +56,7 @@ export function StudentCalendarClient({ events }: CalendarClientProps) {
     <div className="flex flex-col gap-6 lg:flex-row">
       {/* Calendar */}
       <div className="flex-1 min-w-0">
-        <div className="fc-dark-theme coach-card p-4">
+      <div className="fc-dark-theme surface-card p-4">
           <style>{`
             .fc-dark-theme {
               --fc-border-color: #444933;

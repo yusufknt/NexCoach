@@ -49,7 +49,8 @@ async function authProxyHandler(
 
   const resHeaders = new Headers()
   upstreamRes.headers.forEach((value, key) => {
-    if (key.toLowerCase() !== 'set-cookie') {
+    const lowerKey = key.toLowerCase()
+    if (lowerKey !== 'set-cookie' && lowerKey !== 'content-encoding' && lowerKey !== 'content-length') {
       resHeaders.set(key, value)
     }
   })

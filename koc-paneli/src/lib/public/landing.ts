@@ -2,16 +2,27 @@ import { d1 } from '@/lib/cloudflare/d1'
 import type { Package, Profile } from '@/types'
 
 export async function getCoachProfile(): Promise<Profile | null> {
-  const data = await d1.first<Profile>(
-    "SELECT id, full_name, role, avatar_url, bio, created_at FROM profiles WHERE role = 'coach' ORDER BY created_at ASC LIMIT 1"
-  )
-  return data
+  try {
+    const data = await d1.first<Profile>(
+      "SELECT id, full_name, role, avatar_url, bio, created_at FROM profiles WHERE role = 'coach' ORDER BY created_at ASC LIMIT 1"
+    )
+    return data
+  } catch (error) {
+    console.error("Failed to load coach profile:", error)
+    return null
+  }
 }
 
 export async function getActivePackages(): Promise<Package[]> {
-  const data = await d1.query<any>(
-    'SELECT * FROM packages WHERE is_active = 1 ORDER BY price ASC'
-  )
+  let data: any[] | null = null
+  try {
+    data = await d1.query<any>(
+      'SELECT * FROM packages WHERE is_active = 1 ORDER BY price ASC'
+    )
+  } catch (error) {
+    console.error("Failed to load active packages:", error)
+    return []
+  }
 
   if (!data) {
     return []

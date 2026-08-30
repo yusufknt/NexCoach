@@ -93,35 +93,35 @@ export function LoginForm() {
 
 
     const destination = getDashboardPath(role)
-    window.location.href = destination
+    router.replace(destination)
   }
 
   return (
     <div className="w-full max-w-md space-y-6">
       <div className="flex flex-col items-center text-center">
-        <h1 className="font-heading text-3xl font-extrabold uppercase tracking-tight text-[#E5E1E4]">
-          Kinetic Performance
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground">
+          NexCoach
         </h1>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#ABD600] mt-1">
-          Elite Coaching Dashboard
+        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+          Online Kocluk Paneli
         </p>
       </div>
 
-      <Card className="w-full">
+      <Card className="w-full border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
         <CardHeader>
           <CardTitle>Giriş Yap</CardTitle>
-          <CardDescription className="text-sm text-[#C4C9AC]">
+          <CardDescription>
             Email ve şifrenizle hesabınıza giriş yapın.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-[#C4C9AC]">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="ornek@kinetic.com"
+                placeholder="ornek@nexcoach.com"
                 autoComplete="email"
                 {...register('email')}
               />
@@ -130,7 +130,7 @@ export function LoginForm() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-[#C4C9AC]">Şifre</Label>
+              <Label htmlFor="password" className="text-sm font-medium text-foreground">Şifre</Label>
               <Input
                 id="password"
                 type="password"
@@ -147,7 +147,7 @@ export function LoginForm() {
             {errorMessage && (
               <p className="text-sm text-destructive">{errorMessage}</p>
             )}
-            <Button type="submit" className="w-full mt-2 btn-primary-glow" disabled={isSubmitting}>
+      <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
               {isSubmitting ? 'Giriş yapılıyor...' : 'Giriş Yap'}
             </Button>
           </form>

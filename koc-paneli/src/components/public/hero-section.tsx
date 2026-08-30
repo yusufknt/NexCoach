@@ -19,7 +19,7 @@ export function HeroSection({ coach }: HeroSectionProps) {
       <div className="public-container relative grid items-center gap-14 lg:grid-cols-[1.08fr_.92fr] lg:gap-16">
         <div className="max-w-3xl">
           <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3.5 py-2 text-xs font-semibold tracking-wide text-white/75">
-            <span className="size-1.5 rounded-full bg-primary shadow-[0_0_12px_rgba(104,117,255,.9)]" />
+            <span className="size-1.5 rounded-full bg-primary shadow-sm" />
             Kişisel koçluk, tek bir yerde
           </div>
           <h1 className="max-w-[13ch] font-heading text-[2.8rem] font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-6xl lg:text-[4.65rem]">
@@ -29,7 +29,7 @@ export function HeroSection({ coach }: HeroSectionProps) {
             NexCoach ile {name} tarafından hazırlanan programını takip et, ilerlemeni görünür kıl ve ihtiyaç duyduğun anda destek al.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link href="#paketler" className={cn(buttonVariants({ size: 'lg' }), 'public-primary-button h-12 justify-center gap-2 px-6 text-sm sm:w-auto')}>
+            <Link href="#paketler" className={cn(buttonVariants({ size: 'lg' }), 'h-12 justify-center gap-2 px-6 text-sm sm:w-auto')}>
               Koçluğa başla <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
             <Link href="#nasil-calisir" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'h-12 justify-center gap-2 px-6 text-sm sm:w-auto')}>
@@ -46,7 +46,7 @@ export function HeroSection({ coach }: HeroSectionProps) {
         </div>
 
         <div className="relative mx-auto w-full max-w-[520px] lg:mx-0">
-          <div className="relative aspect-[5/6] overflow-hidden rounded-[1.25rem] border border-white/10 bg-[#121622] shadow-[0_28px_90px_rgba(0,0,0,.42)]">
+          <div className="relative aspect-[5/6] overflow-hidden rounded-[1.25rem] border border-border bg-card shadow-2xl">
             {avatarUrl ? (
               <Image src={avatarUrl} alt={`${name} profil fotoğrafı`} fill sizes="(max-width: 1024px) 90vw, 42vw" className="object-cover" priority />
             ) : (
@@ -57,8 +57,8 @@ export function HeroSection({ coach }: HeroSectionProps) {
                 </div>
               </div>
             )}
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#090b12] to-transparent" />
-            <div className="absolute inset-x-5 bottom-5 flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-[#0d1019]/90 p-4 backdrop-blur-md sm:inset-x-6 sm:bottom-6">
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
+            <div className="absolute inset-x-5 bottom-5 flex items-center justify-between gap-4 rounded-xl border border-border bg-popover/90 p-4 backdrop-blur-md sm:inset-x-6 sm:bottom-6">
               <div>
                 <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/45">NexCoach ile</p>
                 <p className="mt-1 text-sm font-semibold text-white sm:text-base">Planın her zaman yanında</p>
@@ -68,7 +68,7 @@ export function HeroSection({ coach }: HeroSectionProps) {
               </span>
             </div>
           </div>
-          <div className="absolute -right-4 top-14 hidden w-44 border-l-2 border-primary bg-[#111521] p-4 shadow-xl sm:block">
+          <div className="absolute -right-4 top-14 hidden w-44 border-l-2 border-primary bg-card p-4 shadow-xl sm:block">
             <p className="text-2xl font-bold text-white">%100</p>
             <p className="mt-1 text-xs leading-5 text-white/50">Sana göre hazırlanan yol haritası</p>
           </div>

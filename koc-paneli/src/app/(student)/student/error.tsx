@@ -20,21 +20,21 @@ export default function StudentError({
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 mb-6 shadow-[0_0_24px_rgba(239,68,68,0.1)]">
         <AlertTriangle className="h-8 w-8 text-red-400" />
       </div>
-      <h2 className="text-2xl font-bold text-white mb-2">Öğrenci Panelinde Bir Hata Oluştu</h2>
-      <p className="text-[#C4C9AC] max-w-md mx-auto mb-8">
+      <h2 className="mb-2 text-2xl font-bold text-foreground">Öğrenci Panelinde Bir Hata Oluştu</h2>
+      <p className="mx-auto mb-8 max-w-md text-muted-foreground">
         Beklenmeyen bir hata meydana geldi. Sorun devam ederse lütfen koçunuzla iletişime geçin.
       </p>
       
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={() => reset()} 
-          className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600] w-full sm:w-auto flex items-center justify-center gap-2"
+          className="flex w-full items-center justify-center gap-2 sm:w-auto"
         >
           <RotateCcw className="h-4 w-4" />
           Yeniden Dene
         </Button>
         <a href="mailto:koc@NexCoach.com">
-          <Button variant="outline" className="w-full sm:w-auto border-[#444933] bg-[#2A2A2C] text-[#E5E1E4] hover:bg-[#353437] flex items-center justify-center gap-2">
+          <Button variant="outline" className="flex w-full items-center justify-center gap-2 sm:w-auto">
             <Mail className="h-4 w-4" />
             Koça E-posta Gönder
           </Button>

@@ -1,6 +1,6 @@
 # Database Schema & Migrations
 
-Cloudflare D1 (SQLite) serves as the primary operational database. Supabase PostgreSQL data and legacy RLS policies are preserved strictly for rollback purposes and are not active in runtime.
+Cloudflare D1 (SQLite) serves as the primary operational database.
 
 ## Schema Location (Active)
 `cloudflare/d1/migrations/`

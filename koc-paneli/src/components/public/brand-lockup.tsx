@@ -20,7 +20,7 @@ export function BrandLockup({ compact = false, showName = false, className = '' 
         />
       </span>
       {showName && (
-        <span className="font-heading text-[1.05rem] font-semibold tracking-[-0.045em] text-white sm:text-[1.15rem]">
+        <span className="font-heading text-[1.05rem] font-semibold tracking-[-0.045em] text-foreground sm:text-[1.15rem]">
           NexCoach
         </span>
       )}

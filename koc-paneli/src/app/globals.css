@@ -89,7 +89,7 @@
   --card-foreground: #f8fafc;
   --popover: #111827;
   --popover-foreground: #f8fafc;
-  --primary: #3b82f6;
+  --primary: #0066ff;
   --primary-foreground: #ffffff;
   --secondary: #1f2937;
   --secondary-foreground: #f8fafc;
@@ -102,15 +102,15 @@
   --destructive: #ef4444;
   --border: #1f2937;
   --input: #1f2937;
-  --ring: #3b82f6;
+  --ring: #0066ff;
   --sidebar: #0f172a;
   --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #3b82f6;
+  --sidebar-primary: #0066ff;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1e293b;
   --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: #1f2937;
-  --sidebar-ring: #3b82f6;
+  --sidebar-ring: #0066ff;
 }
 
 @layer base {
@@ -121,7 +121,7 @@
     @apply font-sans scroll-smooth antialiased;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-blue-500/15 selection:text-blue-700;
+    @apply bg-background text-foreground antialiased selection:bg-primary/15 selection:text-primary;
   }
   h1,
   h2,
@@ -144,24 +144,16 @@
     @apply transition-colors duration-150 hover:bg-muted/50;
   }
 
-  .btn-primary-glow {
-    @apply rounded-xl bg-primary text-primary-foreground font-medium shadow-sm transition-all duration-150 hover:bg-primary/90 hover:shadow active:scale-[0.99];
-  }
-
   .input-surface {
     @apply rounded-xl border border-input bg-card text-foreground transition-all duration-150 placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15;
   }
 
   .coach-page {
-    @apply min-h-screen bg-[#F8F9FB] p-4 sm:p-6 lg:p-8 text-foreground;
+    @apply min-h-screen bg-background p-4 sm:p-6 lg:p-8 text-foreground;
   }
 
   .coach-container {
     @apply mx-auto w-full max-w-[1400px];
-  }
-
-  .coach-card {
-    @apply rounded-2xl border border-border/80 bg-card text-card-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.03),0_1px_2px_0_rgba(0,0,0,0.02)] transition-all duration-200 hover:border-border hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.05)];
   }
 
   .coach-muted {
@@ -264,16 +256,6 @@
     font-weight: 400;
   }
 
-  .public-shell {
-    --primary: #7482ff;
-    --primary-foreground: #ffffff;
-    --accent: #7482ff;
-    --accent-foreground: #ffffff;
-    --ring: #7482ff;
-    --border: rgba(255, 255, 255, 0.1);
-    background: #0b0d14;
-  }
-
   .public-container {
     width: min(100% - 2rem, 1180px);
     margin-inline: auto;
@@ -288,18 +270,7 @@
   }
 
   .section-title {
-    @apply max-w-[16ch] font-heading text-3xl font-bold leading-[1.12] tracking-[-0.04em] text-white sm:text-4xl lg:text-5xl;
-  }
-
-  .public-primary-button {
-    background: #7482ff !important;
-    color: #ffffff !important;
-    box-shadow: 0 10px 30px rgba(116, 130, 255, 0.2) !important;
-  }
-
-  .public-primary-button:hover {
-    background: #8490ff !important;
-    box-shadow: 0 12px 34px rgba(116, 130, 255, 0.3) !important;
+    @apply max-w-[16ch] font-heading text-3xl font-bold leading-[1.12] tracking-[-0.04em] text-foreground sm:text-4xl lg:text-5xl;
   }
 
   .brand-logo {
@@ -336,7 +307,7 @@
     background-image:
       linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-      radial-gradient(circle at 78% 25%, rgba(116, 130, 255, 0.12), transparent 32%);
+      radial-gradient(circle at 78% 25%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 32%);
     background-size: 64px 64px, 64px 64px, auto;
     mask-image: linear-gradient(to bottom, black 50%, transparent 95%);
   }
@@ -352,9 +323,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .public-shell *,
-    .public-shell *::before,
-    .public-shell *::after {
+    [data-public-shell] *,
+    [data-public-shell] *::before,
+    [data-public-shell] *::after {
       scroll-behavior: auto !important;
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;

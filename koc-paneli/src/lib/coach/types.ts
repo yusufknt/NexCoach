@@ -123,11 +123,13 @@ export type StudentOption = {
 
 // --- Dashboard Extended Types ---
 export type MonthlyRevenue = {
+  period: string
   month: string
   revenue: number
 }
 
 export type MonthlyStudentGrowth = {
+  period: string
   month: string
   count: number
 }

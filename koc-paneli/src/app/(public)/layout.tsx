@@ -6,7 +6,7 @@ export default function PublicLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="public-shell min-h-screen bg-[#0b0d14] text-white">
+    <div className="dark min-h-screen bg-background text-foreground" data-public-shell>
       <PublicHeader />
       <main>{children}</main>
     </div>

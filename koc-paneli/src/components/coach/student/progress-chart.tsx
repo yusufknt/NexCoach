@@ -72,7 +72,7 @@ export function ProgressChart({ entries }: ProgressChartProps) {
   }
 
   return (
-    <div className="coach-card p-5 space-y-4 border border-[#27272A] bg-[#18181B]/80 backdrop-blur-xl">
+        <div className="surface-card space-y-4 p-5 backdrop-blur-xl">
       {/* Chart Tabs Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#27272A]/80 pb-3">
         <div className="flex flex-wrap gap-1 bg-[#0E0E10] border border-[#27272A] p-1 rounded-xl">

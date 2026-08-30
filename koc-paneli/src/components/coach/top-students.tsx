@@ -9,6 +9,8 @@ type TopStudentsProps = {
 }
 
 export function TopStudents({ students }: TopStudentsProps) {
+  const maxProgressCount = Math.max(...students.map((student) => student.progressCount), 1)
+
   return (
     <Card className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs transition-all hover:shadow-md">
       <div className="flex items-center justify-between border-b border-border/70 pb-4">
@@ -63,7 +65,7 @@ export function TopStudents({ students }: TopStudentsProps) {
                       <div
                         className="h-full rounded-full bg-blue-600 transition-all duration-500"
                         style={{
-                          width: `${Math.max(10, Math.min(100, student.progressCount * 20))}%`,
+                          width: `${(student.progressCount / maxProgressCount) * 100}%`,
                         }}
                       />
                     </div>

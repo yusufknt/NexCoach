@@ -285,7 +285,7 @@ export function OnboardingClient() {
           <button
             type="button"
             onClick={nextStep}
-            className="btn-primary-glow flex items-center gap-2 px-6 py-2.5 text-sm"
+              className="flex items-center gap-2 px-6 py-2.5 text-sm"
           >
             İleri
             <ChevronRight className="h-4 w-4" />
@@ -295,7 +295,7 @@ export function OnboardingClient() {
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="btn-primary-glow flex items-center gap-2 px-6 py-2.5 text-sm disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 text-sm disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

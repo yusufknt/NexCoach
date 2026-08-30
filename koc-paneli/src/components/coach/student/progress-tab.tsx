@@ -97,7 +97,7 @@ export function ProgressTab({
       {/* Metrics Summary Cards Grid */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {/* Kilo Card */}
-        <div className="coach-card p-4 flex flex-col justify-between h-32 relative overflow-hidden border border-[#444933]/30">
+                    <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Kilo Durumu</span>
@@ -120,7 +120,7 @@ export function ProgressTab({
         </div>
 
         {/* Bel Çevresi Card */}
-        <div className="coach-card p-4 flex flex-col justify-between h-32 relative overflow-hidden border border-[#444933]/30">
+                    <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Bel Ölçüsü</span>
@@ -143,7 +143,7 @@ export function ProgressTab({
         </div>
 
         {/* Kaldırışlar Card */}
-        <div className="coach-card p-4 flex flex-col justify-between h-32 relative overflow-hidden border border-[#444933]/30">
+                    <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Kaldırış Gücü (Max)</span>
@@ -172,7 +172,7 @@ export function ProgressTab({
         </div>
 
         {/* Yaşam Ortalamaları Card */}
-        <div className="coach-card p-4 flex flex-col justify-between h-32 relative overflow-hidden border border-[#444933]/30">
+                    <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Yaşam Ortalamaları</span>

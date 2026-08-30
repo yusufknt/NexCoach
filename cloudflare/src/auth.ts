@@ -7,6 +7,7 @@ export const getAuth = (env: Env) => {
     secret: env.API_SECRET,
     emailAndPassword: {
       enabled: true,
+      minPasswordLength: 6,
     },
     // We get origin from env or assume production worker url
     baseURL: env.ENVIRONMENT === "production" 

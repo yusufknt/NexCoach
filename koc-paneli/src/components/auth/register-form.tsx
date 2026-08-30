@@ -159,7 +159,7 @@ export function RegisterForm({ inviteToken, coachName, packageName }: RegisterFo
             {errorMessage && (
               <p className="text-sm text-destructive">{errorMessage}</p>
             )}
-            <Button type="submit" className="w-full mt-2 btn-primary-glow" disabled={isSubmitting}>
+      <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
               {isSubmitting ? 'Kayıt oluşturuluyor...' : 'Kayıt Ol'}
             </Button>
           </form>

@@ -17,11 +17,11 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f0f13] p-4 text-center">
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 mb-6">
-        <AlertTriangle className="h-10 w-10 text-red-400" />
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-center text-foreground">
+      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
+        <AlertTriangle className="h-10 w-10 text-destructive" />
       </div>
-      <h1 className="text-3xl font-bold text-white mb-2">Bir şeyler ters gitti!</h1>
+      <h1 className="mb-2 text-3xl font-bold text-foreground">Bir şeyler ters gitti!</h1>
       <p className="text-muted-foreground max-w-md mx-auto mb-8">
         İsteğinizi işlerken beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.
         Sorun devam ederse sistem yöneticisine başvurun.
@@ -30,13 +30,13 @@ export default function Error({
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={() => reset()} 
-          className="btn-primary-glow w-full sm:w-auto flex items-center justify-center gap-2"
+          className="w-full sm:w-auto flex items-center justify-center gap-2"
         >
           <RotateCcw className="h-4 w-4" />
           Yeniden Dene
         </Button>
         <a href="mailto:destek@NexCoach.com">
-          <Button variant="outline" className="w-full sm:w-auto border-white/10 bg-white/5 text-white hover:bg-white/10">
+          <Button variant="outline" className="w-full sm:w-auto">
             Destek Ekibine Ulaş
           </Button>
         </a>
