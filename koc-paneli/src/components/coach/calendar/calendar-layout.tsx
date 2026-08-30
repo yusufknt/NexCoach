@@ -166,7 +166,7 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
           title="Takvim"
           description="Randevularınızı ve müsaitliğinizi yönetin."
           action={
-            <Button onClick={handleAddAvailability} className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+            <Button onClick={handleAddAvailability} className="bg-primary text-primary-foreground hover:bg-primary">
               <Plus className="mr-2 h-4 w-4" />
               Müsait Saat Ekle
             </Button>

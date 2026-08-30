@@ -29,7 +29,7 @@ type CalendarViewProps = {
 
 const EVENT_COLORS: Record<string, { backgroundColor: string; borderColor: string }> = {
   available: { backgroundColor: '#10b981', borderColor: '#059669' },
-  session: { backgroundColor: '#ABD600', borderColor: '#C3F400' },
+  session: { backgroundColor: 'var(--primary)', borderColor: 'var(--primary)' },
   blocked: { backgroundColor: '#6b7280', borderColor: '#4b5563' },
 }
 
@@ -59,24 +59,24 @@ export function CalendarView({ events, onDateSelect, onEventClick, onEventDrop }
     <div className="fc-dark-theme surface-card p-4">
       <style>{`
         .fc-dark-theme {
-          --fc-border-color: #444933;
-          --fc-button-bg-color: #201F22;
-          --fc-button-border-color: #444933;
-          --fc-button-text-color: #E5E1E4;
-          --fc-button-hover-bg-color: #2A2A2C;
-          --fc-button-hover-border-color: #ABD600;
-          --fc-button-active-bg-color: #C3F400;
-          --fc-button-active-border-color: #C3F400;
-          --fc-button-active-text-color: #283500;
+          --fc-border-color: var(--border);
+          --fc-button-bg-color: var(--card);
+          --fc-button-border-color: var(--border);
+          --fc-button-text-color: var(--foreground);
+          --fc-button-hover-bg-color: var(--muted);
+          --fc-button-hover-border-color: var(--primary);
+          --fc-button-active-bg-color: var(--primary);
+          --fc-button-active-border-color: var(--primary);
+          --fc-button-active-text-color: var(--primary-foreground);
           --fc-page-bg-color: transparent;
           --fc-neutral-bg-color: rgba(196,201,172,0.06);
           --fc-today-bg-color: rgba(171,214,0,0.08);
           --fc-event-border-color: transparent;
-          --fc-now-indicator-color: #ABD600;
-          --fc-list-event-hover-bg-color: #2A2A2C;
+          --fc-now-indicator-color: var(--primary);
+          --fc-list-event-hover-bg-color: var(--muted);
         }
         .fc-dark-theme .fc-toolbar-title {
-          color: #E5E1E4;
+          color: var(--foreground);
           font-size: 1.25rem;
           font-weight: 700;
         }
@@ -84,7 +84,7 @@ export function CalendarView({ events, onDateSelect, onEventClick, onEventDrop }
         .fc-dark-theme .fc-daygrid-day-number,
         .fc-dark-theme .fc-list-day-text,
         .fc-dark-theme .fc-list-day-side-text {
-          color: #C4C9AC;
+          color: var(--muted-foreground);
           text-decoration: none;
         }
         .fc-dark-theme .fc-timegrid-slot-label-cushion {

@@ -15,31 +15,31 @@ type ReportCardProps = {
 
 export function ReportCard({ report, onOpenPdf, onPublish, onDelete }: ReportCardProps) {
   return (
-    <Card className="coach-card border border-[#444933] overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between bg-[#19191B] pb-3 border-b border-[#2C2C2E]">
+    <Card className="surface-card overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between bg-muted/30 pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[#ABD600]" />
-          <span className="font-bold text-[#E5E1E4]">{getMonthLabel(report.report_month)}</span>
+          <Calendar className="h-4 w-4 text-primary" />
+          <span className="font-bold text-foreground">{getMonthLabel(report.report_month)}</span>
         </div>
         <div>
           {report.is_published ? (
-            <span className="rounded bg-[#ABD600]/10 px-2 py-0.5 text-[10px] font-bold text-[#ABD600]">Yayınlandı</span>
+            <span className="rounded bg-success/15 px-2 py-0.5 text-[10px] font-bold text-success">Yayınlandı</span>
           ) : (
-            <span className="rounded bg-yellow-500/10 px-2 py-0.5 text-[10px] font-bold text-yellow-400">Taslak</span>
+            <span className="rounded bg-yellow-500/15 px-2 py-0.5 text-[10px] font-bold text-yellow-600">Taslak</span>
           )}
         </div>
       </CardHeader>
       <CardContent className="p-4 space-y-4">
         {report.coach_comment && (
-          <p className="text-xs text-[#C4C9AC] line-clamp-3 italic">
+          <p className="text-xs text-muted-foreground line-clamp-3 italic">
             &ldquo;{report.coach_comment}&rdquo;
           </p>
         )}
 
         {report.metrics_summary && (
-          <div className="grid grid-cols-3 gap-2 bg-[#121214]/50 rounded-lg p-2 text-center text-[10px] text-[#C4C9AC] border border-[#27272A]">
+          <div className="grid grid-cols-3 gap-2 bg-muted/50 rounded-lg p-2 text-center text-[10px] text-muted-foreground border border-border/60">
             <div>
-              <span className="block text-[#ABD600] font-semibold">
+              <span className="block text-foreground font-semibold">
                 {report.metrics_summary.weight_diff !== null && report.metrics_summary.weight_diff !== undefined 
                   ? `${report.metrics_summary.weight_diff > 0 ? '+' : ''}${Number(report.metrics_summary.weight_diff).toFixed(1)} kg`
                   : '—'
@@ -48,7 +48,7 @@ export function ReportCard({ report, onOpenPdf, onPublish, onDelete }: ReportCar
               <span>Kilo Farkı</span>
             </div>
             <div>
-              <span className="block text-[#ABD600] font-semibold">
+              <span className="block text-foreground font-semibold">
                 {report.metrics_summary.avg_waist 
                   ? `${Number(report.metrics_summary.avg_waist).toFixed(1)} cm`
                   : '—'
@@ -57,7 +57,7 @@ export function ReportCard({ report, onOpenPdf, onPublish, onDelete }: ReportCar
               <span>Ort. Bel</span>
             </div>
             <div>
-              <span className="block text-[#ABD600] font-semibold">
+              <span className="block text-foreground font-semibold">
                 {report.metrics_summary.workouts_completed || 0} G
               </span>
               <span>Antrenman</span>
@@ -65,13 +65,13 @@ export function ReportCard({ report, onOpenPdf, onPublish, onDelete }: ReportCar
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-2 border-t border-[#27272A]">
+        <div className="flex items-center justify-between pt-2 border-t border-border/70">
           <div className="flex gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onOpenPdf(report.id)}
-              className="h-8 text-xs text-[#C4C9AC] hover:bg-[#2A2A2C] hover:text-[#E5E1E4]"
+              className="h-8 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <ExternalLink className="mr-1 h-3.5 w-3.5" /> PDF
             </Button>
@@ -79,7 +79,7 @@ export function ReportCard({ report, onOpenPdf, onPublish, onDelete }: ReportCar
               <Button
                 size="sm"
                 onClick={() => onPublish(report.id)}
-                className="h-8 text-xs bg-[#ABD600]/10 text-[#ABD600] hover:bg-[#ABD600]/20"
+                className="h-8 text-xs bg-primary/10 text-primary hover:bg-primary/20"
               >
                 Yayınla
               </Button>
@@ -89,7 +89,7 @@ export function ReportCard({ report, onOpenPdf, onPublish, onDelete }: ReportCar
             variant="ghost"
             size="sm"
             onClick={() => onDelete(report.id)}
-            className="h-8 w-8 text-white/30 hover:bg-red-500/10 hover:text-red-400 p-0"
+            className="h-8 w-8 text-muted-foreground/60 hover:bg-destructive/10 hover:text-destructive p-0"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>

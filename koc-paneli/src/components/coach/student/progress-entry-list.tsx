@@ -16,7 +16,7 @@ export function ProgressEntryList({ entries }: ProgressEntryListProps) {
 
   if (sorted.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-[#444933]/30 p-8 text-center text-sm text-[#C4C9AC] bg-black/10">
+      <div className="rounded-xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground bg-black/10">
         Henüz girilmiş bir ilerleme kaydı bulunmuyor.
       </div>
     )
@@ -44,7 +44,7 @@ export function ProgressEntryList({ entries }: ProgressEntryListProps) {
             <img
               src={lightboxUrl}
               alt="İlerleme Fotoğrafı"
-              className="max-h-[80vh] mx-auto rounded-lg object-contain shadow-2xl border border-[#27272A]"
+              className="max-h-[80vh] mx-auto rounded-lg object-contain shadow-2xl border border-border"
             />
           </div>
         </div>
@@ -90,18 +90,18 @@ function ProgressEntryCard({
   const workoutsTarget = getMetricString(m.workout_days_target)
 
   return (
-    <div className="bg-[#18181B]/50 border border-[#27272A] rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:border-[#ABD600]/30">
+    <div className="bg-muted/30 border border-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:border-primary/30">
       
       {/* Left section: Date & Weight */}
       <div className="flex items-center gap-4 shrink-0 md:w-44">
-        <div className="p-2.5 rounded-lg bg-[#ABD600]/10 text-[#ABD600]">
+        <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
           <Calendar className="h-5 w-5" />
         </div>
         <div>
-          <span className="text-[10px] text-[#C4C9AC] block font-semibold uppercase tracking-wider">
+          <span className="text-[10px] text-muted-foreground block font-semibold uppercase tracking-wider">
             {formatDate(entry.date)}
           </span>
-          <span className="text-base font-extrabold text-[#E5E1E4]">
+          <span className="text-base font-extrabold text-foreground">
             {entry.weight !== null ? `${Number(entry.weight).toFixed(1)} kg` : '—'}
           </span>
         </div>
@@ -111,7 +111,7 @@ function ProgressEntryCard({
       <div className="flex-1 min-w-0 space-y-2">
         {/* Notes (compact design) */}
         {entry.note && (
-          <p className="text-xs text-[#C4C9AC] italic leading-relaxed line-clamp-2 border-l border-[#ABD600]/50 pl-2">
+          <p className="text-xs text-muted-foreground italic leading-relaxed line-clamp-2 border-l border-primary/50 pl-2">
             &ldquo;{entry.note}&rdquo;
           </p>
         )}
@@ -120,27 +120,27 @@ function ProgressEntryCard({
         <div className="flex flex-wrap gap-1.5 items-center">
           {/* Body measurements */}
           {waist && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-[#00eefc] bg-[#00eefc]/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
               Bel: {waist} cm
             </span>
           )}
           {chest && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-[#00eefc] bg-[#00eefc]/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
               Göğüs: {chest} cm
             </span>
           )}
           {(rightArm || leftArm) && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-[#00eefc] bg-[#00eefc]/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
               Kol: {rightArm ?? '—'}/{leftArm ?? '—'} cm
             </span>
           )}
           {(rightThigh || leftThigh) && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-[#00eefc] bg-[#00eefc]/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
               Uyluk: {rightThigh ?? '—'}/{leftThigh ?? '—'} cm
             </span>
           )}
           {bodyFat && (
-            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-[#00eefc] bg-[#00eefc]/5">
+            <span className="text-[10px] px-2 py-0.5 rounded border border-[#00eefc]/25 text-ring bg-ring/5">
               Yağ %: {bodyFat}%
             </span>
           )}
@@ -216,7 +216,7 @@ function ProgressPhotoThumbnail({ url, onClick }: { url: string; onClick?: () =>
   return (
     <div
       onClick={onClick}
-      className="relative group w-20 h-24 rounded-lg overflow-hidden border border-[#27272A] bg-black/20 shrink-0 cursor-pointer"
+      className="relative group w-20 h-24 rounded-lg overflow-hidden border border-border bg-black/20 shrink-0 cursor-pointer"
     >
       <img
         src={url}

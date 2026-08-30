@@ -27,7 +27,7 @@ export default function CoachCalendarLoading() {
 
         {/* Sidebar Skeleton */}
         <div className="w-full shrink-0 lg:w-80 space-y-6">
-          <Card className="coach-card">
+          <Card className="surface-card">
             <CardHeader className="pb-2">
               <Skeleton className="h-5 w-40" />
             </CardHeader>
@@ -44,7 +44,7 @@ export default function CoachCalendarLoading() {
             </CardContent>
           </Card>
           
-          <Card className="coach-card">
+          <Card className="surface-card">
             <CardHeader className="pb-2">
               <Skeleton className="h-5 w-48" />
             </CardHeader>

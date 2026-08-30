@@ -37,9 +37,9 @@ function formatValue(value: string | number | null | undefined, suffix = ''): st
 
 export function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[#27272A]/40 last:border-0">
+    <div className="flex items-center justify-between py-2 border-b border-border/60 last:border-0">
       <span className="coach-muted text-xs sm:text-sm">{label}</span>
-      <span className="text-xs sm:text-sm font-semibold text-[#E5E1E4]">{value}</span>
+      <span className="text-xs sm:text-sm font-semibold text-foreground">{value}</span>
     </div>
   )
 }
@@ -58,10 +58,10 @@ export function SectionCard({
   return (
     <div className={`surface-card p-5 ${className}`}>
       <div className="flex items-center gap-2 mb-4">
-        <div className="p-1.5 rounded-lg bg-[#ABD600]/10 text-[#ABD600]">
+        <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
           {icon}
         </div>
-        <h3 className="text-sm font-bold text-[#E5E1E4] uppercase tracking-wider">{title}</h3>
+        <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">{title}</h3>
       </div>
       {children}
     </div>
@@ -77,7 +77,7 @@ export function ProfileInfoCards({ profile }: { profile: NonNullable<StudentOnbo
           icon={<User className="h-4 w-4" />}
           title="Kişisel Bilgiler"
         >
-          <div className="divide-y divide-[#27272A]/40">
+          <div className="divide-y divide-border/60">
             <InfoRow
               label="Boy"
               value={formatValue(profile.height_cm, ' cm')}
@@ -115,14 +115,14 @@ export function ProfileInfoCards({ profile }: { profile: NonNullable<StudentOnbo
         >
           <div className="space-y-4">
             <div>
-              <span className="text-xs text-[#C4C9AC] block font-semibold mb-1">Sakatlık veya Kısıtlamalar</span>
-              <p className="text-xs text-[#E5E1E4] bg-[#131315]/50 border border-[#27272A] rounded-lg p-3 min-h-[50px] leading-relaxed">
+              <span className="text-xs text-muted-foreground block font-semibold mb-1">Sakatlık veya Kısıtlamalar</span>
+              <p className="text-xs text-foreground bg-muted/30 border border-border/60 rounded-lg p-3 min-h-[50px] leading-relaxed">
                 {profile.injuries ?? 'Herhangi bir sakatlık belirtilmedi.'}
               </p>
             </div>
             <div>
-              <span className="text-xs text-[#C4C9AC] block font-semibold mb-1">Kullanılan Supplementler</span>
-              <p className="text-xs text-[#E5E1E4] bg-[#131315]/50 border border-[#27272A] rounded-lg p-3 min-h-[50px] leading-relaxed">
+              <span className="text-xs text-muted-foreground block font-semibold mb-1">Kullanılan Supplementler</span>
+              <p className="text-xs text-foreground bg-muted/30 border border-border/60 rounded-lg p-3 min-h-[50px] leading-relaxed">
                 {profile.supplements ?? 'Kullanılan supplement belirtilmedi.'}
               </p>
             </div>

@@ -102,10 +102,10 @@ export function ProfilePhotosCard({
     return (
       <div className="space-y-1.5 flex flex-col">
         <p className="coach-muted text-center text-xs font-semibold">{label}</p>
-        <div className="relative overflow-hidden rounded-xl border border-[#27272A] bg-[#0E0E10] aspect-[3/4] group flex-1">
+        <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 aspect-[3/4] group flex-1">
           {uploading ? (
             <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-20">
-              <Loader2 className="h-6 w-6 text-[#ABD600] animate-spin" />
+              <Loader2 className="h-6 w-6 text-primary animate-spin" />
             </div>
           ) : photoUrl ? (
             <>
@@ -117,7 +117,7 @@ export function ProfilePhotosCard({
                       e.stopPropagation()
                       inputRef.current?.click()
                     }}
-                    className="flex h-7 w-7 items-center justify-center rounded-full bg-[#09090B]/85 text-[#C4C9AC] hover:text-[#ABD600] hover:scale-105 transition"
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-card/90 text-muted-foreground border border-border shadow-sm hover:text-primary hover:scale-105 transition"
                     title={`${label} Fotoğrafını Değiştir`}
                   >
                     <Camera className="h-4 w-4" />
@@ -125,7 +125,7 @@ export function ProfilePhotosCard({
                   <button
                     type="button"
                     onClick={(e) => handlePhotoDelete(e, kind)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full bg-[#09090B]/85 text-[#C4C9AC] hover:text-red-400 hover:scale-105 transition"
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-card/90 text-muted-foreground border border-border shadow-sm hover:text-destructive hover:scale-105 transition"
                     title={`${label} Fotoğrafını Sil`}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -148,14 +148,14 @@ export function ProfilePhotosCard({
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="flex w-full h-full flex-col items-center justify-center gap-2 border-2 border-dashed border-[#444933] bg-[#0E0E10]/50 transition duration-200 hover:border-[#ABD600]/50 hover:bg-[#ABD600]/5"
+              className="flex w-full h-full flex-col items-center justify-center gap-2 border-2 border-dashed border-border/80 bg-muted/30 transition duration-200 hover:border-primary/50 hover:bg-primary/5"
             >
-              <Camera className="h-6 w-6 text-[#C4C9AC]/60 animate-pulse" />
-              <span className="text-[10px] text-[#C4C9AC]/60 font-semibold uppercase">Fotoğraf Yükle</span>
+              <Camera className="h-6 w-6 text-muted-foreground/60 animate-pulse" />
+              <span className="text-[10px] text-muted-foreground/60 font-semibold uppercase">Fotoğraf Yükle</span>
             </button>
           ) : (
-            <div className="flex w-full h-full items-center justify-center bg-[#0E0E10]">
-              <span className="text-xs text-[#C4C9AC]/40">Yüklenmemiş</span>
+            <div className="flex w-full h-full items-center justify-center bg-muted/20">
+              <span className="text-xs text-muted-foreground/40">Yüklenmemiş</span>
             </div>
           )}
           {isEditable && (
@@ -209,9 +209,9 @@ export function ProfilePhotosCard({
             <img
               src={lightboxPhoto.url}
               alt={lightboxPhoto.label}
-              className="max-h-[80vh] mx-auto rounded-lg object-contain shadow-2xl border border-[#27272A]"
+              className="max-h-[80vh] mx-auto rounded-lg object-contain shadow-2xl border border-border"
             />
-            <p className="mt-4 text-sm font-semibold text-[#E5E1E4] tracking-wide">{lightboxPhoto.label}</p>
+            <p className="mt-4 text-sm font-semibold text-foreground tracking-wide">{lightboxPhoto.label}</p>
           </div>
         </div>
       )}

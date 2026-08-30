@@ -81,24 +81,24 @@ export function ProfileTab({ profile }: ProfileTabProps) {
   return (
     <div className="space-y-6">
       {/* Avatar + Profile */}
-      <Card className="coach-card">
+      <Card className="surface-card">
         <CardHeader>
-          <CardTitle className="text-base text-[#E5E1E4]">Profil Bilgileri</CardTitle>
+          <CardTitle className="text-base text-foreground">Profil Bilgileri</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Avatar */}
           <div className="flex items-center gap-6">
             <div className="relative">
-              <Avatar className="h-20 w-20 border-2 border-[#444933]">
+              <Avatar className="h-20 w-20 border-2 border-border/60">
                 {avatarUrl && <AvatarImage src={avatarUrl} />}
-                <AvatarFallback className="bg-[#353437] text-2xl text-[#E5E1E4]">
+                <AvatarFallback className="bg-muted text-2xl text-foreground">
                   {fullName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <button
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
-                className="absolute -bottom-1 -right-1 rounded-full border border-[#444933] bg-[#201F22] p-1.5 text-[#C4C9AC] transition hover:bg-[#C3F400] hover:text-[#283500]"
+                className="absolute -bottom-1 -right-1 rounded-full border border-border/60 bg-card p-1.5 text-muted-foreground transition hover:bg-primary hover:text-primary-foreground"
               >
                 <Camera className="h-3.5 w-3.5" />
               </button>
@@ -111,15 +111,15 @@ export function ProfileTab({ profile }: ProfileTabProps) {
               />
             </div>
             <div>
-              <p className="font-medium text-[#E5E1E4]">{fullName}</p>
-              <p className="text-sm text-[#C4C9AC]">{profile.email}</p>
+              <p className="font-medium text-foreground">{fullName}</p>
+              <p className="text-sm text-muted-foreground">{profile.email}</p>
             </div>
           </div>
 
           {/* Form */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label htmlFor="profile-name" className="text-[#C4C9AC]">Ad Soyad</Label>
+              <Label htmlFor="profile-name" className="text-muted-foreground">Ad Soyad</Label>
               <Input
                 id="profile-name"
                 value={fullName}
@@ -128,7 +128,7 @@ export function ProfileTab({ profile }: ProfileTabProps) {
               />
             </div>
             <div>
-              <Label className="text-[#C4C9AC]">Email</Label>
+              <Label className="text-muted-foreground">Email</Label>
               <Input
                 value={profile.email ?? ''}
                 disabled
@@ -138,7 +138,7 @@ export function ProfileTab({ profile }: ProfileTabProps) {
           </div>
 
           <div>
-            <Label htmlFor="profile-bio" className="text-[#C4C9AC]">Biyografi</Label>
+            <Label htmlFor="profile-bio" className="text-muted-foreground">Biyografi</Label>
             <Textarea
               id="profile-bio"
               value={bio}
@@ -148,7 +148,7 @@ export function ProfileTab({ profile }: ProfileTabProps) {
             />
           </div>
 
-          <Button onClick={handleSaveProfile} disabled={saving} className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+          <Button onClick={handleSaveProfile} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary">
             <Save className="mr-2 h-4 w-4" />
             {saving ? 'Kaydediliyor...' : 'Profili Kaydet'}
           </Button>
@@ -156,16 +156,16 @@ export function ProfileTab({ profile }: ProfileTabProps) {
       </Card>
 
       {/* Change Password */}
-      <Card className="coach-card">
+      <Card className="surface-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base text-[#E5E1E4]">
-            <Lock className="h-4 w-4 text-[#ABD600]" />
+          <CardTitle className="flex items-center gap-2 text-base text-foreground">
+            <Lock className="h-4 w-4 text-primary" />
             Şifre Değiştir
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="current-pw" className="text-[#C4C9AC]">Mevcut Şifre</Label>
+            <Label htmlFor="current-pw" className="text-muted-foreground">Mevcut Şifre</Label>
             <Input
               id="current-pw"
               type="password"
@@ -176,7 +176,7 @@ export function ProfileTab({ profile }: ProfileTabProps) {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label htmlFor="new-pw" className="text-[#C4C9AC]">Yeni Şifre</Label>
+              <Label htmlFor="new-pw" className="text-muted-foreground">Yeni Şifre</Label>
               <Input
                 id="new-pw"
                 type="password"
@@ -186,7 +186,7 @@ export function ProfileTab({ profile }: ProfileTabProps) {
               />
             </div>
             <div>
-              <Label htmlFor="confirm-pw" className="text-[#C4C9AC]">Yeni Şifre (Tekrar)</Label>
+              <Label htmlFor="confirm-pw" className="text-muted-foreground">Yeni Şifre (Tekrar)</Label>
               <Input
                 id="confirm-pw"
                 type="password"
@@ -196,7 +196,7 @@ export function ProfileTab({ profile }: ProfileTabProps) {
               />
             </div>
           </div>
-          <Button onClick={handleChangePassword} disabled={changingPassword} variant="outline" className="border-[#444933] text-[#E5E1E4] hover:bg-[#2A2A2C]">
+          <Button onClick={handleChangePassword} disabled={changingPassword} variant="outline" className="border-border/60 text-foreground hover:bg-muted">
             {changingPassword ? 'Değiştiriliyor...' : 'Şifreyi Değiştir'}
           </Button>
         </CardContent>

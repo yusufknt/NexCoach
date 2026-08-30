@@ -39,15 +39,15 @@ function calculateAge(birthDate: string | null): number | string {
 
 export function StudentProfileHeader({ student, onboarding }: StudentProfileHeaderProps) {
   return (
-    <Card className="coach-card">
+    <Card className="surface-card">
       <CardContent className="p-6 space-y-4">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <Avatar className="size-16 border border-border">
+            <Avatar className="size-16 border border-border/50 shadow-sm">
               {student.avatarUrl && (
                 <AvatarImage src={student.avatarUrl} alt={student.fullName} />
               )}
-              <AvatarFallback className="bg-slate-100 text-base font-semibold text-slate-700">
+              <AvatarFallback className="bg-primary/10 text-base font-semibold text-primary">
                 {student.fullName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -83,29 +83,29 @@ export function StudentProfileHeader({ student, onboarding }: StudentProfileHead
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/70 pt-3.5 text-xs text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <span>Boy:</span>
-              <span className="font-semibold text-foreground">{onboarding.profile.height_cm} cm</span>
+              <span className="font-medium text-foreground">{onboarding.profile.height_cm} cm</span>
             </div>
-            <div className="h-3 w-[1px] bg-border hidden sm:block" />
+            <div className="h-3 w-[1px] bg-border/60 hidden sm:block" />
             <div className="flex items-center gap-1.5">
               <span>Başlangıç Kilosu:</span>
-              <span className="font-semibold text-foreground">{onboarding.profile.initial_weight} kg</span>
+              <span className="font-medium text-foreground">{onboarding.profile.initial_weight} kg</span>
             </div>
-            <div className="h-3 w-[1px] bg-border hidden sm:block" />
+            <div className="h-3 w-[1px] bg-border/60 hidden sm:block" />
             <div className="flex items-center gap-1.5">
               <span>Yaş:</span>
-              <span className="font-semibold text-foreground">{calculateAge(onboarding.profile.birth_date)}</span>
+              <span className="font-medium text-foreground">{calculateAge(onboarding.profile.birth_date)}</span>
             </div>
-            <div className="h-3 w-[1px] bg-border hidden sm:block" />
+            <div className="h-3 w-[1px] bg-border/60 hidden sm:block" />
             <div className="flex items-center gap-1.5">
               <span>Hedef:</span>
-              <span className="font-semibold text-primary">
+              <span className="font-medium text-primary">
                 {onboarding.profile.goal ? (goalMap[onboarding.profile.goal] || onboarding.profile.goal) : '-'}
               </span>
             </div>
-            <div className="h-3 w-[1px] bg-border hidden sm:block" />
+            <div className="h-3 w-[1px] bg-border/60 hidden sm:block" />
             <div className="flex items-center gap-1.5">
               <span>Deneyim:</span>
-              <span className="font-semibold text-foreground">
+              <span className="font-medium text-foreground">
                 {onboarding.profile.experience ? (experienceMap[onboarding.profile.experience] || onboarding.profile.experience) : '-'}
               </span>
             </div>

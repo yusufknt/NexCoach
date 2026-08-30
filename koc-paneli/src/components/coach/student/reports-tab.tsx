@@ -220,22 +220,22 @@ export function ReportsTab({ coachStudentId, studentId, entries }: ReportsTabPro
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-[#E5E1E4]">Gelişim Raporları</h3>
-          <p className="text-xs text-[#C4C9AC]">Aylık gelişim ve özet PDF raporları.</p>
+          <h3 className="text-lg font-bold text-foreground">Gelişim Raporları</h3>
+          <p className="text-sm text-muted-foreground">Aylık gelişim ve özet PDF raporları.</p>
         </div>
-        <Button onClick={() => setWizardOpen(true)} className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+        <Button onClick={() => setWizardOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary/90">
           <Plus className="mr-1.5 h-4 w-4" /> Yeni Rapor Hazırla
         </Button>
       </div>
 
       {loading ? (
-        <div className="py-8 text-center text-sm text-[#C4C9AC]">Yükleniyor...</div>
+        <div className="py-8 text-center text-sm text-muted-foreground">Yükleniyor...</div>
       ) : reports.length === 0 ? (
-        <Card className="coach-card">
+        <Card className="rounded-2xl border border-dashed border-border/80 bg-muted/30">
           <CardContent className="py-12 text-center">
-            <FileText className="mx-auto mb-4 h-12 w-12 text-[#C4C9AC]/30" />
-            <p className="text-sm font-medium text-[#E5E1E4]">Henüz Hazırlanmış Rapor Yok</p>
-            <p className="text-xs text-[#C4C9AC] mt-1">Öğrencinin aylık gelişim özetini ve yorumlarınızı içeren ilk raporu hazırlayın.</p>
+            <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground/30" />
+            <p className="text-sm font-medium text-foreground">Henüz Hazırlanmış Rapor Yok</p>
+            <p className="text-xs text-muted-foreground mt-1">Öğrencinin aylık gelişim özetini ve yorumlarınızı içeren ilk raporu hazırlayın.</p>
           </CardContent>
         </Card>
       ) : (

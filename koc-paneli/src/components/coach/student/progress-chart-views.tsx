@@ -28,11 +28,11 @@ export type ChartDataPoint = {
 }
 
 const tooltipContentStyle = {
-  backgroundColor: '#131315',
-  borderColor: '#2C2C2E',
+  backgroundColor: 'var(--background)',
+  borderColor: 'var(--border)',
   borderRadius: '12px',
 }
-const tooltipLabelStyle = { color: '#E5E1E4', fontWeight: 'bold' as const, fontSize: '12px' }
+const tooltipLabelStyle = { color: 'var(--foreground)', fontWeight: 'bold' as const, fontSize: '12px' }
 const tooltipItemStyle = { fontSize: '12px' }
 
 export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
@@ -40,20 +40,20 @@ export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
     <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
       <defs>
         <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#ABD600" stopOpacity={0.2} />
-          <stop offset="95%" stopColor="#ABD600" stopOpacity={0.0} />
+          <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
         </linearGradient>
         <linearGradient id="colorWaist" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#00eefc" stopOpacity={0.2} />
-          <stop offset="95%" stopColor="#00eefc" stopOpacity={0.0} />
+          <stop offset="5%" stopColor="var(--ring)" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="var(--ring)" stopOpacity={0.0} />
         </linearGradient>
       </defs>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <XAxis dataKey="label" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} tickLine={false} axisLine={false} />
       <YAxis
         yAxisId="left"
         domain={['auto', 'auto']}
-        tick={{ fill: '#ABD600', fontSize: 10 }}
+        tick={{ fill: 'var(--primary)', fontSize: 10 }}
         tickLine={false}
         axisLine={false}
         unit=" kg"
@@ -62,7 +62,7 @@ export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
         yAxisId="right"
         orientation="right"
         domain={['auto', 'auto']}
-        tick={{ fill: '#00eefc', fontSize: 10 }}
+        tick={{ fill: 'var(--ring)', fontSize: 10 }}
         tickLine={false}
         axisLine={false}
         unit=" cm"
@@ -78,7 +78,7 @@ export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="weight"
         name="Kilo"
-        stroke="#ABD600"
+        stroke="var(--primary)"
         strokeWidth={2}
         fillOpacity={1}
         fill="url(#colorWeight)"
@@ -90,7 +90,7 @@ export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="waist"
         name="Bel Çevresi"
-        stroke="#00eefc"
+        stroke="var(--ring)"
         strokeWidth={2}
         fillOpacity={1}
         fill="url(#colorWaist)"
@@ -105,8 +105,8 @@ export function LiftsLineChart({ data }: { data: ChartDataPoint[] }) {
   return (
     <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-      <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} unit=" kg" />
+      <XAxis dataKey="label" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <YAxis tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} tickLine={false} axisLine={false} unit=" kg" />
       <Tooltip
         contentStyle={tooltipContentStyle}
         labelStyle={tooltipLabelStyle}
@@ -117,7 +117,7 @@ export function LiftsLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="bench"
         name="Bench Press"
-        stroke="#ffb4ab"
+        stroke="var(--destructive)"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -126,7 +126,7 @@ export function LiftsLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="squat"
         name="Squat"
-        stroke="#ABD600"
+        stroke="var(--primary)"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -135,7 +135,7 @@ export function LiftsLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="deadlift"
         name="Deadlift"
-        stroke="#00eefc"
+        stroke="var(--ring)"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -148,8 +148,8 @@ export function LifestyleLineChart({ data }: { data: ChartDataPoint[] }) {
   return (
     <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-      <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} domain={[0, 10]} />
+      <XAxis dataKey="label" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <YAxis tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} tickLine={false} axisLine={false} domain={[0, 10]} />
       <Tooltip
         contentStyle={tooltipContentStyle}
         labelStyle={tooltipLabelStyle}
@@ -160,7 +160,7 @@ export function LifestyleLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="sleep"
         name="Uyku (saat)"
-        stroke="#d2e5f5"
+        stroke="var(--secondary)"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -169,7 +169,7 @@ export function LifestyleLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="diet"
         name="Diyet Skoru"
-        stroke="#ABD600"
+        stroke="var(--primary)"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -178,7 +178,7 @@ export function LifestyleLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="energy"
         name="Enerji Seviyesi"
-        stroke="#00eefc"
+        stroke="var(--ring)"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -192,13 +192,13 @@ export function StepsAreaChart({ data }: { data: ChartDataPoint[] }) {
     <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
       <defs>
         <linearGradient id="colorSteps" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#ABD600" stopOpacity={0.2} />
-          <stop offset="95%" stopColor="#ABD600" stopOpacity={0.0} />
+          <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
         </linearGradient>
       </defs>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
-      <XAxis dataKey="label" tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
-      <YAxis tick={{ fill: '#C4C9AC', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <XAxis dataKey="label" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} tickLine={false} axisLine={false} />
+      <YAxis tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} tickLine={false} axisLine={false} />
       <Tooltip
         contentStyle={tooltipContentStyle}
         labelStyle={tooltipLabelStyle}
@@ -210,7 +210,7 @@ export function StepsAreaChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="steps"
         name="Günlük Ortalama Adım"
-        stroke="#ABD600"
+        stroke="var(--primary)"
         strokeWidth={2}
         fillOpacity={1}
         fill="url(#colorSteps)"

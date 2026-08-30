@@ -100,19 +100,19 @@ export function ProgressTab({
                     <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Kilo Durumu</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Kilo Durumu</span>
               <h3 className="text-xl font-bold text-white mt-1">
                 {latestWeight ? `${latestWeight.toFixed(1)} kg` : '—'}
               </h3>
             </div>
-            <div className="p-2 rounded-lg bg-[#ABD600]/10 text-[#ABD600]">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
               <Scale className="h-4 w-4" />
             </div>
           </div>
-          <div className="flex items-center justify-between mt-2 border-t border-[#27272A]/40 pt-2 text-[10px] text-[#C4C9AC]">
+          <div className="flex items-center justify-between mt-2 border-t border-border pt-2 text-[10px] text-muted-foreground">
             <span>Başlangıç: {initialWeight ? `${initialWeight} kg` : '—'}</span>
             {latestWeight && initialWeight ? (
-              <span className={`font-bold px-1.5 py-0.5 rounded ${latestWeight - initialWeight < 0 ? 'bg-[#ABD600]/10 text-[#ABD600]' : 'bg-red-500/10 text-red-400'}`}>
+              <span className={`font-bold px-1.5 py-0.5 rounded ${latestWeight - initialWeight < 0 ? 'bg-primary/10 text-primary' : 'bg-red-500/10 text-red-400'}`}>
                 {latestWeight - initialWeight > 0 ? '+' : ''}{(latestWeight - initialWeight).toFixed(1)} kg
               </span>
             ) : null}
@@ -123,19 +123,19 @@ export function ProgressTab({
                     <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Bel Ölçüsü</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Bel Ölçüsü</span>
               <h3 className="text-xl font-bold text-white mt-1">
                 {latestWaist ? `${latestWaist.toFixed(1)} cm` : '—'}
               </h3>
             </div>
-            <div className="p-2 rounded-lg bg-[#00eefc]/10 text-[#00eefc]">
+            <div className="p-2 rounded-lg bg-ring/10 text-ring">
               <Activity className="h-4 w-4" />
             </div>
           </div>
-          <div className="flex items-center justify-between mt-2 border-t border-[#27272A]/40 pt-2 text-[10px] text-[#C4C9AC]">
+          <div className="flex items-center justify-between mt-2 border-t border-border pt-2 text-[10px] text-muted-foreground">
             <span>Başlangıç: {initialWaist ? `${initialWaist} cm` : '—'}</span>
             {latestWaist && initialWaist ? (
-              <span className={`font-bold px-1.5 py-0.5 rounded ${latestWaist - initialWaist < 0 ? 'bg-[#ABD600]/10 text-[#ABD600]' : 'bg-red-500/10 text-red-400'}`}>
+              <span className={`font-bold px-1.5 py-0.5 rounded ${latestWaist - initialWaist < 0 ? 'bg-primary/10 text-primary' : 'bg-red-500/10 text-red-400'}`}>
                 {latestWaist - initialWaist > 0 ? '+' : ''}{(latestWaist - initialWaist).toFixed(1)} cm
               </span>
             ) : null}
@@ -146,18 +146,18 @@ export function ProgressTab({
                     <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Kaldırış Gücü (Max)</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Kaldırış Gücü (Max)</span>
               <div className="grid grid-cols-3 gap-2 mt-1.5 text-[10px] font-semibold text-white">
                 <div>
-                  <span className="block text-[8px] text-[#C4C9AC] uppercase">Bench</span>
+                  <span className="block text-[8px] text-muted-foreground uppercase">Bench</span>
                   {maxBench ? `${maxBench} kg` : '—'}
                 </div>
                 <div>
-                  <span className="block text-[8px] text-[#C4C9AC] uppercase">Squat</span>
+                  <span className="block text-[8px] text-muted-foreground uppercase">Squat</span>
                   {maxSquat ? `${maxSquat} kg` : '—'}
                 </div>
                 <div>
-                  <span className="block text-[8px] text-[#C4C9AC] uppercase">Deadlift</span>
+                  <span className="block text-[8px] text-muted-foreground uppercase">Deadlift</span>
                   {maxDeadlift ? `${maxDeadlift} kg` : '—'}
                 </div>
               </div>
@@ -166,7 +166,7 @@ export function ProgressTab({
               <Dumbbell className="h-4 w-4" />
             </div>
           </div>
-          <div className="text-[8px] text-[#C4C9AC]/50 border-t border-[#27272A]/40 pt-1 mt-1 text-right">
+          <div className="text-[8px] text-muted-foreground border-t border-border pt-1 mt-1 text-right">
             En Yüksek 1RM Performansı
           </div>
         </div>
@@ -175,18 +175,18 @@ export function ProgressTab({
                     <div className="surface-card relative flex h-32 flex-col justify-between overflow-hidden p-4">
           <div className="flex justify-between items-start">
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-[#C4C9AC] font-bold">Yaşam Ortalamaları</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Yaşam Ortalamaları</span>
               <div className="grid grid-cols-3 gap-1.5 mt-1.5 text-[9px] font-semibold text-white">
                 <div>
-                  <span className="block text-[7px] text-[#C4C9AC] uppercase">Uyku</span>
+                  <span className="block text-[7px] text-muted-foreground uppercase">Uyku</span>
                   {avgSleep ? `${avgSleep.toFixed(1)} sa` : '—'}
                 </div>
                 <div>
-                  <span className="block text-[7px] text-[#C4C9AC] uppercase">Adım</span>
+                  <span className="block text-[7px] text-muted-foreground uppercase">Adım</span>
                   {avgSteps ? Math.round(avgSteps).toLocaleString('tr-TR') : '—'}
                 </div>
                 <div>
-                  <span className="block text-[7px] text-[#C4C9AC] uppercase">Diyet</span>
+                  <span className="block text-[7px] text-muted-foreground uppercase">Diyet</span>
                   {avgDiet ? `${avgDiet.toFixed(1)}/10` : '—'}
                 </div>
               </div>
@@ -195,7 +195,7 @@ export function ProgressTab({
               <Heart className="h-4 w-4" />
             </div>
           </div>
-          <div className="text-[8px] text-[#C4C9AC]/50 border-t border-[#27272A]/40 pt-1 mt-1 text-right">
+          <div className="text-[8px] text-muted-foreground border-t border-border pt-1 mt-1 text-right">
             Enerji Seviyesi Ort: {avgEnergy ? `${avgEnergy.toFixed(1)}/10` : '—'}
           </div>
         </div>
@@ -204,14 +204,14 @@ export function ProgressTab({
       {/* Dynamic Tabs Chart Container */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-[#E5E1E4]">İlerleme Analiz Grafiği</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">İlerleme Analiz Grafiği</h2>
         </div>
         <ProgressChart entries={entries} />
       </section>
 
       {/* Timeline Entries List */}
       <section className="space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-[#E5E1E4]">İlerleme Kayıt Geçmişi</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">İlerleme Kayıt Geçmişi</h2>
         <ProgressEntryList entries={entries} />
       </section>
     </div>

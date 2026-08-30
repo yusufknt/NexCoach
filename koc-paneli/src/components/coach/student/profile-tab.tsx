@@ -12,7 +12,7 @@ type ProfileTabProps = {
 export function ProfileTab({ onboarding, isEditable = false }: ProfileTabProps) {
   if (!onboarding) {
     return (
-      <p className="rounded-2xl border border-dashed border-[#444933] bg-[#18181B]/60 p-8 text-center text-sm text-[#C4C9AC]">
+      <p className="rounded-2xl border border-dashed border-border/80 bg-muted/30 p-8 text-center text-sm text-muted-foreground">
         Öğrenci henüz profil bilgilerini tamamlamamış.
       </p>
     )

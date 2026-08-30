@@ -76,10 +76,10 @@ export function ProgramUpload({ coachStudentId, studentId }: ProgramUploadProps)
   }
 
   return (
-    <Card className="coach-card">
+    <Card className="surface-card">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base text-[#E5E1E4]">
-          <Upload className="size-4 text-[#ABD600]" />
+        <CardTitle className="flex items-center gap-2 text-base text-foreground">
+          <Upload className="size-4 text-primary" />
           Program Yükle
         </CardTitle>
       </CardHeader>
@@ -99,15 +99,15 @@ export function ProgramUpload({ coachStudentId, studentId }: ProgramUploadProps)
             className={cn(
               'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 transition-all duration-200',
               isDragging
-                ? 'border-[#ABD600]/60 bg-[#ABD600]/10'
-                : 'border-[#444933] bg-[#0E0E10]/70 hover:border-[#ABD600]/50'
+                ? 'border-primary/60 bg-primary/10'
+                : 'border-border/80 bg-muted/30 hover:border-primary/50'
             )}
           >
-            <FileUp className="mb-3 size-10 text-[#ABD600]" />
-            <p className="text-sm font-medium text-[#E5E1E4]">
+            <FileUp className="mb-3 size-10 text-primary" />
+            <p className="text-sm font-medium text-foreground">
               PDF dosyasını sürükleyip bırakın
             </p>
-            <p className="mt-1 text-xs text-[#C4C9AC]">veya dosya seçin</p>
+            <p className="mt-1 text-xs text-muted-foreground">veya dosya seçin</p>
             <label className="mt-4 cursor-pointer">
               <span className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
                 Dosya Seç
@@ -120,7 +120,7 @@ export function ProgramUpload({ coachStudentId, studentId }: ProgramUploadProps)
               />
             </label>
             {file && (
-              <p className="mt-3 text-sm text-[#ABD600]">{file.name}</p>
+              <p className="mt-3 text-sm text-primary">{file.name}</p>
             )}
           </div>
 
@@ -131,6 +131,7 @@ export function ProgramUpload({ coachStudentId, studentId }: ProgramUploadProps)
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Örn. 4. Hafta Antrenman Programı"
+              className="input-surface"
             />
           </div>
 
@@ -142,12 +143,13 @@ export function ProgramUpload({ coachStudentId, studentId }: ProgramUploadProps)
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="İsteğe bağlı açıklama"
+              className="input-surface"
             />
           </div>
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" disabled={isSubmitting} className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+          <Button type="submit" disabled={isSubmitting} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
             {isSubmitting ? 'Yükleniyor...' : 'Programı Yükle'}
           </Button>
         </form>

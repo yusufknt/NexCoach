@@ -52,7 +52,7 @@ export function ProgressChart({ entries }: ProgressChartProps) {
 
   if (chartData.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-[#444933] bg-[#18181B]/60 p-8 text-center text-sm text-[#C4C9AC]">
+      <p className="rounded-lg border border-dashed border-border/60 bg-muted/30 p-8 text-center text-sm text-muted-foreground">
         Grafik için öğrenciden en az bir ilerleme kaydı alınmış olmalıdır.
       </p>
     )
@@ -74,14 +74,14 @@ export function ProgressChart({ entries }: ProgressChartProps) {
   return (
         <div className="surface-card space-y-4 p-5 backdrop-blur-xl">
       {/* Chart Tabs Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#27272A]/80 pb-3">
-        <div className="flex flex-wrap gap-1 bg-[#0E0E10] border border-[#27272A] p-1 rounded-xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+        <div className="flex flex-wrap gap-1 bg-[#0E0E10] border border-border p-1 rounded-xl">
           <button
             onClick={() => setActiveTab('body')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'body'
                 ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-[#C4C9AC] hover:text-white'
+                : 'text-muted-foreground hover:text-white'
             }`}
           >
             Kilo & Bel
@@ -91,7 +91,7 @@ export function ProgressChart({ entries }: ProgressChartProps) {
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'lifts'
                 ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-[#C4C9AC] hover:text-white'
+                : 'text-muted-foreground hover:text-white'
             }`}
           >
             Güç Gelişimi
@@ -101,7 +101,7 @@ export function ProgressChart({ entries }: ProgressChartProps) {
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'lifestyle'
                 ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-[#C4C9AC] hover:text-white'
+                : 'text-muted-foreground hover:text-white'
             }`}
           >
             Yaşam Tarzı
@@ -111,19 +111,19 @@ export function ProgressChart({ entries }: ProgressChartProps) {
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'steps'
                 ? 'bg-[#C3F400] text-[#283500]'
-                : 'text-[#C4C9AC] hover:text-white'
+                : 'text-muted-foreground hover:text-white'
             }`}
           >
             Günlük Adım
           </button>
         </div>
-        <span className="text-[10px] text-[#C4C9AC] uppercase tracking-wider font-bold">
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
           Son {chartData.length} Kayıt Listeleniyor
         </span>
       </div>
 
       {!hasData() ? (
-        <div className="h-64 flex items-center justify-center text-xs text-[#C4C9AC] border border-dashed border-[#444933]/30 rounded-xl bg-black/10">
+        <div className="h-64 flex items-center justify-center text-xs text-muted-foreground border border-dashed border-border/60 rounded-xl bg-black/10">
           Seçilen sekmeye ait veri bulunamadı.
         </div>
       ) : (

@@ -55,7 +55,7 @@ export function ProgramList({ programs, coachStudentId }: ProgramListProps) {
 
   if (programs.length === 0) {
     return (
-      <p className="rounded-2xl border border-dashed border-[#444933] bg-[#18181B]/60 p-8 text-center text-sm text-[#C4C9AC]">
+      <p className="rounded-2xl border border-dashed border-border/60 bg-muted/30 p-8 text-center text-sm text-muted-foreground">
         Henüz yüklenmiş program yok.
       </p>
     )
@@ -64,21 +64,21 @@ export function ProgramList({ programs, coachStudentId }: ProgramListProps) {
   return (
     <div className="space-y-3">
       {error && <p className="text-sm text-red-400">{error}</p>}
-      <ul className="divide-y divide-[#444933] overflow-hidden rounded-2xl border border-[#27272A] bg-[#18181B]/70">
+      <ul className="divide-y divide-[#444933] overflow-hidden rounded-2xl border border-border bg-muted/30">
         {programs.map((program) => (
           <li
             key={program.id}
             className="list-row flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex min-w-0 items-start gap-3">
-              <FileText className="mt-0.5 size-5 shrink-0 text-[#ABD600]" />
+              <FileText className="mt-0.5 size-5 shrink-0 text-primary" />
               <div className="min-w-0">
-                <p className="truncate font-medium text-[#E5E1E4]">{program.title}</p>
-                <p className="text-xs text-[#C4C9AC]/70">
+                <p className="truncate font-medium text-foreground">{program.title}</p>
+                <p className="text-xs text-muted-foreground">
                   {formatDate(program.createdAt)} · {program.fileName}
                 </p>
                 {program.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-[#C4C9AC]">
+                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                     {program.description}
                   </p>
                 )}

@@ -23,7 +23,7 @@ function Toggle({ enabled, onChange }: ToggleProps) {
       type="button"
       onClick={() => onChange(!enabled)}
       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
-        enabled ? 'bg-[#C3F400]' : 'bg-[#353437]'
+        enabled ? 'bg-primary' : 'bg-muted'
       }`}
     >
       <span
@@ -71,10 +71,10 @@ export function NotificationsTab({ initialPreferences }: NotificationsTabProps) 
 
   return (
     <div className="space-y-6">
-      <Card className="coach-card">
+      <Card className="surface-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base text-[#E5E1E4]">
-            <Bell className="h-4 w-4 text-[#ABD600]" />
+          <CardTitle className="flex items-center gap-2 text-base text-foreground">
+            <Bell className="h-4 w-4 text-primary" />
             Email Bildirimleri
           </CardTitle>
         </CardHeader>
@@ -82,8 +82,8 @@ export function NotificationsTab({ initialPreferences }: NotificationsTabProps) 
           {toggleItems.map((item) => (
             <div key={item.key} className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[#E5E1E4]">{item.title}</p>
-                <p className="text-xs text-[#C4C9AC]">{item.description}</p>
+                <p className="text-sm font-medium text-foreground">{item.title}</p>
+                <p className="text-xs text-muted-foreground">{item.description}</p>
               </div>
               <Toggle
                 enabled={prefs[item.key]}
@@ -95,7 +95,7 @@ export function NotificationsTab({ initialPreferences }: NotificationsTabProps) 
           ))}
 
           <div className="pt-2">
-            <Button onClick={handleSave} disabled={saving} className="bg-[#C3F400] text-[#283500] hover:bg-[#ABD600]">
+            <Button onClick={handleSave} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary">
               {saving ? 'Kaydediliyor...' : 'Tercihleri Kaydet'}
             </Button>
           </div>

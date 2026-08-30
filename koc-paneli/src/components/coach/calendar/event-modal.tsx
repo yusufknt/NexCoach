@@ -53,21 +53,21 @@ export function EventModal({
   }
 
   const eventTypes = [
-    { value: 'session' as const, label: 'Seans', color: 'bg-[#ABD600]' },
+    { value: 'session' as const, label: 'Seans', color: 'bg-primary' },
     { value: 'available' as const, label: 'Müsait', color: 'bg-emerald-500' },
     { value: 'blocked' as const, label: 'Bloklu', color: 'bg-gray-500' },
   ]
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-2xl border border-[#27272A] bg-[#18181B] p-6 shadow-2xl">
+      <div className="w-full max-w-lg rounded-2xl border border-border bg-muted/30 p-6 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">
             {mode === 'create' ? 'Yeni Etkinlik' : 'Etkinliği Düzenle'}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[#C4C9AC] transition-colors hover:bg-[#2A2A2C] hover:text-[#E5E1E4]"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="h-5 w-5" />
           </button>
@@ -76,7 +76,7 @@ export function EventModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Event Type */}
           <div>
-            <Label className="mb-2 text-[#C4C9AC]">Etkinlik Tipi</Label>
+            <Label className="mb-2 text-muted-foreground">Etkinlik Tipi</Label>
             <div className="mt-2 flex gap-2">
               {eventTypes.map((t) => (
                 <button
@@ -85,8 +85,8 @@ export function EventModal({
                   onClick={() => setEventType(t.value)}
                   className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                     eventType === t.value
-                      ? 'bg-[#C3F400] text-[#283500] ring-1 ring-[#C3F400]/30'
-                      : 'text-[#C4C9AC] hover:bg-[#2A2A2C] hover:text-[#E5E1E4]'
+                      ? 'bg-primary text-primary-foreground ring-1 ring-primary/30'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   }`}
                 >
                   <span className={`h-2.5 w-2.5 rounded-full ${t.color}`} />
@@ -98,7 +98,7 @@ export function EventModal({
 
           {/* Title */}
           <div>
-            <Label htmlFor="event-title" className="text-[#C4C9AC]">Başlık</Label>
+            <Label htmlFor="event-title" className="text-muted-foreground">Başlık</Label>
             <Input
               id="event-title"
               value={title}
@@ -111,7 +111,7 @@ export function EventModal({
           {/* Date / Time */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="start-time" className="text-[#C4C9AC]">Başlangıç</Label>
+              <Label htmlFor="start-time" className="text-muted-foreground">Başlangıç</Label>
               <Input
                 id="start-time"
                 type="datetime-local"
@@ -122,7 +122,7 @@ export function EventModal({
               />
             </div>
             <div>
-              <Label htmlFor="end-time" className="text-[#C4C9AC]">Bitiş</Label>
+              <Label htmlFor="end-time" className="text-muted-foreground">Bitiş</Label>
               <Input
                 id="end-time"
                 type="datetime-local"
@@ -137,7 +137,7 @@ export function EventModal({
           {/* Student (for session type) */}
           {eventType === 'session' && (
             <div>
-              <Label htmlFor="student-select" className="text-[#C4C9AC]">Öğrenci</Label>
+              <Label htmlFor="student-select" className="text-muted-foreground">Öğrenci</Label>
               <select
                 id="student-select"
                 value={studentId}
@@ -155,7 +155,7 @@ export function EventModal({
 
           {/* Description */}
           <div>
-            <Label htmlFor="event-desc" className="text-[#C4C9AC]">Açıklama</Label>
+            <Label htmlFor="event-desc" className="text-muted-foreground">Açıklama</Label>
             <Textarea
               id="event-desc"
               value={description}
@@ -168,7 +168,7 @@ export function EventModal({
           {/* Meeting URL */}
           {eventType === 'session' && (
             <div>
-              <Label htmlFor="meeting-url" className="text-[#C4C9AC]">Görüşme Linki (Zoom/Meet)</Label>
+              <Label htmlFor="meeting-url" className="text-muted-foreground">Görüşme Linki (Zoom/Meet)</Label>
               <Input
                 id="meeting-url"
                 type="url"
@@ -196,10 +196,10 @@ export function EventModal({
               <div />
             )}
             <div className="flex gap-2">
-              <Button type="button" variant="ghost" onClick={onClose} className="text-[#C4C9AC] hover:bg-[#2A2A2C]">
+              <Button type="button" variant="ghost" onClick={onClose} className="text-muted-foreground hover:bg-muted">
                 İptal
               </Button>
-              <Button type="submit" className="bg-[#C3F400] px-6 text-[#283500] hover:bg-[#ABD600]">
+              <Button type="submit" className="bg-primary px-6 text-primary-foreground hover:bg-primary">
                 {mode === 'create' ? 'Oluştur' : 'Güncelle'}
               </Button>
             </div>
