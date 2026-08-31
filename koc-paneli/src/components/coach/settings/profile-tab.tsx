@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Camera, Save, Lock } from 'lucide-react'
-import { updateProfile, uploadAvatar, changePassword } from '@/lib/coach/settings.client'
+import { changePassword } from '@/lib/coach/settings.client'
+import { updateProfile, uploadAvatar } from '@/lib/coach/settings-actions'
 import { useToast } from '@/components/ui/toast-provider'
 import type { CoachProfile } from '@/lib/coach/types'
 
@@ -35,7 +36,9 @@ export function ProfileTab({ profile }: ProfileTabProps) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
-    const url = await uploadAvatar(file)
+    const formData = new FormData()
+    formData.set('avatar', file)
+    const url = await uploadAvatar(formData)
     if (url) {
       setAvatarUrl(url)
       showToast('success', 'Profil fotoğrafı güncellendi!')
@@ -61,8 +64,8 @@ export function ProfileTab({ profile }: ProfileTabProps) {
       showToast('error', 'Yeni şifreler eşleşmiyor.')
       return
     }
-    if (newPassword.length < 6) {
-      showToast('error', 'Şifre en az 6 karakter olmalı.')
+    if (newPassword.length < 8) {
+      showToast('error', 'Şifre en az 8 karakter olmalı.')
       return
     }
     setChangingPassword(true)

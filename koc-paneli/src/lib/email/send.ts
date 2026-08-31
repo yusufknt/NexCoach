@@ -6,8 +6,16 @@ import { d1 } from '@/lib/cloudflare/d1'
 import { newMessageEmailTemplate, newStudentEmailTemplate, reminderEmailTemplate } from './templates'
 import type { NotificationPreferences } from '@/lib/coach/types'
 
+function getAppUrl(): string {
+  const configuredUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (configuredUrl) return configuredUrl.replace(/\/$/, '')
+
+  const vercelProductionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  return vercelProductionHost ? `https://${vercelProductionHost}` : 'http://localhost:3000'
+}
+
 async function getCoachEmailAndPrefs(coachId: string): Promise<{ email: string | null; prefs: NotificationPreferences } | null> {
-  const profile = await d1.first<{ notification_preferences: any }>(
+  const profile = await d1.first<{ notification_preferences: unknown }>(
     'SELECT notification_preferences FROM profiles WHERE id = ?',
     [coachId]
   )
@@ -17,12 +25,15 @@ async function getCoachEmailAndPrefs(coachId: string): Promise<{ email: string |
   
   const user = await d1.first<{ email: string }>('SELECT email FROM user WHERE id = ?', [coachId])
 
-  let prefs: any = null
+  let prefs: Record<string, unknown> | null = null
   if (profile.notification_preferences) {
     try {
-      prefs = typeof profile.notification_preferences === 'string'
+      const parsed: unknown = typeof profile.notification_preferences === 'string'
         ? JSON.parse(profile.notification_preferences)
         : profile.notification_preferences
+      prefs = typeof parsed === 'object' && parsed !== null
+        ? parsed as Record<string, unknown>
+        : null
     } catch {
       prefs = null
     }
@@ -31,9 +42,9 @@ async function getCoachEmailAndPrefs(coachId: string): Promise<{ email: string |
   return {
     email: user?.email ?? null,
     prefs: {
-      emailOnMessage: prefs?.emailOnMessage ?? true,
-      emailOnNewStudent: prefs?.emailOnNewStudent ?? true,
-      emailReminderBefore24h: prefs?.emailReminderBefore24h ?? true,
+      emailOnMessage: typeof prefs?.emailOnMessage === 'boolean' ? prefs.emailOnMessage : true,
+      emailOnNewStudent: typeof prefs?.emailOnNewStudent === 'boolean' ? prefs.emailOnNewStudent : true,
+      emailReminderBefore24h: typeof prefs?.emailReminderBefore24h === 'boolean' ? prefs.emailReminderBefore24h : true,
     },
   }
 }
@@ -58,7 +69,7 @@ export async function sendNewMessageNotification(params: {
     ? params.messageContent.slice(0, 100) + '...'
     : params.messageContent
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const appUrl = getAppUrl()
   const messageUrl = `${appUrl}/coach/mesajlar`
 
   const coachProfile = await d1.first<{ full_name: string | null }>(
@@ -95,7 +106,7 @@ export async function sendNewStudentNotification(params: {
   const coachData = await getCoachEmailAndPrefs(params.coachId)
   if (!coachData?.email || !coachData.prefs.emailOnNewStudent) return
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const appUrl = getAppUrl()
   const dashboardUrl = `${appUrl}/coach/dashboard`
 
   const coachProfile = await d1.first<{ full_name: string | null }>(

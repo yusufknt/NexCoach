@@ -12,6 +12,9 @@ export type Env = {
   R2_PROGRESS_PHOTOS: R2Bucket
   R2_MONTHLY_REPORTS: R2Bucket
 
+  // Edge abuse protection
+  AUTH_RATE_LIMITER: RateLimit
+
   // Environment Variables
   ENVIRONMENT: string
   CORS_ORIGIN: string
@@ -19,7 +22,8 @@ export type Env = {
   // Secrets (wrangler secret put ile eklenir)
   SUPABASE_URL?: string
   SUPABASE_SERVICE_KEY?: string
-  API_SECRET?: string
+  API_SECRET: string
+  URL_SIGNING_SECRET: string
   JWT_SECRET?: string
 }
 

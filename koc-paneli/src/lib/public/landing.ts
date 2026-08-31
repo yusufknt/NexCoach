@@ -1,28 +1,34 @@
 import { d1 } from '@/lib/cloudflare/d1'
+import { unstable_cache } from 'next/cache'
 import type { Package, Profile } from '@/types'
 
-export async function getCoachProfile(): Promise<Profile | null> {
-  try {
-    const data = await d1.first<Profile>(
-      "SELECT id, full_name, role, avatar_url, bio, created_at FROM profiles WHERE role = 'coach' ORDER BY created_at ASC LIMIT 1"
-    )
-    return data
-  } catch (error) {
-    console.error("Failed to load coach profile:", error)
-    return null
-  }
-}
+export const getCoachProfile = unstable_cache(
+  async (): Promise<Profile | null> => {
+    try {
+      const data = await d1.first<Profile>(
+        "SELECT id, full_name, role, avatar_url, bio, created_at FROM profiles WHERE role = 'coach' ORDER BY created_at ASC LIMIT 1"
+      )
+      return data
+    } catch (error) {
+      console.error("Failed to load coach profile:", error)
+      return null
+    }
+  },
+  ['coach-profile-public'],
+  { revalidate: 3600, tags: ['coach'] }
+)
 
-export async function getActivePackages(): Promise<Package[]> {
-  let data: any[] | null = null
-  try {
-    data = await d1.query<any>(
-      'SELECT * FROM packages WHERE is_active = 1 ORDER BY price ASC'
-    )
-  } catch (error) {
-    console.error("Failed to load active packages:", error)
-    return []
-  }
+export const getActivePackages = unstable_cache(
+  async (): Promise<Package[]> => {
+    let data: any[] | null = null
+    try {
+      data = await d1.query<any>(
+        'SELECT * FROM packages WHERE is_active = 1 ORDER BY price ASC'
+      )
+    } catch (error) {
+      console.error("Failed to load active packages:", error)
+      return []
+    }
 
   if (!data) {
     return []
@@ -44,8 +50,10 @@ export async function getActivePackages(): Promise<Package[]> {
       is_active: Boolean(pkg.is_active),
     }
   })
-}
-
+},
+['active-packages-public'],
+{ revalidate: 3600, tags: ['packages'] }
+)
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat('tr-TR', {
     style: 'currency',

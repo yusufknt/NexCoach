@@ -1,5 +1,7 @@
-const WORKER_URL = 'https://nexcoach-api.yusufk6509.workers.dev';
-const API_SECRET = 'nexcoach_prod_sec_2026_cf';
+const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev';
+const API_SECRET = process.env.CLOUDFLARE_API_SECRET;
+
+if (!API_SECRET) throw new Error('CLOUDFLARE_API_SECRET is required');
 
 async function runQuery(endpoint, query, params) {
   const res = await fetch(`${WORKER_URL}/api/db/${endpoint}`, {
@@ -16,7 +18,7 @@ async function runQuery(endpoint, query, params) {
 }
 
 async function main() {
-  const users = await runQuery('all', 'SELECT * FROM user', []);
+  const users = await runQuery('query', 'SELECT * FROM user', []);
   console.log('USERS:', users.data.map(u => ({ id: u.id, email: u.email })));
   
   const kocId = users.data.find(u => u.email === 'koc@test.com')?.id;
@@ -29,7 +31,7 @@ async function main() {
     const existing = await runQuery('first', 'SELECT * FROM coach_students WHERE coach_id = ? AND student_id = ?', [kocId, ogrenciId]);
     if (!existing.data) {
        console.log('Linking...');
-       await runQuery('execute', 'INSERT INTO coach_students (coach_id, student_id, start_date, status, payment_status) VALUES (?, ?, ?, ?, ?)', [kocId, ogrenciId, new Date().toISOString(), 'active', 'paid']);
+       await runQuery('run', 'INSERT INTO coach_students (coach_id, student_id, start_date, status, payment_status) VALUES (?, ?, ?, ?, ?)', [kocId, ogrenciId, new Date().toISOString(), 'active', 'paid']);
        console.log('Linked successfully!');
     } else {
        console.log('Already linked:', existing.data);

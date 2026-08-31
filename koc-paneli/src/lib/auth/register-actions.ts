@@ -19,8 +19,8 @@ export async function registerWithInvitation(
     return { success: false, error: 'Tüm zorunlu alanları doldurun.' }
   }
 
-  if (password.length < 6) {
-    return { success: false, error: 'Şifre en az 6 karakter olmalı.' }
+  if (password.length < 8) {
+    return { success: false, error: 'Şifre en az 8 karakter olmalı.' }
   }
 
   if (password !== passwordConfirm) {

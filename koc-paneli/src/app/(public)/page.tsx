@@ -5,16 +5,19 @@ import { PackagesSection } from '@/components/public/packages-section'
 import { TestimonialsSection } from '@/components/public/testimonials-section'
 import { FooterSection } from '@/components/public/footer-section'
 
+export const revalidate = 3600 // 1 hour ISR cache
+
+
 export default async function HomePage() {
   const coach = await getCoachProfile()
 
   return (
-    <>
+    <main>
       <HeroSection coach={coach} />
       <AboutSection coach={coach} />
       <PackagesSection />
       <TestimonialsSection />
       <FooterSection />
-    </>
+    </main>
   )
 }

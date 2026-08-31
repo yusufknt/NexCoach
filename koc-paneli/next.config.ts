@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '25mb',
     },
   },
+  images: {
+    loader: 'custom',
+    loaderFile: './src/lib/cloudflare-image-loader.ts',
+  },
 }
 
 export default nextConfig

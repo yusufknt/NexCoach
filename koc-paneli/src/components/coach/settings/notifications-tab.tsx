@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Bell } from 'lucide-react'
-import { updateNotificationPreferences } from '@/lib/coach/settings.client'
+import { updateNotificationPreferences } from '@/lib/coach/settings-actions'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast-provider'
 import type { NotificationPreferences } from '@/lib/coach/types'

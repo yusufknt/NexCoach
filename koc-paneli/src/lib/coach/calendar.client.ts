@@ -2,10 +2,43 @@
 
 import { d1 } from '@/lib/cloudflare/d1'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+import { getAuthenticatedCoachId } from '@/lib/coach/auth'
 import type { CalendarEventFormData } from './types'
+
+const eventFieldsSchema = z.object({
+  title: z.string().trim().min(1).max(160),
+  event_type: z.enum(['available', 'session', 'blocked']),
+  start_time: z.string().min(1).max(50),
+  end_time: z.string().min(1).max(50),
+  student_id: z.string().uuid().nullable(),
+  description: z.string().trim().max(2000),
+  meeting_url: z.union([z.literal(''), z.url().max(2000)]),
+}).strict()
+
+const eventSchema = eventFieldsSchema.refine(
+  (data) => !Number.isNaN(Date.parse(data.start_time))
+    && !Number.isNaN(Date.parse(data.end_time))
+    && Date.parse(data.end_time) > Date.parse(data.start_time),
+  { message: 'Invalid event time range' }
+)
+
+async function ownsStudent(coachId: string, studentId: string | null): Promise<boolean> {
+  if (!studentId) return true
+  const relation = await d1.first<{ id: string }>(
+    'SELECT id FROM coach_students WHERE coach_id = ? AND student_id = ? LIMIT 1',
+    [coachId, studentId]
+  )
+  return Boolean(relation)
+}
 
 export async function createCalendarEvent(coachId: string, data: CalendarEventFormData) {
   try {
+    const authenticatedCoachId = await getAuthenticatedCoachId()
+    const parsed = eventSchema.safeParse(data)
+    if (authenticatedCoachId !== coachId || !parsed.success) return null
+    if (!await ownsStudent(coachId, parsed.data.student_id)) return null
+    data = parsed.data
     const id = crypto.randomUUID()
     await d1.run(
       `INSERT INTO calendar_events (id, coach_id, title, event_type, start_time, end_time, student_id, description, meeting_url)
@@ -26,7 +59,7 @@ export async function createCalendarEvent(coachId: string, data: CalendarEventFo
     revalidatePath('/coach/takvim')
     revalidatePath('/coach/dashboard')
 
-    const created = await d1.first(
+    const created = await d1.first<{ id: string; start_time: string; end_time: string }>(
       'SELECT * FROM calendar_events WHERE id = ?',
       [id]
     )
@@ -39,8 +72,19 @@ export async function createCalendarEvent(coachId: string, data: CalendarEventFo
 
 export async function updateCalendarEvent(eventId: string, data: Partial<CalendarEventFormData>) {
   try {
+    const coachId = await getAuthenticatedCoachId()
+    const parsed = eventFieldsSchema.partial().refine(
+      (value) => (value.start_time === undefined || !Number.isNaN(Date.parse(value.start_time)))
+        && (value.end_time === undefined || !Number.isNaN(Date.parse(value.end_time)))
+        && (value.start_time === undefined || value.end_time === undefined
+          || Date.parse(value.end_time) > Date.parse(value.start_time)),
+      { message: 'Invalid event time range' }
+    ).safeParse(data)
+    if (!coachId || !z.string().uuid().safeParse(eventId).success || !parsed.success) return false
+    if (parsed.data.student_id !== undefined && !await ownsStudent(coachId, parsed.data.student_id)) return false
+    data = parsed.data
     const updates: string[] = []
-    const params: any[] = []
+    const params: unknown[] = []
 
     if (data.title !== undefined) {
       updates.push('title = ?')
@@ -73,9 +117,9 @@ export async function updateCalendarEvent(eventId: string, data: Partial<Calenda
 
     if (updates.length === 0) return true
 
-    params.push(eventId)
+    params.push(eventId, coachId)
     await d1.run(
-      `UPDATE calendar_events SET ${updates.join(', ')} WHERE id = ?`,
+      `UPDATE calendar_events SET ${updates.join(', ')} WHERE id = ? AND coach_id = ?`,
       params
     )
 
@@ -90,7 +134,9 @@ export async function updateCalendarEvent(eventId: string, data: Partial<Calenda
 
 export async function deleteCalendarEvent(eventId: string) {
   try {
-    await d1.run('DELETE FROM calendar_events WHERE id = ?', [eventId])
+    const coachId = await getAuthenticatedCoachId()
+    if (!coachId || !z.string().uuid().safeParse(eventId).success) return false
+    await d1.run('DELETE FROM calendar_events WHERE id = ? AND coach_id = ?', [eventId, coachId])
     revalidatePath('/coach/takvim')
     revalidatePath('/coach/dashboard')
     return true
@@ -102,9 +148,17 @@ export async function deleteCalendarEvent(eventId: string) {
 
 export async function moveCalendarEvent(eventId: string, newStart: string, newEnd: string) {
   try {
+    const coachId = await getAuthenticatedCoachId()
+    const parsed = z.object({
+      eventId: z.string().uuid(),
+      newStart: z.string().min(1).max(50),
+      newEnd: z.string().min(1).max(50),
+    }).safeParse({ eventId, newStart, newEnd })
+    if (!coachId || !parsed.success) return false
+    if (Number.isNaN(Date.parse(newStart)) || Date.parse(newEnd) <= Date.parse(newStart)) return false
     await d1.run(
-      'UPDATE calendar_events SET start_time = ?, end_time = ? WHERE id = ?',
-      [newStart, newEnd, eventId]
+      'UPDATE calendar_events SET start_time = ?, end_time = ? WHERE id = ? AND coach_id = ?',
+      [newStart, newEnd, eventId, coachId]
     )
     revalidatePath('/coach/takvim')
     revalidatePath('/coach/dashboard')

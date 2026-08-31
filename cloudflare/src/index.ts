@@ -6,6 +6,7 @@ import { storageRoutes } from './routes/storage'
 import { migrationRoutes } from './routes/migration'
 import { dbRoutes } from './routes/db'
 import { authRoutes } from './routes/auth'
+import { hasInternalApiAccess } from './security'
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -14,9 +15,12 @@ const app = new Hono<{ Bindings: Env }>()
 // ============================================
 
 app.use('*', async (c, next) => {
-  const origin = c.req.header('origin') || '*';
+  const configuredOrigins = c.env.CORS_ORIGIN.split(',').map((value) => value.trim()).filter(Boolean)
+  const allowedOrigins = c.env.ENVIRONMENT === 'production'
+    ? configuredOrigins
+    : [...configuredOrigins, 'http://localhost:3000']
   const corsMiddleware = cors({
-    origin: (originHeader) => originHeader || '*',
+    origin: (originHeader) => allowedOrigins.includes(originHeader) ? originHeader : null,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-API-Secret'],
     credentials: true,
@@ -25,21 +29,34 @@ app.use('*', async (c, next) => {
   return corsMiddleware(c, next)
 })
 
+app.use('/api/auth/*', async (c, next) => {
+  const path = new URL(c.req.url).pathname
+  if (c.req.method !== 'POST' || !['/api/auth/sign-in/email', '/api/auth/sign-up/email'].includes(path)) {
+    return next()
+  }
+
+  const clientAddress = c.req.header('cf-connecting-ip') || 'unknown'
+  const { success } = await c.env.AUTH_RATE_LIMITER.limit({ key: `${path}:${clientAddress}` })
+  if (!success) {
+    c.header('Retry-After', '60')
+    return c.json({ success: false, error: 'Too many authentication attempts' }, 429)
+  }
+  return next()
+})
+
 // ============================================
 // API Secret Guard for Protected Endpoints
 // ============================================
 
 app.use('/api/admin/*', async (c, next) => {
-  const secret = c.req.header('X-API-Secret')
-  if (c.env.API_SECRET && secret !== c.env.API_SECRET) {
+  if (!hasInternalApiAccess(c.req.raw, c.env)) {
     return c.json({ success: false, error: 'Unauthorized' }, 401)
   }
   return next()
 })
 
 app.use('/api/db/*', async (c, next) => {
-  const secret = c.req.header('X-API-Secret')
-  if (c.env.API_SECRET && secret !== c.env.API_SECRET) {
+  if (!hasInternalApiAccess(c.req.raw, c.env)) {
     return c.json({ success: false, error: 'Unauthorized' }, 401)
   }
   return next()

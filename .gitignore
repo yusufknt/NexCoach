@@ -40,3 +40,4 @@ yarn-error.log*
 node_modules/
 cloudflare/node_modules/
 .DS_Store
+.vercel

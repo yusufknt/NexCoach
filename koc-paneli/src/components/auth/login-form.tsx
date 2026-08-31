@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { authClient } from '@/lib/auth-client'
-import { getDashboardPath, resolveUserRole } from '@/lib/auth'
+import { getDashboardPath } from '@/lib/auth'
+import { getCurrentUserRole } from '@/lib/auth/role-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -59,30 +60,7 @@ export function LoginForm() {
       return
     }
 
-    let userRole = null;
-    try {
-      const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
-      const API_SECRET = 'nexcoach_prod_sec_2026_cf'
-      const res = await fetch(`${WORKER_URL}/api/db/first`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Secret': API_SECRET,
-        },
-        body: JSON.stringify({
-          query: 'SELECT role FROM profiles WHERE id = ?',
-          params: [data.user.id],
-        }),
-      })
-      if (res.ok) {
-        const resJson = await res.json()
-        userRole = resJson?.data?.role
-      }
-    } catch {
-      // Handled below
-    }
-
-    const role = resolveUserRole(userRole, null)
+    const role = await getCurrentUserRole()
 
     if (!role) {
       setErrorMessage(
@@ -123,10 +101,12 @@ export function LoginForm() {
                 type="email"
                 placeholder="ornek@nexcoach.com"
                 autoComplete="email"
+                aria-invalid={errors.email ? "true" : "false"}
+                aria-describedby={errors.email ? "email-error" : undefined}
                 {...register('email')}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p id="email-error" className="text-sm text-destructive" role="alert">{errors.email.message}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -136,10 +116,12 @@ export function LoginForm() {
                 type="password"
                 placeholder="••••••"
                 autoComplete="current-password"
+                aria-invalid={errors.password ? "true" : "false"}
+                aria-describedby={errors.password ? "password-error" : undefined}
                 {...register('password')}
               />
               {errors.password && (
-                <p className="text-sm text-destructive">
+                <p id="password-error" className="text-sm text-destructive" role="alert">
                   {errors.password.message}
                 </p>
               )}

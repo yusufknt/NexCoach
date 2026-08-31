@@ -1,9 +1,15 @@
 'use client'
 
+import { useEffect } from 'react'
 import { AlertCircle, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import * as Sentry from '@sentry/nextjs'
 
-export default function PublicError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function PublicError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => {
+    console.error(error)
+    Sentry.captureException(error)
+  }, [error])
   return (
     <main className="dark flex min-h-screen items-center justify-center bg-background px-5 py-28 text-center text-foreground" data-public-shell>
       <div className="max-w-md">

@@ -1,5 +1,7 @@
-const WORKER_URL = 'https://nexcoach-api.yusufk6509.workers.dev';
-const API_SECRET = 'nexcoach_prod_sec_2026_cf';
+const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev';
+const API_SECRET = process.env.CLOUDFLARE_API_SECRET;
+
+if (!API_SECRET) throw new Error('CLOUDFLARE_API_SECRET is required');
 
 async function createAccount(email, password, name, role) {
   try {
@@ -41,8 +43,8 @@ async function createAccount(email, password, name, role) {
 }
 
 async function run() {
-  await createAccount('koc@test.com', '123456', 'Koc Test', 'coach');
-  await createAccount('ogrenci@test.com', '123456', 'Ogrenci Test', 'student');
+  await createAccount('koc@test.com', 'Test1234!', 'Koc Test', 'coach');
+  await createAccount('ogrenci@test.com', 'Test1234!', 'Ogrenci Test', 'student');
 }
 
 run();

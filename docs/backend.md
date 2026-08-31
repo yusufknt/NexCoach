@@ -10,6 +10,7 @@
 ## Locations
 - Cloudflare D1 client: `koc-paneli/src/lib/cloudflare/d1.ts`
 - Cloudflare R2 storage: `koc-paneli/src/lib/cloudflare/storage.ts`
+- Worker storage authorization/signing: `cloudflare/src/routes/storage.ts`, `cloudflare/src/security.ts`
 - Better Auth client: `koc-paneli/src/lib/auth-client.ts`
 - Coach backend queries: `koc-paneli/src/lib/coach/*.server.ts`
 - Coach server actions: `koc-paneli/src/lib/coach/*-actions.ts`
@@ -17,3 +18,9 @@
 - Student server actions: `koc-paneli/src/lib/student/*-actions.ts`
 - Email service: `koc-paneli/src/lib/email/send.ts`, `templates.ts`
 - Cron routes: `koc-paneli/src/app/api/cron/`
+
+## Production Security
+- `programs`, `progress-photos` ve `monthly-reports` bucket nesneleri çıplak Worker URL'siyle okunamaz; en fazla 1 saatlik HMAC imzalı URL gerekir.
+- R2 upload/delete/list/sign işlemleri `X-API-Secret` olmadan fail-closed davranır. `API_SECRET` ve bağımsız `URL_SIGNING_SECRET` yalnızca runtime secret olmalıdır.
+- Genel D1 köprüsü istek boyutu, şema, parametre sayısı ve SQL işlem tipi açısından Hono/Zod ile doğrulanır. Kullanıcı mutasyonlarında ayrıca Server Action kimlik/yetki ve domain doğrulaması zorunludur.
+- Koç ayarları, mesajlar, takvim ve öğrenci hızlı ilerleme mutasyonları kimlik doğrulamalı Server Action üzerinden çalışır.

@@ -19,11 +19,10 @@ export async function proxy(request: NextRequest) {
   }
 
   const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
-  const API_SECRET = process.env.CLOUDFLARE_API_SECRET || 'nexcoach_prod_sec_2026_cf'
+  const API_SECRET = process.env.CLOUDFLARE_API_SECRET || ''
   
   // Get session from Better Auth worker
   let user = null;
-  let session = null;
   try {
     const authUrl = `${WORKER_URL}/api/auth/get-session`;
     let cookie = request.headers.get('cookie') || '';
@@ -44,7 +43,6 @@ export async function proxy(request: NextRequest) {
       const data = await res.json();
       if (data && data.user) {
         user = data.user;
-        session = data.session;
       }
     }
   } catch (e) {
@@ -74,7 +72,7 @@ export async function proxy(request: NextRequest) {
           role = resolveUserRole(json.data.role, null);
         }
       }
-    } catch (e) {}
+    } catch {}
   }
 
   if (isLoginRoute || isRegisterRoute) {

@@ -14,3 +14,7 @@ Better Auth (email/password) backed by Cloudflare D1 + Role-Based Access Control
 
 ## Security Notes
 - Worker Hono CORS yapısı credentials (cookie) kullanımına uygun olarak dinamik origin ve `credentials: true` ile ayarlanmıştır.
+- Better Auth giriş/kayıt uçları `cloudflare/src/index.ts` içindeki Cloudflare Rate Limiting binding'i ve `cloudflare/src/auth.ts` içindeki endpoint kurallarıyla korunur.
+- İstemci IP'si yalnızca Cloudflare'ın `cf-connecting-ip` başlığından alınır; giriş 5/dakika, kayıt 3/dakika uygulama limiti kullanır.
+- `API_SECRET` kaynak kodda tutulmaz; Worker ve Next.js runtime secret olarak aynı döndürülmüş değeri kullanır.
+- Şifre oluşturma/değiştirme minimum uzunluğu 8 karakterdir.

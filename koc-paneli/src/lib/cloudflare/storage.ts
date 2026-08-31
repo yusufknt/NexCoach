@@ -4,7 +4,12 @@
  */
 
 const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
-const API_SECRET = process.env.CLOUDFLARE_API_SECRET || 'nexcoach_prod_sec_2026_cf'
+const API_SECRET = process.env.CLOUDFLARE_API_SECRET
+
+function getApiSecret(): string {
+  if (!API_SECRET) throw new Error('CLOUDFLARE_API_SECRET is not configured')
+  return API_SECRET
+}
 
 export type R2BucketType = 'programs' | 'avatars' | 'progress-photos' | 'monthly-reports'
 
@@ -22,11 +27,11 @@ export const cfStorage = {
       const cleanPath = path.startsWith('/') ? path.slice(1) : path
       const url = `${WORKER_URL}/api/storage/${bucket}/${cleanPath}`
 
-      let body: any
+      let body: BodyInit
       if (data instanceof Blob || data instanceof ArrayBuffer) {
         body = data
       } else if (data instanceof Uint8Array || Buffer.isBuffer(data)) {
-        body = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)
+        body = new Uint8Array(data)
       } else {
         body = data
       }
@@ -35,7 +40,7 @@ export const cfStorage = {
         method: 'PUT',
         headers: {
           'Content-Type': contentType,
-          'X-API-Secret': API_SECRET,
+          'X-API-Secret': getApiSecret(),
         },
         body,
       })
@@ -47,8 +52,8 @@ export const cfStorage = {
 
       const resJson = await response.json()
       return { error: null, data: resJson.data }
-    } catch (err: any) {
-      return { error: err }
+    } catch (error: unknown) {
+      return { error: error instanceof Error ? error : new Error(String(error)) }
     }
   },
 
@@ -66,7 +71,7 @@ export const cfStorage = {
         const res = await fetch(url, {
           method: 'DELETE',
           headers: {
-            'X-API-Secret': API_SECRET,
+            'X-API-Secret': getApiSecret(),
           },
         })
         if (!res.ok) {
@@ -80,7 +85,7 @@ export const cfStorage = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Secret': API_SECRET,
+            'X-API-Secret': getApiSecret(),
           },
           body: JSON.stringify({ keys: paths.map((p) => (p.startsWith('/') ? p.slice(1) : p)) }),
         })
@@ -90,8 +95,8 @@ export const cfStorage = {
         }
         return { error: null }
       }
-    } catch (err: any) {
-      return { error: err }
+    } catch (error: unknown) {
+      return { error: error instanceof Error ? error : new Error(String(error)) }
     }
   },
 
@@ -108,19 +113,34 @@ export const cfStorage = {
   },
 
   /**
-   * Create signed or accessible URL.
+   * Create a short-lived signed URL for a private object.
    */
   async createSignedUrl(
     bucket: R2BucketType,
     path: string,
-    _expiresIn: number = 3600
+    expiresIn: number = 300
   ): Promise<{ data: { signedUrl: string } | null; error: Error | null }> {
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path
-    return {
-      data: {
-        signedUrl: `${WORKER_URL}/api/storage/${bucket}/${cleanPath}`,
-      },
-      error: null,
+    try {
+      const cleanPath = path.startsWith('/') ? path.slice(1) : path
+      const response = await fetch(`${WORKER_URL}/api/storage/${bucket}/sign`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Secret': getApiSecret(),
+        },
+        body: JSON.stringify({ key: cleanPath, expiresIn }),
+        cache: 'no-store',
+      })
+      if (!response.ok) {
+        return { data: null, error: new Error(`R2 signing failed [${response.status}]`) }
+      }
+      const json = await response.json() as { data?: { signedUrl?: string } }
+      if (!json.data?.signedUrl) {
+        return { data: null, error: new Error('R2 signing response is invalid') }
+      }
+      return { data: { signedUrl: json.data.signedUrl }, error: null }
+    } catch (error) {
+      return { data: null, error: error instanceof Error ? error : new Error(String(error)) }
     }
   },
 }

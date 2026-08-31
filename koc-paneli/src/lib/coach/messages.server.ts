@@ -1,66 +1,68 @@
 import { d1 } from '@/lib/cloudflare/d1'
 import type { ChatSummary } from './types'
 
-type StudentProfileRow = {
-  id: string
-  full_name: string | null
-  avatar_url: string | null
+type ChatSummaryRow = {
+  studentId: string
+  fullName: string | null
+  avatarUrl: string | null
+  lastMessageContent: string | null
+  lastMessageCreatedAt: string | null
+  lastMessageIsRead: number | null
+  lastMessageSenderId: string | null
+  unreadCount: number
 }
 
 export async function getChatSummaries(coachId: string): Promise<ChatSummary[]> {
-  const students = await d1.query<StudentProfileRow>(
-    `SELECT pr.id, pr.full_name, pr.avatar_url
-     FROM coach_students cs
-     JOIN profiles pr ON pr.id = cs.student_id
-     WHERE cs.coach_id = ?`,
-    [coachId]
-  )
+  const query = `
+    WITH RankedMessages AS (
+      SELECT 
+        m.id, m.content, m.created_at, m.is_read, m.sender_id,
+        CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END as student_id,
+        ROW_NUMBER() OVER (
+          PARTITION BY CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END 
+          ORDER BY m.created_at DESC
+        ) as rn
+      FROM messages m
+      WHERE m.sender_id = ? OR m.receiver_id = ?
+    ),
+    UnreadCounts AS (
+      SELECT sender_id as student_id, COUNT(*) as unread_count
+      FROM messages
+      WHERE receiver_id = ? AND is_read = 0
+      GROUP BY sender_id
+    )
+    SELECT 
+      pr.id as studentId,
+      pr.full_name as fullName,
+      pr.avatar_url as avatarUrl,
+      rm.content as lastMessageContent,
+      rm.created_at as lastMessageCreatedAt,
+      rm.is_read as lastMessageIsRead,
+      rm.sender_id as lastMessageSenderId,
+      COALESCE(uc.unread_count, 0) as unreadCount
+    FROM coach_students cs
+    JOIN profiles pr ON pr.id = cs.student_id
+    LEFT JOIN RankedMessages rm ON rm.student_id = pr.id AND rm.rn = 1
+    LEFT JOIN UnreadCounts uc ON uc.student_id = pr.id
+    WHERE cs.coach_id = ?
+    ORDER BY rm.created_at DESC
+  `
 
-  const summaries: ChatSummary[] = []
+  const rows = await d1.query<ChatSummaryRow>(query, [
+    coachId, coachId, coachId, coachId, coachId, coachId
+  ])
 
-  for (const student of students ?? []) {
-    const [lastMsg, unreadCountRow] = await Promise.all([
-      d1.first<{
-        id: string
-        content: string
-        created_at: string
-        is_read: number | boolean
-        sender_id: string
-      }>(
-        `SELECT id, content, created_at, is_read, sender_id
-         FROM messages
-         WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
-         ORDER BY created_at DESC
-         LIMIT 1`,
-        [coachId, student.id, student.id, coachId]
-      ),
-      d1.first<{ count: number }>(
-        `SELECT COUNT(*) as count
-         FROM messages
-         WHERE sender_id = ? AND receiver_id = ? AND is_read = 0`,
-        [student.id, coachId]
-      ),
-    ])
-
-    summaries.push({
-      studentId: student.id,
-      fullName: student.full_name ?? 'İsimsiz',
-      avatarUrl: student.avatar_url ?? null,
-      lastMessage: lastMsg
-        ? {
-            content: lastMsg.content,
-            createdAt: lastMsg.created_at,
-            isRead: Boolean(lastMsg.is_read),
-            senderId: lastMsg.sender_id,
-          }
-        : null,
-      unreadCount: unreadCountRow?.count ?? 0,
-    })
-  }
-
-  return summaries.sort((a, b) => {
-    if (!a.lastMessage) return 1
-    if (!b.lastMessage) return -1
-    return new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime()
-  })
+  return (rows ?? []).map(row => ({
+    studentId: row.studentId,
+    fullName: row.fullName ?? 'İsimsiz',
+    avatarUrl: row.avatarUrl,
+    lastMessage: row.lastMessageContent ? {
+      content: row.lastMessageContent,
+      createdAt: row.lastMessageCreatedAt!,
+      isRead: Boolean(row.lastMessageIsRead),
+      senderId: row.lastMessageSenderId!,
+    } : null,
+    unreadCount: row.unreadCount,
+  }))
 }
+

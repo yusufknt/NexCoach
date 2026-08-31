@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RotateCcw } from 'lucide-react'
+import * as Sentry from '@sentry/nextjs'
 
 export default function CoachError({
   error,
@@ -13,6 +14,7 @@ export default function CoachError({
 }) {
   useEffect(() => {
     console.error(error)
+    Sentry.captureException(error)
   }, [error])
 
   return (

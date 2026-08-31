@@ -1,7 +1,33 @@
 import { Hono } from 'hono'
+import { z } from 'zod'
 import type { Env } from '../types/env'
 
 export const dbRoutes = new Hono<{ Bindings: Env }>()
+
+const MAX_DB_REQUEST_SIZE = 64 * 1024
+const querySchema = z.object({
+  query: z.string().trim().min(1).max(20_000),
+  params: z.array(z.unknown()).max(100).optional(),
+}).strict()
+const batchSchema = z.object({
+  statements: z.array(querySchema).min(1).max(50),
+}).strict()
+
+function isReadQuery(query: string): boolean {
+  return /^(SELECT|WITH)\b/i.test(query.trimStart())
+}
+
+function isMutationQuery(query: string): boolean {
+  return /^(INSERT|UPDATE|DELETE)\b/i.test(query.trimStart())
+}
+
+dbRoutes.use('*', async (c, next) => {
+  const contentLength = Number(c.req.header('Content-Length'))
+  if (Number.isFinite(contentLength) && contentLength > MAX_DB_REQUEST_SIZE) {
+    return c.json({ success: false, error: 'Request body is too large' }, 413)
+  }
+  return next()
+})
 
 // Parameter binding helper (handles undefined, null, objects to JSON)
 function sanitizeParam(val: any): any {
@@ -22,10 +48,11 @@ function sanitizeParams(params?: any[]): any[] {
 // 1. Query: SELECT multiple rows
 dbRoutes.post('/query', async (c) => {
   try {
-    const { query, params } = await c.req.json<{ query: string; params?: any[] }>()
-    if (!query) {
-      return c.json({ success: false, error: 'Query is required' }, 400)
+    const parsed = querySchema.safeParse(await c.req.json().catch(() => null))
+    if (!parsed.success || !isReadQuery(parsed.data.query)) {
+      return c.json({ success: false, error: 'Invalid read query request' }, 400)
     }
+    const { query, params } = parsed.data
 
     const boundParams = sanitizeParams(params)
     const stmt = boundParams.length > 0
@@ -47,10 +74,11 @@ dbRoutes.post('/query', async (c) => {
 // 2. First: SELECT single row
 dbRoutes.post('/first', async (c) => {
   try {
-    const { query, params } = await c.req.json<{ query: string; params?: any[] }>()
-    if (!query) {
-      return c.json({ success: false, error: 'Query is required' }, 400)
+    const parsed = querySchema.safeParse(await c.req.json().catch(() => null))
+    if (!parsed.success || !isReadQuery(parsed.data.query)) {
+      return c.json({ success: false, error: 'Invalid read query request' }, 400)
     }
+    const { query, params } = parsed.data
 
     const boundParams = sanitizeParams(params)
     const stmt = boundParams.length > 0
@@ -71,10 +99,11 @@ dbRoutes.post('/first', async (c) => {
 // 3. Run: INSERT, UPDATE, DELETE
 dbRoutes.post('/run', async (c) => {
   try {
-    const { query, params } = await c.req.json<{ query: string; params?: any[] }>()
-    if (!query) {
-      return c.json({ success: false, error: 'Query is required' }, 400)
+    const parsed = querySchema.safeParse(await c.req.json().catch(() => null))
+    if (!parsed.success || !isMutationQuery(parsed.data.query)) {
+      return c.json({ success: false, error: 'Invalid mutation request' }, 400)
     }
+    const { query, params } = parsed.data
 
     const boundParams = sanitizeParams(params)
     const stmt = boundParams.length > 0
@@ -98,13 +127,11 @@ dbRoutes.post('/run', async (c) => {
 // 4. Batch: Execute multiple statements atomically
 dbRoutes.post('/batch', async (c) => {
   try {
-    const { statements } = await c.req.json<{
-      statements: Array<{ query: string; params?: any[] }>
-    }>()
-
-    if (!statements || !Array.isArray(statements) || statements.length === 0) {
-      return c.json({ success: false, error: 'Statements array is required' }, 400)
+    const parsed = batchSchema.safeParse(await c.req.json().catch(() => null))
+    if (!parsed.success || parsed.data.statements.some((statement) => !isMutationQuery(statement.query))) {
+      return c.json({ success: false, error: 'Invalid batch request' }, 400)
     }
+    const { statements } = parsed.data
 
     const d1Statements = statements.map((s) => {
       const boundParams = sanitizeParams(s.params)

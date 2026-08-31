@@ -1,0 +1,99 @@
+name: Deploy NexCoach
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-lint:
+    name: Type Check and Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./koc-paneli
+        run: npm ci
+
+      - name: Frontend Type Check
+        working-directory: ./koc-paneli
+        run: npm run type-check
+
+      - name: Frontend Lint
+        working-directory: ./koc-paneli
+        run: npm run lint
+
+      - name: Install Worker Dependencies
+        working-directory: ./cloudflare
+        run: npm ci
+
+      - name: Worker Type Check
+        working-directory: ./cloudflare
+        run: npx tsc --noEmit
+
+  deploy-worker:
+    name: Deploy API Worker
+    runs-on: ubuntu-latest
+    needs: test-and-lint
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Worker Dependencies
+        working-directory: ./cloudflare
+        run: npm ci
+
+      - name: Deploy Worker to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ./cloudflare
+          command: deploy
+
+  deploy-pages:
+    name: Deploy Next.js to Pages
+    runs-on: ubuntu-latest
+    needs: test-and-lint
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./koc-paneli
+        run: npm ci
+
+      - name: Build Next.js for Cloudflare Pages
+        working-directory: ./koc-paneli
+        run: npx @cloudflare/next-on-pages
+
+      - name: Deploy Pages to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy koc-paneli/.vercel/output/static --project-name=nexcoach

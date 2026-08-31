@@ -1,7 +1,10 @@
 const assert = require('assert');
 
-const WORKER_URL = 'https://nexcoach-api.yusufk6509.workers.dev';
+const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev';
 const ORIGIN = 'http://localhost:3000';
+const API_SECRET = process.env.CLOUDFLARE_API_SECRET;
+
+if (!API_SECRET) throw new Error('CLOUDFLARE_API_SECRET is required');
 
 async function testLoginFlow(email, password, expectedRole) {
   console.log(`\nTesting login for ${email} (${expectedRole})`);
@@ -29,7 +32,6 @@ async function testLoginFlow(email, password, expectedRole) {
   console.log(`   Session Fetch PASS.`);
 
   // Verify role mapping through Next.js proxy simulation
-  const API_SECRET = 'nexcoach_prod_sec_2026_cf';
   res = await fetch(`${WORKER_URL}/api/db/first`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-API-Secret': API_SECRET, 'Origin': ORIGIN },

@@ -9,6 +9,7 @@ import { TopStudents } from '@/components/coach/top-students'
 import { CoachPageHeader } from '@/components/coach/page-header'
 import { Bell, Search, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
+import { ErrorBoundary } from '@/components/ui/error-boundary'
 
 export default async function CoachDashboardPage() {
   const data = await getDashboardData()
@@ -67,13 +68,23 @@ export default async function CoachDashboardPage() {
         <QuickActions students={data.topStudents} />
 
         {/* Revenue & Growth Charts */}
-        <DashboardCharts revenue={data.revenue} growth={data.growth} />
+        <ErrorBoundary name="Grafikler">
+          <DashboardCharts revenue={data.revenue} growth={data.growth} />
+        </ErrorBoundary>
 
         {/* Bottom 3-column widgets */}
         <div className="grid gap-6 xl:grid-cols-3">
-          <UpcomingAppointments appointments={data.upcomingAppointments} />
-          <ActivityFeed activities={data.activities} />
-          <TopStudents students={data.topStudents} />
+          <ErrorBoundary name="Gelecek Randevular">
+            <UpcomingAppointments appointments={data.upcomingAppointments} />
+          </ErrorBoundary>
+          
+          <ErrorBoundary name="Son Aktiviteler">
+            <ActivityFeed activities={data.activities} />
+          </ErrorBoundary>
+          
+          <ErrorBoundary name="Öne Çıkan Danışanlar">
+            <TopStudents students={data.topStudents} />
+          </ErrorBoundary>
         </div>
       </div>
     </div>
