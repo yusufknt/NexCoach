@@ -38,7 +38,7 @@ bucket_name = "nexcoach-monthly-reports"
 ENVIRONMENT = "production"
 # Browser requests use the same-origin Vercel auth proxy. Keep direct
 # cross-origin Worker access closed unless an explicit origin is required.
-CORS_ORIGIN = ""
+CORS_ORIGIN = "https://fitcoach-lilac.vercel.app"
 
 # ============================================
 # Authentication Rate Limiting (10 attempts/minute/location/key)
