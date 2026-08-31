@@ -106,7 +106,7 @@ export function ReportsTab({ coachStudentId, studentId, entries }: ReportsTabPro
       const canvas = await html2canvas(templateEl, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#000000', // Our background is dark usually or muted, wait, standard is to use template bg
+        backgroundColor: '#09090b',
         logging: false
       })
 
