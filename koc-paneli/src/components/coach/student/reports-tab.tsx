@@ -98,36 +98,30 @@ export function ReportsTab({ coachStudentId, studentId, entries }: ReportsTabPro
         throw new Error('Template element not found')
       }
 
-      templateEl.style.display = 'block'
-      await new Promise((resolve) => setTimeout(resolve, 800))
+      // templateEl.style.display = 'block'
+      
+      // Wait for images to load
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
       const canvas = await html2canvas(templateEl, {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#000000', // Our background is dark usually or muted, wait, standard is to use template bg
         logging: false
       })
 
-      templateEl.style.display = 'none'
+      // templateEl.style.display = 'none'
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.8)
-      const pdf = new jsPDF('p', 'mm', 'a4')
-      const imgWidth = 210
-      const pageHeight = 297
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      const imgData = canvas.toDataURL('image/jpeg', 0.9)
       
-      let heightLeft = imgHeight
-      let position = 0
+      // Create a PDF with the exact dimensions of the canvas (single continuous page)
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      })
 
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight
-        pdf.addPage()
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
-        heightLeft -= pageHeight
-      }
+      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height)
 
       const pdfBlob = pdf.output('blob')
       const reader = new FileReader()

@@ -16,8 +16,7 @@ export const ReportPdfTemplate = forwardRef<HTMLDivElement, ReportPdfTemplatePro
       <div
         ref={ref}
         id="pdf-report-template"
-        className="w-[800px] bg-muted/30 text-foreground p-8 space-y-6 font-sans relative"
-        style={{ display: 'none', position: 'fixed', left: '-9999px', top: '-9999px', zIndex: -100 }}
+        className="w-[800px] bg-muted/30 text-foreground p-8 space-y-6 font-sans fixed left-[-9999px] top-[0] -z-50 opacity-0 pointer-events-none"
       >
         {/* Neon green top line */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary" />

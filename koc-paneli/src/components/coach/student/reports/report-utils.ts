@@ -206,8 +206,8 @@ export function calculateMonthStats(selectedMonth: string, entries: ProgressEntr
 
       const completed = parseInt(m.workout_days_completed?.toString() ?? '', 10)
       const target = parseInt(m.workout_days_target?.toString() ?? '', 10)
-      if (!isNaN(completed)) workoutsCompleted += completed
-      if (!isNaN(target)) workoutsTarget += target
+      if (!isNaN(completed)) wCompleted += completed
+      if (!isNaN(target)) wTarget += target
 
       if (e.before_photo_url && !wPhotoUrl) {
         wPhotoUrl = e.before_photo_url
