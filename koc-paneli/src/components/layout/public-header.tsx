@@ -18,15 +18,15 @@ export function PublicHeader() {
       
       {/* Desktop Navigation */}
       <nav className="hidden items-center gap-7 md:flex" aria-label="Ana menü">
-        <a className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" href="#hakkimda">
+        <Link className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" href="/#hakkimda">
           Hakkımda
-        </a>
-        <a className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" href="#paketler">
+        </Link>
+        <Link className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" href="/#paketler">
           Paketler
-        </a>
-        <a className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" href="#referanslar">
+        </Link>
+        <Link className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" href="/#referanslar">
           Referanslar
-        </a>
+        </Link>
         <Link
           href="/giris"
           className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'h-10 px-5')}
@@ -48,27 +48,27 @@ export function PublicHeader() {
       {/* Mobile Menu Panel */}
       {isOpen && (
         <div className="absolute inset-x-0 top-[4.5rem] flex flex-col gap-2 border-b border-border bg-background p-5 shadow-2xl md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
-          <a 
+          <Link 
             onClick={() => setIsOpen(false)} 
             className="rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-            href="#hakkimda"
+            href="/#hakkimda"
           >
             Hakkımda
-          </a>
-          <a 
+          </Link>
+          <Link 
             onClick={() => setIsOpen(false)} 
             className="rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-            href="#paketler"
+            href="/#paketler"
           >
             Paketler
-          </a>
-          <a 
+          </Link>
+          <Link 
             onClick={() => setIsOpen(false)} 
             className="rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-            href="#referanslar"
+            href="/#referanslar"
           >
             Referanslar
-          </a>
+          </Link>
           <Link
             onClick={() => setIsOpen(false)}
             href="/giris"
