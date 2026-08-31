@@ -60,18 +60,9 @@ export function LoginForm() {
       return
     }
 
-    const role = await getCurrentUserRole()
-
-    if (!role) {
-      setErrorMessage(
-        'Profil rolü bulunamadı. Lütfen yöneticinizle iletişime geçin.'
-      )
-      return
-    }
-
-
-    const destination = getDashboardPath(role)
-    router.replace(destination)
+    // Role-based redirect is handled by middleware (proxy.ts) automatically.
+    // Triggering a hard navigation lets the middleware read the new session cookie.
+    window.location.href = '/'
   }
 
   return (
