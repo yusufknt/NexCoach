@@ -61,8 +61,9 @@ export function LoginForm() {
     }
 
     // Role-based redirect is handled by middleware (proxy.ts) automatically.
-    // Triggering a hard navigation lets the middleware read the new session cookie.
-    window.location.href = '/'
+    // Triggering a hard navigation to /giris lets the middleware read the new session cookie
+    // and correctly redirect the user to their respective dashboard (coach or student)
+    window.location.href = '/giris'
   }
 
   return (
