@@ -1,16 +1,24 @@
 import type { Metadata } from 'next'
-import { Inter, Montserrat } from 'next/font/google'
+import localFont from 'next/font/local'
 import { ToastProvider } from '@/components/ui/toast-provider'
 import './globals.css'
 
-const inter = Inter({
-  subsets: ['latin'],
+const sansFont = localFont({
+  src: [
+    { path: './fonts/Geist-Latin.woff2', weight: '100 900', style: 'normal' },
+    { path: './fonts/Geist-Latin-Ext.woff2', weight: '100 900', style: 'normal' },
+  ],
   variable: '--font-sans',
+  display: 'swap',
 })
 
-const montserrat = Montserrat({
-  subsets: ['latin'],
+const headingFont = localFont({
+  src: [
+    { path: './fonts/Geist-Latin.woff2', weight: '100 900', style: 'normal' },
+    { path: './fonts/Geist-Latin-Ext.woff2', weight: '100 900', style: 'normal' },
+  ],
   variable: '--font-heading',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -27,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="tr" className={`${inter.variable} ${montserrat.variable}`}>
+    <html lang="tr" className={`${sansFont.variable} ${headingFont.variable}`}>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"

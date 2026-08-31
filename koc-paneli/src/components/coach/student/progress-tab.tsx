@@ -210,8 +210,22 @@ export function ProgressTab({
       </section>
 
       {/* Timeline Entries List */}
-      <section className="space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">İlerleme Kayıt Geçmişi</h2>
+      <section className="space-y-5 pt-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">Öğrenci günlüğü</p>
+            <h2 className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+              İlerleme Kayıt Geçmişi
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
+              Ölçümleri, performans verilerini, yaşam alışkanlıklarını ve gelişim fotoğraflarını kayıt bazında inceleyin.
+            </p>
+          </div>
+          <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            {entries.length} kayıt
+          </div>
+        </div>
         <ProgressEntryList entries={entries} />
       </section>
     </div>
