@@ -7,5 +7,5 @@
   - Server actions: `*-actions.ts`
 - **Imports:** Always use `@/` alias mapped to `koc-paneli/src/`
 - **Single Responsibility:** Keep UI components under ~250 lines; extract complex form sections, SVG/PDF templates, and sub-views to dedicated subdirectories (`components/{domain}/{feature}/`).
-- **Data Mutations:** Mutate data via Server Actions (`'use server'`) or Supabase client in client hooks.
+- **Data Mutations:** Mutate data via Server Actions (`'use server'`). Client components must call Server Actions instead of calling the database directly.
 - **Type Safety:** Shared database types in `@/types/database`, domain models in `lib/{role}/types.ts`.

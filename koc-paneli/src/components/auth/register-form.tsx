@@ -187,8 +187,8 @@ export function RegisterForm({ inviteToken, coachName, packageName }: RegisterFo
                         htmlFor="acceptTerms"
                         className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        <Link href="/sozlesmeler/kullanici-sozlesmesi" target="_blank" className="text-primary hover:underline">Kullanıcı Sözleşmesi</Link>'ni ve{' '}
-                        <Link href="/sozlesmeler/gizlilik-politikasi" target="_blank" className="text-primary hover:underline">Gizlilik Politikası</Link>'nı okudum, kabul ediyorum.
+                        <Link href="/sozlesmeler/kullanici-sozlesmesi" target="_blank" className="text-primary hover:underline">Kullanıcı Sözleşmesi</Link>&apos;ni ve{' '}
+                        <Link href="/sozlesmeler/gizlilik-politikasi" target="_blank" className="text-primary hover:underline">Gizlilik Politikası</Link>&apos;nı okudum, kabul ediyorum.
                       </label>
                       {errors.acceptTerms && (
                         <p className="text-xs text-destructive mt-1">{errors.acceptTerms.message}</p>
@@ -213,7 +213,7 @@ export function RegisterForm({ inviteToken, coachName, packageName }: RegisterFo
                         htmlFor="acceptKvkk"
                         className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        KVKK kapsamında <Link href="/sozlesmeler/aydinlatma-metni" target="_blank" className="text-primary hover:underline">Aydınlatma Metni</Link>'ni okudum.
+                        KVKK kapsamında <Link href="/sozlesmeler/aydinlatma-metni" target="_blank" className="text-primary hover:underline">Aydınlatma Metni</Link>&apos;ni okudum.
                       </label>
                       {errors.acceptKvkk && (
                         <p className="text-xs text-destructive mt-1">{errors.acceptKvkk.message}</p>
