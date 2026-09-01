@@ -6,9 +6,10 @@ import { resolveUserRole } from '@/lib/auth'
 import type { UserRole } from '@/types'
 
 export async function getCurrentUserRole(): Promise<UserRole | null> {
-  const workerUrl = process.env.CLOUDFLARE_WORKER_URL
+  const rawWorkerUrl = process.env.CLOUDFLARE_WORKER_URL
     || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL
     || 'https://nexcoach-api.yusufk6509.workers.dev'
+  const workerUrl = rawWorkerUrl.replace(/\/+$/, '')
   const requestHeaders = await headers()
   const response = await fetch(`${workerUrl}/api/auth/get-session`, {
     headers: { cookie: requestHeaders.get('cookie') || '' },

@@ -3,7 +3,8 @@
  * Interacts with R2 buckets via Cloudflare Worker storage API.
  */
 
-const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+const RAW_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+const WORKER_URL = RAW_WORKER_URL.replace(/\/+$/, '')
 const API_SECRET = process.env.CLOUDFLARE_API_SECRET
 
 function getApiSecret(): string {

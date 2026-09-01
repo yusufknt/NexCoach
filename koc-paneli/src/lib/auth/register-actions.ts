@@ -50,7 +50,8 @@ export async function registerWithInvitation(
     return { success: false, error: 'Davet linkinin süresi dolmuş.' }
   }
 
-  const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+  const RAW_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+  const WORKER_URL = RAW_WORKER_URL.replace(/\/+$/, '')
   
   const authResponse = await fetch(`${WORKER_URL}/api/auth/sign-up/email`, {
     method: 'POST',

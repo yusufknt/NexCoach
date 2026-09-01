@@ -41,9 +41,10 @@ export async function registerCoachWithInvitation(
     return { success: false, message: 'Davet bağlantısı geçersiz, kullanılmış veya süresi dolmuş.' }
   }
 
-  const workerUrl = process.env.CLOUDFLARE_WORKER_URL
+  const rawWorkerUrl = process.env.CLOUDFLARE_WORKER_URL
     || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL
     || 'https://nexcoach-api.yusufk6509.workers.dev'
+  const workerUrl = rawWorkerUrl.replace(/\/+$/, '')
   const authResponse = await fetch(`${workerUrl}/api/auth/sign-up/email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

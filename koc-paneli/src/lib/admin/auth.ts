@@ -3,9 +3,10 @@ import { d1 } from '@/lib/cloudflare/d1'
 
 export async function getAuthenticatedAdminId(): Promise<string | null> {
   try {
-    const workerUrl = process.env.CLOUDFLARE_WORKER_URL
+    const rawWorkerUrl = process.env.CLOUDFLARE_WORKER_URL
       || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL
       || 'https://nexcoach-api.yusufk6509.workers.dev'
+    const workerUrl = rawWorkerUrl.replace(/\/+$/, '')
     const requestHeaders = await headers()
     let cookie = requestHeaders.get('cookie') || ''
 
