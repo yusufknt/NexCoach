@@ -27,6 +27,7 @@ export async function middleware(request: NextRequest) {
   
   // Get session from Better Auth worker
   let user = null;
+  let sessionError = null;
   try {
     const authUrl = `${WORKER_URL}/api/auth/get-session`;
     let cookie = request.headers.get('cookie') || '';
@@ -59,14 +60,20 @@ export async function middleware(request: NextRequest) {
       const data = await res.json();
       if (data && data.user) {
         user = data.user;
+      } else {
+        sessionError = 'no_user_in_response';
       }
+    } else {
+      sessionError = `http_${res.status}`;
     }
   } catch (e) {
+    sessionError = 'fetch_exception';
     console.error("Better Auth fetch error:", e instanceof Error ? e.message : e);
   }
 
   // Get user role from DB if logged in
   let role = null;
+  let roleError = null;
   if (user) {
     try {
       const res = await fetch(`${WORKER_URL}/api/db/first`, {
@@ -89,24 +96,46 @@ export async function middleware(request: NextRequest) {
         const json = await res.json();
         if (json.success && json.data) {
           role = resolveUserRole(json.data.role, null);
+          if (!role) roleError = 'role_is_null_or_invalid';
         } else if (!json.success) {
+          roleError = `db_err_${json.error || 'unknown'}`;
           console.error("DB Role Fetch returned error:", json.error);
         }
       } else {
+        roleError = `http_err_${res.status}`;
         console.error("DB Role Fetch HTTP Error:", res.status, await res.text());
       }
     } catch (e) {
+      roleError = 'fetch_exception';
       console.error("DB Role Fetch Exception:", e instanceof Error ? e.message : e);
     }
   }
 
   if (isLoginRoute || isRegisterRoute) {
     if (user) {
+      if (!role) {
+        const errUrl = new URL(request.url);
+        errUrl.searchParams.set('auth_debug', `role_failed_${roleError || 'unknown'}`);
+        if (request.nextUrl.searchParams.get('auth_debug') !== errUrl.searchParams.get('auth_debug')) {
+          return NextResponse.redirect(errUrl);
+        }
+        return response;
+      }
+
       const destination = getDashboardPath(role)
       if (pathname === destination || pathname.startsWith(destination) || destination === '/giris') {
         return response
       }
       return NextResponse.redirect(new URL(destination, request.url))
+    } else {
+      const cookieHeader = request.headers.get('cookie') || '';
+      if (cookieHeader.includes('better-auth.session_token=')) {
+        const errUrl = new URL(request.url);
+        errUrl.searchParams.set('auth_debug', `session_failed_${sessionError || 'unknown'}`);
+        if (request.nextUrl.searchParams.get('auth_debug') !== errUrl.searchParams.get('auth_debug')) {
+          return NextResponse.redirect(errUrl);
+        }
+      }
     }
     return response
   }
