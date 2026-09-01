@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
     }
   } catch (e) {
     sessionError = 'fetch_exception';
-    console.error("Better Auth fetch error:", e instanceof Error ? e.message : e);
+    console.error("[Middleware] Better Auth fetch error:", e instanceof Error ? e.message : e);
   }
 
   // Get user role from DB if logged in
@@ -114,11 +114,6 @@ export async function middleware(request: NextRequest) {
   if (isLoginRoute || isRegisterRoute) {
     if (user) {
       if (!role) {
-        const errUrl = new URL(request.url);
-        errUrl.searchParams.set('auth_debug', `role_failed_${roleError || 'unknown'}`);
-        if (request.nextUrl.searchParams.get('auth_debug') !== errUrl.searchParams.get('auth_debug')) {
-          return NextResponse.redirect(errUrl);
-        }
         return response;
       }
 
@@ -127,15 +122,6 @@ export async function middleware(request: NextRequest) {
         return response
       }
       return NextResponse.redirect(new URL(destination, request.url))
-    } else {
-      const cookieHeader = request.headers.get('cookie') || '';
-      if (cookieHeader.includes('better-auth.session_token=')) {
-        const errUrl = new URL(request.url);
-        errUrl.searchParams.set('auth_debug', `session_failed_${sessionError || 'unknown'}`);
-        if (request.nextUrl.searchParams.get('auth_debug') !== errUrl.searchParams.get('auth_debug')) {
-          return NextResponse.redirect(errUrl);
-        }
-      }
     }
     return response
   }
