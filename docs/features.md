@@ -17,8 +17,8 @@
 | **Student Profile** | `app/(student)/student/profil` | `components/coach/student/profile-tab.tsx` (reused with isEditable) | `lib/coach/onboarding.server.ts` |
 | **Student Reports** | `app/(student)/student/raporlar` | `components/student/reports-client.tsx` | `lib/coach/report-actions.ts` |
 | **Public Landing** | `app/(public)/page.tsx` | `components/public/` (`hero-section.tsx`, `about-section.tsx`, `packages-section.tsx`, `testimonials-section.tsx`, `footer-section.tsx`) | `lib/public/landing.ts`, `app/api/public/packages/route.ts` |
-| **Auth** | `app/giris`, `app/kayit` | `components/auth/` (`login-form.tsx`, `register-form.tsx`) | `lib/auth/register-actions.ts`, `lib/auth-client.ts`, `src/proxy.ts` |
+| **Auth** | `app/giris`, `app/kayit` | `components/auth/` (`login-form.tsx`, `register-form.tsx`) | `lib/auth/register-actions.ts`, `lib/auth-client.ts`, `src/middleware.ts` |
 | **Admin Dashboard** | `app/(admin)/admin/dashboard` | `components/admin/admin-sidebar.tsx` | `lib/admin/admin.server.ts`, `lib/admin/auth.ts` |
 | **Admin Coach Management** | `app/(admin)/admin/koclar`, `app/(admin)/admin/koclar/[id]` | `components/admin/coach-invite-form.tsx`, `status-badge.tsx` | `lib/admin/admin.server.ts`, `lib/admin/admin-actions.ts` |
 | **Coach Invitation Registration** | `app/(public)/koc-kayit` | `components/auth/coach-register-form.tsx` | `lib/admin/coach-invite.server.ts`, `lib/auth/coach-register-actions.ts` |
-| **Membership Expiry Screens** | `app/(coach)/coach/uyelik`, `app/(student)/student/uyelik` | Route-local status views | `src/proxy.ts`, `lib/coach/auth.ts`, `lib/student/auth.ts` |
+| **Membership Expiry Screens** | `app/(coach)/coach/uyelik`, `app/(student)/student/uyelik` | Route-local status views | `src/middleware.ts`, `lib/coach/auth.ts`, `lib/student/auth.ts` |

@@ -6,7 +6,7 @@ Better Auth (email/password) backed by Cloudflare D1 + Role-Based Access Control
 1. **Login/Register Pages:** `koc-paneli/src/app/(public)/giris/page.tsx`, `koc-paneli/src/app/(public)/kayit/page.tsx`, `koc-paneli/src/app/(public)/koc-kayit/page.tsx`
 2. **Auth Forms & Actions:** `koc-paneli/src/components/auth/` (uses `authClient.signIn`), `koc-paneli/src/lib/auth/register-actions.ts` (API fetch)
 3. **Session & Middleware:**
-   - `koc-paneli/src/proxy.ts`: Intercepts `/admin/*`, `/coach/*` and `/student/*`, verifies the Worker session (`/api/auth/get-session`), resolves role and enforces membership access.
+   - `koc-paneli/src/middleware.ts`: Intercepts `/admin/*`, `/coach/*` and `/student/*`, verifies the Worker session (`/api/auth/get-session`), resolves role and enforces membership access.
 4. **Role Resolution:** `admins` membership takes precedence; otherwise role is fetched from `profiles`. `koc-paneli/src/lib/auth.ts` maps roles to dashboards.
 5. **Server Route Guards:**
    - Admin: `koc-paneli/src/lib/admin/auth.ts` (`getAuthenticatedAdminId`)

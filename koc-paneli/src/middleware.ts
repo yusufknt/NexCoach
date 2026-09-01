@@ -5,7 +5,7 @@ const coachRoutes = ['/coach']
 const studentRoutes = ['/student']
 const adminRoutes = ['/admin']
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isCoachRoute = coachRoutes.some((route) => pathname.startsWith(route))
   const isStudentRoute = studentRoutes.some((route) => pathname.startsWith(route))
