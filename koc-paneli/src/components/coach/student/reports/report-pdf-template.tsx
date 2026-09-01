@@ -2,7 +2,20 @@
 
 import { forwardRef } from 'react'
 import { formatDate } from '@/lib/coach/format'
-import { getMonthLabel, getWeeklyDiff, getNetDiff, type MonthStats } from './report-utils'
+import { getMonthLabel, type MonthStats } from './report-utils'
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from 'recharts'
+import { Activity, Dumbbell, Scale, Ruler, Flame, Utensils, Moon, Footprints, Target } from 'lucide-react'
 
 type ReportPdfTemplateProps = {
   selectedMonth: string
@@ -12,353 +25,252 @@ type ReportPdfTemplateProps = {
 
 export const ReportPdfTemplate = forwardRef<HTMLDivElement, ReportPdfTemplateProps>(
   function ReportPdfTemplate({ selectedMonth, stats, coachComment }, ref) {
+    if (!stats) return null
+
+    // Prepare chart data from weekly breakdown
+    const chartData = stats.weeklyBreakdown.map((w, idx) => ({
+      name: `${idx + 1}. Hafta`,
+      Kilo: w.avg_weight ? Number(w.avg_weight.toFixed(1)) : null,
+      Bel: w.avg_waist ? Number(w.avg_waist.toFixed(1)) : null,
+      Bench: w.bench_max || 0,
+      Squat: w.squat_max || 0,
+      Deadlift: w.deadlift_max || 0,
+    }))
+
+    // Helper for progress bar percentages
+    const getPercentage = (value: number | null, max: number) => {
+      if (!value) return 0
+      return Math.min(100, (value / max) * 100)
+    }
+
     return (
       <div
         ref={ref}
         id="pdf-report-template"
-        className="w-[800px] bg-[#09090b] text-white p-8 space-y-8 font-sans fixed left-[-9999px] top-[0] -z-50"
+        className="w-[900px] bg-[#09090b] text-white p-10 space-y-8 font-sans fixed left-[-9999px] top-[0] -z-50"
       >
-        {/* Neon green top line */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary" />
+        {/* Top Accent Line */}
+        <div className="absolute top-0 left-0 right-0 h-2 bg-primary" />
 
-        {/* Header */}
-        <div className="flex justify-between items-end border-b border-zinc-800 pb-4">
-          <div>
-            <h1 className="text-primary text-3xl font-extrabold tracking-wider uppercase">FITCOACH</h1>
-            <p className="text-[10px] text-zinc-400 uppercase tracking-widest mt-0.5">Kinetic Performance Coaching Portal</p>
+        {/* Header Section */}
+        <div className="flex justify-between items-center border-b border-zinc-800 pb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20">
+              <Activity className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-primary text-4xl font-extrabold tracking-wider uppercase">FITCOACH</h1>
+              <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">Kinetic Performance System</p>
+            </div>
           </div>
           <div className="text-right">
-            <h2 className="text-lg font-bold text-white uppercase tracking-wide">AYLIK GELİŞİM RAPORU</h2>
-            <p className="text-sm font-semibold text-primary">{selectedMonth ? getMonthLabel(`${selectedMonth}-01`) : ''}</p>
+            <h2 className="text-2xl font-bold text-white uppercase tracking-wide">Aylık Gelişim Raporu</h2>
+            <p className="text-lg font-semibold text-primary mt-1">
+              {selectedMonth ? getMonthLabel(`${selectedMonth}-01`) : ''}
+            </p>
           </div>
         </div>
 
-        {/* Profile / Metadata Info */}
-        <div className="grid grid-cols-2 gap-4 bg-[#18181b] rounded-xl p-4 border border-zinc-800">
-          <div className="text-sm">
-            <span className="text-xs text-zinc-400 block">Öğrenci:</span>
-            <span className="font-bold text-white text-base">Sporcu Gelişim Raporu</span>
-          </div>
-          <div className="text-sm text-right">
-            <span className="text-xs text-zinc-400 block">Rapor Tarihi:</span>
-            <span className="font-semibold text-white">{formatDate(new Date().toISOString())}</span>
-          </div>
-        </div>
-
-        {/* Weekly Comparison Table */}
-        {stats && (
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold text-primary uppercase tracking-widest border-l-2 border-primary pl-2">Haftalık İlerleme & Karşılaştırma Analizi</h3>
-            
-            <div className="overflow-hidden rounded-xl border border-zinc-800 bg-[#18181b]">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="bg-[#18181b] text-primary uppercase tracking-wider text-[10px] border-b border-zinc-800">
-                    <th className="py-2.5 px-4 font-bold border-r border-zinc-800">METRİK</th>
-                    <th className="py-2.5 px-3 font-bold border-r border-zinc-800 text-center">1. HAFTA</th>
-                    <th className="py-2.5 px-3 font-bold border-r border-zinc-800 text-center">2. HAFTA</th>
-                    <th className="py-2.5 px-3 font-bold border-r border-zinc-800 text-center">3. HAFTA</th>
-                    <th className="py-2.5 px-3 font-bold border-r border-zinc-800 text-center">4. HAFTA</th>
-                    <th className="py-2.5 px-3 font-bold text-center bg-primary/10 text-white">AYLIK NET FARK</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800 text-zinc-100">
-                  {/* Kilo */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Ortalama Kilo</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.avg_weight, prev.avg_weight, true) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold">{w.avg_weight ? `${w.avg_weight.toFixed(1)} kg` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.avg_weight || stats.weeklyBreakdown[2]?.avg_weight || stats.weeklyBreakdown[1]?.avg_weight,
-                        stats.weeklyBreakdown[0]?.avg_weight || stats.weeklyBreakdown[1]?.avg_weight,
-                        true
-                      )} kg
-                    </td>
-                  </tr>
-
-                  {/* Bel */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Ortalama Bel Ölçüsü</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.avg_waist, prev.avg_waist, true) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold">{w.avg_waist ? `${w.avg_waist.toFixed(1)} cm` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.avg_waist || stats.weeklyBreakdown[2]?.avg_waist || stats.weeklyBreakdown[1]?.avg_waist,
-                        stats.weeklyBreakdown[0]?.avg_waist || stats.weeklyBreakdown[1]?.avg_waist,
-                        true
-                      )} cm
-                    </td>
-                  </tr>
-
-                  {/* Bench Press */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Bench Press Max</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.bench_max, prev.bench_max, false) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold text-primary">{w.bench_max ? `${w.bench_max} kg` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5 text-primary">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.bench_max || stats.weeklyBreakdown[2]?.bench_max || stats.weeklyBreakdown[1]?.bench_max,
-                        stats.weeklyBreakdown[0]?.bench_max || stats.weeklyBreakdown[1]?.bench_max,
-                        false
-                      )} kg
-                    </td>
-                  </tr>
-
-                  {/* Squat */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Squat Max</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.squat_max, prev.squat_max, false) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold text-primary">{w.squat_max ? `${w.squat_max} kg` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5 text-primary">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.squat_max || stats.weeklyBreakdown[2]?.squat_max || stats.weeklyBreakdown[1]?.squat_max,
-                        stats.weeklyBreakdown[0]?.squat_max || stats.weeklyBreakdown[1]?.squat_max,
-                        false
-                      )} kg
-                    </td>
-                  </tr>
-
-                  {/* Deadlift */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Deadlift Max</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.deadlift_max, prev.deadlift_max, false) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold text-primary">{w.deadlift_max ? `${w.deadlift_max} kg` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5 text-primary">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.deadlift_max || stats.weeklyBreakdown[2]?.deadlift_max || stats.weeklyBreakdown[1]?.deadlift_max,
-                        stats.weeklyBreakdown[0]?.deadlift_max || stats.weeklyBreakdown[1]?.deadlift_max,
-                        false
-                      )} kg
-                    </td>
-                  </tr>
-
-                  {/* Antrenman */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Antrenman Uyum Oranı</td>
-                    {stats.weeklyBreakdown.map((w, idx) => (
-                      <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                        <span className="font-semibold">{w.workouts_completed} / {w.workouts_target} G</span>
-                      </td>
-                    ))}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5 text-white">
-                      {stats.workoutsCompleted} / {stats.workoutsTarget} G
-                    </td>
-                  </tr>
-
-                  {/* Uyku */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Ortalama Uyku</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.avg_sleep, prev.avg_sleep, false) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold">{w.avg_sleep ? `${w.avg_sleep.toFixed(1)} sa` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.avg_sleep || stats.weeklyBreakdown[2]?.avg_sleep || stats.weeklyBreakdown[1]?.avg_sleep,
-                        stats.weeklyBreakdown[0]?.avg_sleep || stats.weeklyBreakdown[1]?.avg_sleep,
-                        false
-                      )} sa
-                    </td>
-                  </tr>
-
-                  {/* Adım */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Günlük Ortalama Adım</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.avg_steps, prev.avg_steps, false) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold">{w.avg_steps ? Math.round(w.avg_steps).toLocaleString('tr-TR') : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{Math.round(trend.diff).toLocaleString('tr-TR')})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.avg_steps || stats.weeklyBreakdown[2]?.avg_steps || stats.weeklyBreakdown[1]?.avg_steps,
-                        stats.weeklyBreakdown[0]?.avg_steps || stats.weeklyBreakdown[1]?.avg_steps,
-                        false
-                      )}
-                    </td>
-                  </tr>
-
-                  {/* Diyet */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Beslenme / Diyet Uyumu</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.avg_diet, prev.avg_diet, false) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold text-primary">{w.avg_diet ? `${w.avg_diet.toFixed(1)}/10` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5 text-primary">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.avg_diet || stats.weeklyBreakdown[2]?.avg_diet || stats.weeklyBreakdown[1]?.avg_diet,
-                        stats.weeklyBreakdown[0]?.avg_diet || stats.weeklyBreakdown[1]?.avg_diet,
-                        false
-                      )}
-                    </td>
-                  </tr>
-
-                  {/* Enerji */}
-                  <tr>
-                    <td className="py-2 px-4 font-medium border-r border-zinc-800 text-zinc-400">Genel Enerji Seviyesi</td>
-                    {stats.weeklyBreakdown.map((w, idx) => {
-                      const prev = idx > 0 ? stats.weeklyBreakdown[idx - 1] : null
-                      const trend = prev ? getWeeklyDiff(w.avg_energy, prev.avg_energy, false) : null
-                      return (
-                        <td key={idx} className="py-2 px-3 border-r border-zinc-800 text-center">
-                          <span className="font-semibold">{w.avg_energy ? `${w.avg_energy.toFixed(1)}/10` : '—'}</span>
-                          {trend && (
-                            <span style={{ color: trend.color }} className="text-[9px] font-bold ml-1">
-                              ({trend.sign}{trend.diff.toFixed(1)})
-                            </span>
-                          )}
-                        </td>
-                      )
-                    })}
-                    <td className="py-2 px-3 text-center font-bold bg-primary/5">
-                      {getNetDiff(
-                        stats.weeklyBreakdown[3]?.avg_energy || stats.weeklyBreakdown[2]?.avg_energy || stats.weeklyBreakdown[1]?.avg_energy,
-                        stats.weeklyBreakdown[0]?.avg_energy || stats.weeklyBreakdown[1]?.avg_energy,
-                        false
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        {/* Info & Global KPIs */}
+        <div className="grid grid-cols-4 gap-4">
+          <div className="col-span-4 grid grid-cols-4 gap-4 bg-[#18181b] p-5 rounded-2xl border border-zinc-800">
+            <div className="flex flex-col">
+              <span className="text-xs text-zinc-400 uppercase tracking-wider font-semibold mb-1">Rapor Tarihi</span>
+              <span className="font-bold text-white text-lg">{formatDate(new Date().toISOString())}</span>
+            </div>
+            <div className="flex flex-col border-l border-zinc-800 pl-4">
+              <span className="text-xs text-zinc-400 uppercase tracking-wider font-semibold mb-1 flex items-center gap-1"><Scale className="w-3 h-3"/> Kilo Değişimi</span>
+              <span className={`font-bold text-xl ${stats.weightDiff && stats.weightDiff < 0 ? 'text-primary' : (stats.weightDiff && stats.weightDiff > 0 ? 'text-red-400' : 'text-white')}`}>
+                {stats.weightDiff !== null ? `${stats.weightDiff > 0 ? '+' : ''}${stats.weightDiff.toFixed(1)} kg` : '—'}
+              </span>
+            </div>
+            <div className="flex flex-col border-l border-zinc-800 pl-4">
+              <span className="text-xs text-zinc-400 uppercase tracking-wider font-semibold mb-1 flex items-center gap-1"><Ruler className="w-3 h-3"/> Ort. Bel</span>
+              <span className="font-bold text-white text-xl">
+                {stats.avgWaist ? `${stats.avgWaist.toFixed(1)} cm` : '—'}
+              </span>
+            </div>
+            <div className="flex flex-col border-l border-zinc-800 pl-4">
+              <span className="text-xs text-primary uppercase tracking-wider font-semibold mb-1 flex items-center gap-1"><Target className="w-3 h-3"/> Antrenman Uyumu</span>
+              <span className="font-bold text-white text-xl">
+                {stats.workoutsCompleted} <span className="text-sm text-zinc-400">/ {stats.workoutsTarget} Gün</span>
+              </span>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-2 gap-6">
+          {/* Body Composition Chart */}
+          <div className="bg-[#18181b] rounded-2xl p-5 border border-zinc-800">
+            <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Activity className="w-4 h-4"/> Vücut Kompozisyonu
+            </h3>
+            <div className="h-[220px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                  <XAxis dataKey="name" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis yAxisId="left" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} domain={['auto', 'auto']} />
+                  <YAxis yAxisId="right" orientation="right" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} domain={['auto', 'auto']} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
+                    itemStyle={{ fontSize: '12px' }}
+                    labelStyle={{ display: 'none' }}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                  <Line yAxisId="left" type="monotone" dataKey="Kilo" stroke="#22c55e" strokeWidth={3} dot={{ r: 4, fill: '#22c55e', strokeWidth: 0 }} isAnimationActive={false} connectNulls />
+                  <Line yAxisId="right" type="monotone" dataKey="Bel" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: '#3b82f6', strokeWidth: 0 }} isAnimationActive={false} connectNulls />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Strength Progression Chart */}
+          <div className="bg-[#18181b] rounded-2xl p-5 border border-zinc-800">
+            <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Dumbbell className="w-4 h-4"/> Güç Gelişimi (Maksimum)
+            </h3>
+            <div className="h-[220px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                  <XAxis dataKey="name" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    cursor={{ fill: '#27272a', opacity: 0.4 }}
+                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
+                    itemStyle={{ fontSize: '12px' }}
+                    labelStyle={{ display: 'none' }}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                  <Bar dataKey="Bench" fill="#3b82f6" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                  <Bar dataKey="Squat" fill="#f59e0b" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                  <Bar dataKey="Deadlift" fill="#ef4444" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Lifestyle & Habits Section */}
+        <div className="bg-[#18181b] rounded-2xl p-6 border border-zinc-800">
+          <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-5 border-l-2 border-primary pl-3">
+            Yaşam Tarzı ve Alışkanlıklar
+          </h3>
+          <div className="grid grid-cols-4 gap-6">
+            
+            {/* Diet */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+                <span className="flex items-center gap-1"><Utensils className="w-3 h-3"/> Beslenme/Diyet</span>
+                <span className="text-white font-bold">{stats.avgDiet ? `${stats.avgDiet.toFixed(1)}/10` : '—'}</span>
+              </div>
+              <div className="h-2.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-500 rounded-full" 
+                  style={{ width: `${getPercentage(stats.avgDiet, 10)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Energy */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+                <span className="flex items-center gap-1"><Flame className="w-3 h-3"/> Enerji Seviyesi</span>
+                <span className="text-white font-bold">{stats.avgEnergy ? `${stats.avgEnergy.toFixed(1)}/10` : '—'}</span>
+              </div>
+              <div className="h-2.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-orange-500 rounded-full" 
+                  style={{ width: `${getPercentage(stats.avgEnergy, 10)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Sleep */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+                <span className="flex items-center gap-1"><Moon className="w-3 h-3"/> Uyku (Saat)</span>
+                <span className="text-white font-bold">{stats.avgSleep ? `${stats.avgSleep.toFixed(1)}s` : '—'}</span>
+              </div>
+              <div className="h-2.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-indigo-500 rounded-full" 
+                  style={{ width: `${getPercentage(stats.avgSleep, 10)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+                <span className="flex items-center gap-1"><Footprints className="w-3 h-3"/> Günlük Adım</span>
+                <span className="text-white font-bold">{stats.avgSteps ? Math.round(stats.avgSteps).toLocaleString('tr-TR') : '—'}</span>
+              </div>
+              <div className="h-2.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-sky-500 rounded-full" 
+                  style={{ width: `${getPercentage(stats.avgSteps, 12000)}%` }}
+                />
+              </div>
+              <p className="text-[9px] text-zinc-500 text-right mt-1">*12.000 adım hedefine göre</p>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Weekly Photos Grid */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-bold text-primary uppercase tracking-widest border-l-2 border-primary pl-3">
+            Gelişim Fotoğrafları
+          </h3>
+          <div className="grid grid-cols-4 gap-4">
+            {stats.weeklyBreakdown.map((w, idx) => (
+              <div key={idx} className="overflow-hidden rounded-2xl border border-zinc-800 bg-[#18181b] flex flex-col justify-between h-[220px] relative">
+                <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md z-10">
+                  <span className="text-[10px] font-bold text-white uppercase tracking-wider">{idx + 1}. Hafta</span>
+                </div>
+                <div className="relative flex-1 bg-black/40 flex items-center justify-center overflow-hidden">
+                  {w.photo_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={w.photo_url}
+                      alt={`${idx + 1}. Hafta Foto`}
+                      className="w-full h-full object-cover"
+                      crossOrigin="anonymous"
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <span className="text-xs text-zinc-500 block font-semibold mb-1">Fotoğraf</span>
+                      <span className="text-[10px] text-zinc-600 block uppercase tracking-wider">Yüklenmedi</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Coach Assessment Comment Section */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold text-primary uppercase tracking-widest border-l-2 border-primary pl-2">Koçun Değerlendirmesi & Tavsiyeleri</h3>
-          <div className="bg-[#18181b] rounded-xl p-5 border border-zinc-800 min-h-[140px] text-sm leading-relaxed text-zinc-200 whitespace-pre-wrap">
-            {coachComment || 'Bu ay için koç yorumu eklenmemiştir.'}
+        <div className="bg-primary/10 rounded-2xl p-6 border border-primary/20 relative overflow-hidden">
+          <div className="absolute -top-4 -right-4 p-4 opacity-10">
+            <Activity className="w-32 h-32 text-primary" />
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-3 flex items-center gap-2">
+              Koçun Değerlendirmesi & Tavsiyeler
+            </h3>
+            <p className="text-sm leading-relaxed text-zinc-200 whitespace-pre-wrap font-medium">
+              {coachComment || 'Bu ay için koç yorumu eklenmemiştir.'}
+            </p>
           </div>
         </div>
 
-        {/* Weekly Progress Photos Grid */}
-        {stats && (
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold text-primary uppercase tracking-widest border-l-2 border-primary pl-2">Haftalık Gelişim Fotoğrafları</h3>
-            <div className="grid grid-cols-4 gap-4">
-              {stats.weeklyBreakdown.map((w, idx) => (
-                <div key={idx} className="overflow-hidden rounded-xl border border-zinc-800 bg-[#18181b] flex flex-col justify-between h-[180px]">
-                  <div className="relative flex-1 bg-black/40 flex items-center justify-center overflow-hidden">
-                    {w.photo_url ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
-                        src={w.photo_url}
-                        alt={`${idx + 1}. Hafta Foto`}
-                        className="aspect-[4/3] w-full h-full object-cover"
-                        crossOrigin="anonymous"
-                      />
-                    ) : (
-                      <div className="text-center p-4">
-                        <span className="text-[10px] text-zinc-400 block uppercase tracking-wider font-bold">Fotoğraf</span>
-                        <span className="text-[8px] text-zinc-400 block uppercase tracking-wider mt-0.5">Yüklenmedi</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-2 text-center text-[10px] text-zinc-400 font-bold border-t border-zinc-800 uppercase tracking-wider bg-[#18181b]">
-                    {idx + 1}. HAFTA
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Footer */}
-        <div className="border-t border-zinc-800 pt-6 flex justify-between items-center text-[10px] text-zinc-400">
-          <span>© {new Date().getFullYear()} FITCOACH. Tüm Hakları Saklıdır.</span>
-          <span className="font-semibold text-primary uppercase tracking-widest">KINETIC PERFORMANCE SYSTEM</span>
+        <div className="border-t border-zinc-800 pt-6 flex justify-between items-center text-[10px] text-zinc-500 font-medium">
+          <span>© {new Date().getFullYear()} FITCOACH. KINETIC PERFORMANCE COACHING PORTAL.</span>
+          <span className="uppercase tracking-widest">Başarıya Giden Yol.</span>
         </div>
       </div>
     )

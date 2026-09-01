@@ -100,8 +100,8 @@ export function ReportsTab({ coachStudentId, studentId, entries }: ReportsTabPro
 
       // templateEl.style.display = 'block'
       
-      // Wait for images to load
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Wait for images and charts to load completely
+      await new Promise((resolve) => setTimeout(resolve, 2000))
 
       const canvas = await html2canvas(templateEl, {
         scale: 2,
