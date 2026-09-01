@@ -34,7 +34,7 @@ export default async function StudentDetailPage({
 
   return (
     <div className="coach-page">
-      <div className="coach-container space-y-6">
+      <div className="coach-container space-y-4">
       <StudentProfileHeader student={student} onboarding={onboarding} />
       <StudentDetailTabs
         coachStudentId={student.coachStudentId}

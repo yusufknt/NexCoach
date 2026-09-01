@@ -33,10 +33,10 @@ export function StudentDetailTabs({
   onboarding,
 }: StudentDetailTabsProps) {
   return (
-    <Tabs defaultValue="profile">
+    <Tabs defaultValue="progress">
       <TabsList className="coach-tab-list">
-        <TabsTrigger value="profile" className="coach-tab-trigger">Profil</TabsTrigger>
         <TabsTrigger value="progress" className="coach-tab-trigger">İlerleme</TabsTrigger>
+        <TabsTrigger value="profile" className="coach-tab-trigger">Profil</TabsTrigger>
         <TabsTrigger value="programs" className="coach-tab-trigger">Programlar</TabsTrigger>
         <TabsTrigger value="reports" className="coach-tab-trigger">Raporlar</TabsTrigger>
         <TabsTrigger value="notes" className="coach-tab-trigger">Notlar</TabsTrigger>

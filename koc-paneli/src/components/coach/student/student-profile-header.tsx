@@ -40,23 +40,23 @@ function calculateAge(birthDate: string | null): number | string {
 export function StudentProfileHeader({ student, onboarding }: StudentProfileHeaderProps) {
   return (
     <Card className="surface-card">
-      <CardContent className="p-6 space-y-4">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <Avatar className="size-16 border border-border/50 shadow-sm">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar className="size-12 border border-border/50 shadow-sm">
               {student.avatarUrl && (
                 <AvatarImage src={student.avatarUrl} alt={student.fullName} />
               )}
-              <AvatarFallback className="bg-primary/10 text-base font-semibold text-primary">
+              <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
                 {student.fullName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-bold text-foreground">{student.fullName}</h1>
+                <h1 className="text-lg font-bold text-foreground">{student.fullName}</h1>
                 <StudentStatusBadge status={student.status} />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {student.packageName ?? 'Paket atanmamış'} · Başlangıç:{' '}
                 {formatDate(student.startDate)}
                 {student.endDate
@@ -80,7 +80,7 @@ export function StudentProfileHeader({ student, onboarding }: StudentProfileHead
 
         {/* Quick Physical Profile metrics bar */}
         {onboarding?.profile && (
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/70 pt-3.5 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border/70 pt-2 text-xs text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <span>Boy:</span>
               <span className="font-medium text-foreground">{onboarding.profile.height_cm} cm</span>
