@@ -20,8 +20,10 @@ export async function proxy(request: NextRequest) {
     return response
   }
 
-  const WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
-  const API_SECRET = process.env.CLOUDFLARE_API_SECRET || ''
+  const RAW_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
+  const WORKER_URL = RAW_WORKER_URL.replace(/\/+$/, '')
+  const API_SECRET = process.env.CLOUDFLARE_API_SECRET?.trim() || ''
+
   
   // Get session from Better Auth worker
   let user = null;
@@ -75,9 +77,15 @@ export async function proxy(request: NextRequest) {
         const json = await res.json();
         if (json.success && json.data) {
           role = resolveUserRole(json.data.role, null);
+        } else if (!json.success) {
+          console.error("DB Role Fetch returned error:", json.error);
         }
+      } else {
+        console.error("DB Role Fetch HTTP Error:", res.status, await res.text());
       }
-    } catch {}
+    } catch (e) {
+      console.error("DB Role Fetch Exception:", e instanceof Error ? e.message : e);
+    }
   }
 
   if (isLoginRoute || isRegisterRoute) {

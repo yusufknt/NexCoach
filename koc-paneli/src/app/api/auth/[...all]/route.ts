@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-const WORKER_URL =
+const RAW_WORKER_URL =
   process.env.CLOUDFLARE_WORKER_URL ||
   process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL ||
   'https://nexcoach-api.yusufk6509.workers.dev'
+const WORKER_URL = RAW_WORKER_URL.replace(/\/+$/, '')
 
 async function authProxyHandler(
   request: NextRequest,
