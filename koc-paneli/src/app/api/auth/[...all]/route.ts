@@ -69,7 +69,9 @@ async function authProxyHandler(
 
   const isHttps = request.nextUrl.protocol === 'https:'
 
-  for (const cookieStr of setCookies) {
+  for (let cookieStr of setCookies) {
+    // Ensure the cookie domain doesn't prevent it from being set on the client domain
+    cookieStr = cookieStr.replace(/;\s*Domain=[^;]+/i, '');
     response.headers.append('set-cookie', cookieStr)
 
     // For HTTP/localhost support, also issue non-secure cookie variant if Secure cookie was set

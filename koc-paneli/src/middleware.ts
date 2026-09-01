@@ -36,10 +36,22 @@ export async function middleware(request: NextRequest) {
         cookie = `${cookie}; __Secure-better-auth.session_token=${match[1]}`;
       }
     }
+    const reqHeaders = new Headers();
+    if (cookie) reqHeaders.set('cookie', cookie);
+    
+    // Pass essential headers to avoid CSRF or Bot blocks
+    const ua = request.headers.get('user-agent');
+    if (ua) reqHeaders.set('user-agent', ua);
+    
+    const xff = request.headers.get('x-forwarded-for') || request.ip;
+    if (xff) reqHeaders.set('x-forwarded-for', xff);
+
+    // Some environments need host/origin for CSRF bypass on API
+    reqHeaders.set('x-forwarded-host', request.nextUrl.host);
+    reqHeaders.set('origin', request.nextUrl.origin);
+
     const res = await fetch(authUrl, {
-      headers: {
-        cookie,
-      },
+      headers: reqHeaders,
       cache: 'no-store',
       signal: AbortSignal.timeout(5000),
     });
