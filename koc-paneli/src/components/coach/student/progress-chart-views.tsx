@@ -44,8 +44,8 @@ export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
           <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
         </linearGradient>
         <linearGradient id="colorWaist" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="var(--ring)" stopOpacity={0.2} />
-          <stop offset="95%" stopColor="var(--ring)" stopOpacity={0.0} />
+          <stop offset="5%" stopColor="var(--success)" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="var(--success)" stopOpacity={0.0} />
         </linearGradient>
       </defs>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(196,201,172,0.06)" />
@@ -62,7 +62,7 @@ export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
         yAxisId="right"
         orientation="right"
         domain={['auto', 'auto']}
-        tick={{ fill: 'var(--ring)', fontSize: 10 }}
+        tick={{ fill: 'var(--success)', fontSize: 10 }}
         tickLine={false}
         axisLine={false}
         unit=" cm"
@@ -90,7 +90,7 @@ export function BodyAreaChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="waist"
         name="Bel Çevresi"
-        stroke="var(--ring)"
+        stroke="var(--success)"
         strokeWidth={2}
         fillOpacity={1}
         fill="url(#colorWaist)"
@@ -135,7 +135,7 @@ export function LiftsLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="deadlift"
         name="Deadlift"
-        stroke="var(--ring)"
+        stroke="var(--success)"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -160,7 +160,7 @@ export function LifestyleLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="sleep"
         name="Uyku (saat)"
-        stroke="var(--secondary)"
+        stroke="#8b5cf6"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
@@ -178,7 +178,7 @@ export function LifestyleLineChart({ data }: { data: ChartDataPoint[] }) {
         type="monotone"
         dataKey="energy"
         name="Enerji Seviyesi"
-        stroke="var(--ring)"
+        stroke="#f59e0b"
         strokeWidth={2}
         dot={{ r: 3 }}
         connectNulls
