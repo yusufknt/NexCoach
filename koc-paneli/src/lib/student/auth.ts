@@ -23,16 +23,27 @@ export async function getAuthenticatedStudentId(): Promise<string | null> {
     if (!data?.user) return null
     
     const user = data.user
-    const profile = await d1.first<{ role: string }>(
-      'SELECT role FROM profiles WHERE id = ?',
+    const profile = await d1.first<{ role: string; has_access: number }>(
+      `SELECT p.role,
+        EXISTS (
+          SELECT 1 FROM coach_students cs
+          JOIN coach_access ca ON ca.coach_id = cs.coach_id
+          WHERE cs.student_id = p.id
+            AND cs.status = 'active'
+            AND (cs.end_date IS NULL OR date(cs.end_date) >= date('now'))
+            AND ca.status = 'active'
+            AND (ca.starts_at IS NULL OR datetime(ca.starts_at) <= datetime('now'))
+            AND (ca.ends_at IS NULL OR datetime(ca.ends_at) > datetime('now'))
+        ) AS has_access
+       FROM profiles p WHERE p.id = ?`,
       [user.id]
     )
 
-    if (profile?.role !== 'student') {
+    if (profile?.role !== 'student' || !profile.has_access) {
       return null
     }
     return user.id
-  } catch (e) {
+  } catch {
     return null
   }
 }

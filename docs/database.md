@@ -7,6 +7,15 @@ Cloudflare D1 (SQLite) serves as the primary operational database.
 - `0001_initial_schema.sql`: Core tables migrated from PostgreSQL (profiles, coach_students, messages, calendar, programs, etc.)
 - `0002_better_auth.sql`: Better Auth standard tables (user, session, account, verification)
 - `0003_add_issuer.sql`: Better Auth account table extensions
+- `0004_admin_and_coach_access.sql`: Admin membership, coach access periods, single-use coach invitations and admin audit logs
+
+## Admin & Access Tables
+- `admins`: Better Auth users allowed to access `/admin/*`; kept separate from the `profiles` coach/student constraint.
+- `coach_access`: Manual IBAN-era entitlement state (`pending`, `active`, `expired`, `suspended`), access dates, payment note and activating admin.
+- `coach_invitations`: 48-hour coach onboarding invitations. Stores only a SHA-256 token hash plus intended email, name and access dates.
+- `admin_audit_logs`: Append-only records for coach invitation and access mutations.
+
+Migration `0004` backfills existing coach profiles as active with no forced end date so deploying the access gate does not lock current coaches.
 
 ## TypeScript Types
 `koc-paneli/src/types/database.ts` and `koc-paneli/src/types/index.ts`

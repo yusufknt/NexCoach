@@ -4,6 +4,10 @@ export function resolveUserRole(
   profileRole: string | null | undefined,
   metadataRole: unknown
 ): UserRole | null {
+  if (profileRole === 'admin' || metadataRole === 'admin') {
+    return 'admin'
+  }
+
   if (profileRole === 'coach' || profileRole === 'student') {
     return profileRole
   }
@@ -16,6 +20,9 @@ export function resolveUserRole(
 }
 
 export function getDashboardPath(role: UserRole | null): string {
+  if (role === 'admin') {
+    return '/admin/dashboard'
+  }
   if (role === 'coach') {
     return '/coach/dashboard'
   }

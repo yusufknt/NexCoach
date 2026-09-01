@@ -16,5 +16,10 @@
 - Student components: `koc-paneli/src/components/student/`
   - Onboarding: `koc-paneli/src/components/student/onboarding/`
   - Progress: `koc-paneli/src/components/student/progress/`
+- Admin components: `koc-paneli/src/components/admin/`
+  - Navigation: `admin-sidebar.tsx`
+  - Coach onboarding: `coach-invite-form.tsx`
+  - Access/invitation state: `status-badge.tsx`
+- Coach invitation registration: `koc-paneli/src/components/auth/coach-register-form.tsx`
 - UI Base Primitives: `koc-paneli/src/components/ui/`
 - Navigation/Sidebar: `koc-paneli/src/components/layout/`

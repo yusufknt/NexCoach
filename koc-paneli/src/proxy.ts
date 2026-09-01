@@ -3,18 +3,20 @@ import { getDashboardPath, resolveUserRole } from '@/lib/auth'
 
 const coachRoutes = ['/coach']
 const studentRoutes = ['/student']
+const adminRoutes = ['/admin']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isCoachRoute = coachRoutes.some((route) => pathname.startsWith(route))
   const isStudentRoute = studentRoutes.some((route) => pathname.startsWith(route))
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route))
   const isLoginRoute = pathname.startsWith('/giris')
   const isRegisterRoute = pathname.startsWith('/kayit')
 
   const response = NextResponse.next({ request })
 
   // Only run session verification on protected routes or login/register
-  if (!isCoachRoute && !isStudentRoute && !isLoginRoute && !isRegisterRoute) {
+  if (!isCoachRoute && !isStudentRoute && !isAdminRoute && !isLoginRoute && !isRegisterRoute) {
     return response
   }
 
@@ -60,8 +62,11 @@ export async function proxy(request: NextRequest) {
           'X-API-Secret': API_SECRET,
         },
         body: JSON.stringify({
-          query: 'SELECT role FROM profiles WHERE id = ?',
-          params: [user.id],
+          query: `SELECT CASE
+            WHEN EXISTS (SELECT 1 FROM admins WHERE user_id = ?) THEN 'admin'
+            ELSE (SELECT role FROM profiles WHERE id = ? LIMIT 1)
+          END AS role`,
+          params: [user.id, user.id],
         }),
         cache: 'no-store',
         signal: AbortSignal.timeout(5000),
@@ -86,7 +91,7 @@ export async function proxy(request: NextRequest) {
     return response
   }
 
-  if (!isCoachRoute && !isStudentRoute) {
+  if (!isCoachRoute && !isStudentRoute && !isAdminRoute) {
     return response
   }
 
@@ -94,15 +99,87 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/giris', request.url))
   }
 
-  if (isCoachRoute && role !== 'coach') {
-    if (isStudentRoute) return response;
-    return NextResponse.redirect(new URL('/student/dashboard', request.url))
+  const expectedRole = isAdminRoute ? 'admin' : isCoachRoute ? 'coach' : 'student'
+  if (role !== expectedRole) {
+    return NextResponse.redirect(new URL(getDashboardPath(role), request.url))
+  }
+
+  if (isCoachRoute) {
+    const isAccessRoute = pathname.startsWith('/coach/uyelik')
+    let hasActiveAccess = false
+    try {
+      const res = await fetch(`${WORKER_URL}/api/db/first`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Secret': API_SECRET,
+        },
+        body: JSON.stringify({
+          query: 'SELECT status, starts_at, ends_at FROM coach_access WHERE coach_id = ? LIMIT 1',
+          params: [user.id],
+        }),
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
+      })
+      if (res.ok) {
+        const json = await res.json()
+        const access = json?.data as { status?: string; starts_at?: string | null; ends_at?: string | null } | null
+        hasActiveAccess = access?.status === 'active'
+          && (!access.starts_at || new Date(access.starts_at) <= new Date())
+          && (!access.ends_at || new Date(access.ends_at) > new Date())
+      }
+    } catch {}
+
+    if (!hasActiveAccess && !isAccessRoute) {
+      return NextResponse.redirect(new URL('/coach/uyelik', request.url))
+    }
+    if (hasActiveAccess && isAccessRoute) {
+      return NextResponse.redirect(new URL('/coach/dashboard', request.url))
+    }
   }
 
   if (isStudentRoute) {
     if (role !== 'student') {
       if (isCoachRoute) return response;
       return NextResponse.redirect(new URL('/coach/dashboard', request.url))
+    }
+
+    const isAccessRoute = pathname.startsWith('/student/uyelik')
+    let hasActiveAccess = false
+    try {
+      const res = await fetch(`${WORKER_URL}/api/db/first`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Secret': API_SECRET,
+        },
+        body: JSON.stringify({
+          query: `SELECT EXISTS (
+            SELECT 1 FROM coach_students cs
+            JOIN coach_access ca ON ca.coach_id = cs.coach_id
+            WHERE cs.student_id = ?
+              AND cs.status = 'active'
+              AND (cs.end_date IS NULL OR date(cs.end_date) >= date('now'))
+              AND ca.status = 'active'
+              AND (ca.starts_at IS NULL OR datetime(ca.starts_at) <= datetime('now'))
+              AND (ca.ends_at IS NULL OR datetime(ca.ends_at) > datetime('now'))
+          ) AS has_access`,
+          params: [user.id],
+        }),
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
+      })
+      if (res.ok) {
+        const json = await res.json()
+        hasActiveAccess = Boolean(json?.data?.has_access)
+      }
+    } catch {}
+
+    if (!hasActiveAccess && !isAccessRoute) {
+      return NextResponse.redirect(new URL('/student/uyelik', request.url))
+    }
+    if (hasActiveAccess && isAccessRoute) {
+      return NextResponse.redirect(new URL('/student/dashboard', request.url))
     }
 
     const isOnboardingRoute = pathname.startsWith('/student/onboarding')
@@ -142,6 +219,7 @@ export const config = {
   matcher: [
     '/coach/:path*',
     '/student/:path*',
+    '/admin/:path*',
     '/giris',
     '/kayit',
   ],

@@ -26,6 +26,10 @@ export type {
   Message,
   CalendarEvent,
   StudentProfile,
+  CoachAccess,
+  CoachAccessStatus,
+  CoachInvitation,
+  CoachInvitationStatus,
 } from './database'
 
 // --- API Types ---

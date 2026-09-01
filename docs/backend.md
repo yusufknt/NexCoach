@@ -16,6 +16,8 @@
 - Coach server actions: `koc-paneli/src/lib/coach/*-actions.ts`
 - Student backend queries: `koc-paneli/src/lib/student/*.server.ts`
 - Student server actions: `koc-paneli/src/lib/student/*-actions.ts`
+- Admin queries and authorization: `koc-paneli/src/lib/admin/admin.server.ts`, `koc-paneli/src/lib/admin/auth.ts`
+- Admin mutations and coach invitations: `koc-paneli/src/lib/admin/admin-actions.ts`, `koc-paneli/src/lib/admin/coach-invite.server.ts`
 - Email service: `koc-paneli/src/lib/email/send.ts`, `templates.ts`
 - Cron routes: `koc-paneli/src/app/api/cron/`
 
@@ -24,3 +26,5 @@
 - R2 upload/delete/list/sign işlemleri `X-API-Secret` olmadan fail-closed davranır. `API_SECRET` ve bağımsız `URL_SIGNING_SECRET` yalnızca runtime secret olmalıdır.
 - Genel D1 köprüsü istek boyutu, şema, parametre sayısı ve SQL işlem tipi açısından Hono/Zod ile doğrulanır. Kullanıcı mutasyonlarında ayrıca Server Action kimlik/yetki ve domain doğrulaması zorunludur.
 - Koç ayarları, mesajlar, takvim ve öğrenci hızlı ilerleme mutasyonları kimlik doğrulamalı Server Action üzerinden çalışır.
+- Admin coach invitation/access mutations use an admin-only Server Action guard and are recorded in `admin_audit_logs`.
+- Coach invitation email delivery uses Resend; when unavailable, the admin UI returns the one-time link for manual sharing.

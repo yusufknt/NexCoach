@@ -3,7 +3,7 @@
 // ============================================
 
 // --- User Roles ---
-export type UserRole = 'coach' | 'student'
+export type UserRole = 'admin' | 'coach' | 'student'
 
 // --- Gender ---
 export type Gender = 'male' | 'female'

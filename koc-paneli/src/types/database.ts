@@ -14,6 +14,37 @@ export type Profile = {
   created_at: string
 }
 
+export type CoachAccessStatus = 'pending' | 'active' | 'expired' | 'suspended'
+
+export type CoachAccess = {
+  coach_id: string
+  status: CoachAccessStatus
+  starts_at: string | null
+  ends_at: string | null
+  payment_note: string | null
+  activated_by_admin_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type CoachInvitationStatus = 'pending' | 'accepted' | 'expired' | 'cancelled'
+
+export type CoachInvitation = {
+  id: string
+  email: string
+  full_name: string
+  token_hash: string
+  status: CoachInvitationStatus
+  access_starts_at: string
+  access_ends_at: string
+  payment_note: string | null
+  invited_by_admin_id: string
+  accepted_by_coach_id: string | null
+  accepted_at: string | null
+  expires_at: string
+  created_at: string
+}
+
 // --- Packages ---
 export type Package = {
   id: string

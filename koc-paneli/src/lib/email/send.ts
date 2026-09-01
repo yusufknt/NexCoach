@@ -3,7 +3,7 @@
 import { resend, EMAIL_CONFIG } from './index'
 
 import { d1 } from '@/lib/cloudflare/d1'
-import { newMessageEmailTemplate, newStudentEmailTemplate, reminderEmailTemplate } from './templates'
+import { coachInvitationEmailTemplate, newMessageEmailTemplate, newStudentEmailTemplate, reminderEmailTemplate } from './templates'
 import type { NotificationPreferences } from '@/lib/coach/types'
 
 function getAppUrl(): string {
@@ -162,5 +162,31 @@ export async function sendReminderNotification(params: {
     })
   } catch (error) {
     console.error('Failed to send reminder email:', error)
+  }
+}
+
+export async function sendCoachInvitationEmail(params: {
+  email: string
+  coachName: string
+  inviteUrl: string
+  accessEndsAt: string
+}): Promise<boolean> {
+  if (!resend) return false
+
+  try {
+    await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to: params.email,
+      subject: 'NexCoach koç hesabınızı oluşturun',
+      html: coachInvitationEmailTemplate({
+        coachName: params.coachName,
+        inviteUrl: params.inviteUrl,
+        accessEndsAt: params.accessEndsAt,
+      }),
+    })
+    return true
+  } catch (error) {
+    console.error('Failed to send coach invitation email:', error)
+    return false
   }
 }

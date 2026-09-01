@@ -22,6 +22,21 @@ type ReminderTemplateParams = {
   meetingUrl: string | null
 }
 
+type CoachInvitationTemplateParams = {
+  coachName: string
+  inviteUrl: string
+  accessEndsAt: string
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
+}
+
 function baseStyles(): string {
   return `
     <style>
@@ -153,6 +168,41 @@ export function reminderEmailTemplate(params: ReminderTemplateParams): string {
       <p>Bu email ${EMAIL_CONFIG.appName} tarafindan gonderilmistir.</p>
       <p>Bildirim tercihlerinizi panelinizden degistirebilirsiniz.</p>
     </div>
+  </div>
+</body>
+</html>`
+}
+
+export function coachInvitationEmailTemplate(params: CoachInvitationTemplateParams): string {
+  const coachName = escapeHtml(params.coachName)
+  const inviteUrl = escapeHtml(params.inviteUrl)
+  const accessEndsAt = escapeHtml(params.accessEndsAt)
+
+  return `<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexCoach Koç Daveti</title>
+  ${baseStyles()}
+</head>
+<body>
+  <div class="container">
+    <div class="header"><h1>${EMAIL_CONFIG.appName}</h1></div>
+    <div class="content">
+      <h2>Koç hesabınızı oluşturun</h2>
+      <p>Merhaba <strong>${coachName}</strong>,</p>
+      <p>NexCoach koç paneline davet edildiniz. Aşağıdaki tek kullanımlık bağlantı 48 saat geçerlidir.</p>
+      <div class="preview-box">
+        <div class="info-row">
+          <span class="info-label">Panel erişim bitişi</span>
+          <span class="info-value">${accessEndsAt}</span>
+        </div>
+      </div>
+      <a href="${inviteUrl}" class="btn">Hesabımı Oluştur</a>
+      <p>Bu daveti siz beklemiyorsanız e-postayı yok sayabilirsiniz.</p>
+    </div>
+    <div class="footer"><p>Bu e-posta ${EMAIL_CONFIG.appName} tarafından gönderilmiştir.</p></div>
   </div>
 </body>
 </html>`

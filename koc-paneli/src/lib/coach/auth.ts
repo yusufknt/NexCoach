@@ -23,16 +23,23 @@ export async function getAuthenticatedCoachId(): Promise<string | null> {
     if (!data?.user) return null
     
     const user = data.user
-    const profile = await d1.first<{ role: string }>(
-      'SELECT role FROM profiles WHERE id = ?',
+    const profile = await d1.first<{ role: string; access_status: string | null; starts_at: string | null; ends_at: string | null }>(
+      `SELECT p.role, ca.status AS access_status, ca.starts_at, ca.ends_at
+       FROM profiles p
+       LEFT JOIN coach_access ca ON ca.coach_id = p.id
+       WHERE p.id = ?`,
       [user.id]
     )
 
-    if (profile?.role !== 'coach') {
+    const accessIsActive = profile?.access_status === 'active'
+      && (!profile.starts_at || new Date(profile.starts_at) <= new Date())
+      && (!profile.ends_at || new Date(profile.ends_at) > new Date())
+
+    if (profile?.role !== 'coach' || !accessIsActive) {
       return null
     }
     return user.id
-  } catch (e) {
+  } catch {
     return null
   }
 }
