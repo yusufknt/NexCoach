@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
     const ua = request.headers.get('user-agent');
     if (ua) reqHeaders.set('user-agent', ua);
     
-    const xff = request.headers.get('x-forwarded-for') || request.ip;
+    const xff = request.headers.get('x-forwarded-for');
     if (xff) reqHeaders.set('x-forwarded-for', xff);
 
     // Some environments need host/origin for CSRF bypass on API
