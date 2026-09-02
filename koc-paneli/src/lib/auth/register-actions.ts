@@ -53,9 +53,16 @@ export async function registerWithInvitation(
   const RAW_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_WORKER_URL || 'https://nexcoach-api.yusufk6509.workers.dev'
   const WORKER_URL = RAW_WORKER_URL.replace(/\/+$/, '')
   
+  const { headers } = await import('next/headers')
+  const headersList = await headers()
+  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
   const authResponse = await fetch(`${WORKER_URL}/api/auth/sign-up/email`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Origin': origin,
+    },
     body: JSON.stringify({ email, password, name: fullName }),
   })
 
