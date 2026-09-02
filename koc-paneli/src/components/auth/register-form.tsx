@@ -79,8 +79,7 @@ export function RegisterForm({ inviteToken, coachName, packageName }: RegisterFo
       return
     }
 
-    router.push('/giris?registered=1')
-    router.refresh()
+    window.location.assign('/giris?registered=1')
   }
 
   return (
