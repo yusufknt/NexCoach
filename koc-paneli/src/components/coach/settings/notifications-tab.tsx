@@ -42,13 +42,19 @@ export function NotificationsTab({ initialPreferences }: NotificationsTabProps) 
 
   const handleSave = async () => {
     setSaving(true)
-    const ok = await updateNotificationPreferences(prefs)
-    if (ok) {
-      showToast('success', 'Bildirim tercihleri kaydedildi!')
-    } else {
-      showToast('error', 'Tercihler kaydedilemedi.')
+    try {
+      const ok = await updateNotificationPreferences(prefs)
+      if (ok) {
+        showToast('success', 'Bildirim tercihleri kaydedildi!')
+      } else {
+        showToast('error', 'Tercihler kaydedilemedi.')
+      }
+    } catch (err) {
+      console.error(err)
+      showToast('error', 'Tercihler kaydedilirken beklenmeyen bir hata oluştu.')
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
   }
 
   const toggleItems = [

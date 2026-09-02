@@ -26,12 +26,17 @@ export async function updateProfile(input: unknown): Promise<boolean> {
   const parsed = profileSchema.safeParse(input)
   if (!coachId || !parsed.success) return false
 
-  await d1.run(
-    'UPDATE profiles SET full_name = ?, bio = ?, updated_at = ? WHERE id = ?',
-    [parsed.data.fullName, parsed.data.bio || null, new Date().toISOString(), coachId]
-  )
-  revalidatePath('/coach/ayarlar')
-  return true
+  try {
+    await d1.run(
+      'UPDATE profiles SET full_name = ?, bio = ?, updated_at = ? WHERE id = ?',
+      [parsed.data.fullName, parsed.data.bio || null, new Date().toISOString(), coachId]
+    )
+    revalidatePath('/coach/ayarlar')
+    return true
+  } catch (error) {
+    console.error('Error in updateProfile:', error)
+    return false
+  }
 }
 
 export async function uploadAvatar(formData: FormData): Promise<string | null> {
@@ -40,23 +45,28 @@ export async function uploadAvatar(formData: FormData): Promise<string | null> {
   if (!coachId || !(file instanceof File) || file.size === 0) return null
   if (file.size > MAX_AVATAR_SIZE || !ALLOWED_AVATAR_TYPES.has(file.type)) return null
 
-  const extensionByType: Record<string, string> = {
-    'image/jpeg': 'jpg',
-    'image/png': 'png',
-    'image/webp': 'webp',
-  }
-  const filePath = `${coachId}/avatar.${extensionByType[file.type]}`
-  const { error } = await cfStorage.upload('avatars', filePath, await file.arrayBuffer(), file.type)
-  if (error) return null
+  try {
+    const extensionByType: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    }
+    const filePath = `${coachId}/avatar.${extensionByType[file.type]}`
+    const { error } = await cfStorage.upload('avatars', filePath, await file.arrayBuffer(), file.type)
+    if (error) return null
 
-  const publicUrl = cfStorage.getPublicUrl('avatars', filePath).data.publicUrl
-  const urlWithCacheBuster = `${publicUrl}?v=${Date.now()}`
-  await d1.run(
-    'UPDATE profiles SET avatar_url = ?, updated_at = ? WHERE id = ?',
-    [urlWithCacheBuster, new Date().toISOString(), coachId]
-  )
-  revalidatePath('/coach/ayarlar')
-  return urlWithCacheBuster
+    const publicUrl = cfStorage.getPublicUrl('avatars', filePath).data.publicUrl
+    const urlWithCacheBuster = `${publicUrl}?v=${Date.now()}`
+    await d1.run(
+      'UPDATE profiles SET avatar_url = ?, updated_at = ? WHERE id = ?',
+      [urlWithCacheBuster, new Date().toISOString(), coachId]
+    )
+    revalidatePath('/coach/ayarlar')
+    return urlWithCacheBuster
+  } catch (error) {
+    console.error('Error in uploadAvatar:', error)
+    return null
+  }
 }
 
 export async function updateNotificationPreferences(input: unknown): Promise<boolean> {
@@ -64,11 +74,16 @@ export async function updateNotificationPreferences(input: unknown): Promise<boo
   const parsed = notificationPreferencesSchema.safeParse(input)
   if (!coachId || !parsed.success) return false
 
-  const preferences: NotificationPreferences = parsed.data
-  await d1.run(
-    'UPDATE profiles SET notification_preferences = ?, updated_at = ? WHERE id = ?',
-    [JSON.stringify(preferences), new Date().toISOString(), coachId]
-  )
-  revalidatePath('/coach/ayarlar')
-  return true
+  try {
+    const preferences: NotificationPreferences = parsed.data
+    await d1.run(
+      'UPDATE profiles SET notification_preferences = ?, updated_at = ? WHERE id = ?',
+      [JSON.stringify(preferences), new Date().toISOString(), coachId]
+    )
+    revalidatePath('/coach/ayarlar')
+    return true
+  } catch (error) {
+    console.error('Error in updateNotificationPreferences:', error)
+    return false
+  }
 }

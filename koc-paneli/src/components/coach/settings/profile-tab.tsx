@@ -36,27 +36,41 @@ export function ProfileTab({ profile }: ProfileTabProps) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
-    const formData = new FormData()
-    formData.set('avatar', file)
-    const url = await uploadAvatar(formData)
-    if (url) {
-      setAvatarUrl(url)
-      showToast('success', 'Profil fotoğrafı güncellendi!')
-    } else {
-      showToast('error', 'Fotoğraf yüklenemedi.')
+    try {
+      const formData = new FormData()
+      formData.set('avatar', file)
+      const url = await uploadAvatar(formData)
+      if (url) {
+        setAvatarUrl(url)
+        showToast('success', 'Profil fotoğrafı güncellendi!')
+      } else {
+        showToast('error', 'Fotoğraf yüklenemedi.')
+      }
+    } catch (err) {
+      console.error(err)
+      showToast('error', 'Fotoğraf yüklenirken beklenmeyen bir hata oluştu.')
+    } finally {
+      setUploading(false)
+      // Reset input value so the same file can be selected again
+      e.target.value = ''
     }
-    setUploading(false)
   }
 
   const handleSaveProfile = async () => {
     setSaving(true)
-    const ok = await updateProfile({ fullName, bio })
-    if (ok) {
-      showToast('success', 'Profil kaydedildi!')
-    } else {
-      showToast('error', 'Profil kaydedilemedi.')
+    try {
+      const ok = await updateProfile({ fullName, bio })
+      if (ok) {
+        showToast('success', 'Profil kaydedildi!')
+      } else {
+        showToast('error', 'Profil kaydedilemedi.')
+      }
+    } catch (err) {
+      console.error(err)
+      showToast('error', 'Profil kaydedilirken beklenmeyen bir hata oluştu.')
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
   }
 
   const handleChangePassword = async () => {
@@ -69,16 +83,22 @@ export function ProfileTab({ profile }: ProfileTabProps) {
       return
     }
     setChangingPassword(true)
-    const result = await changePassword(currentPassword, newPassword)
-    if (result.success) {
-      showToast('success', 'Şifre başarıyla değiştirildi!')
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
-    } else {
-      showToast('error', result.error ?? 'Şifre değiştirilemedi.')
+    try {
+      const result = await changePassword(currentPassword, newPassword)
+      if (result.success) {
+        showToast('success', 'Şifre başarıyla değiştirildi!')
+        setCurrentPassword('')
+        setNewPassword('')
+        setConfirmPassword('')
+      } else {
+        showToast('error', result.error ?? 'Şifre değiştirilemedi.')
+      }
+    } catch (err) {
+      console.error(err)
+      showToast('error', 'Şifre değiştirilirken beklenmeyen bir hata oluştu.')
+    } finally {
+      setChangingPassword(false)
     }
-    setChangingPassword(false)
   }
 
   return (
