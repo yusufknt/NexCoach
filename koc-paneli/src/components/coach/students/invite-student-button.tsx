@@ -5,11 +5,7 @@ import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
 import { InviteStudentModal } from './invite-student-modal'
 
-type InviteStudentButtonProps = {
-  packages: { id: string; name: string; price: number }[]
-}
-
-export function InviteStudentButton({ packages }: InviteStudentButtonProps) {
+export function InviteStudentButton() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -24,7 +20,6 @@ export function InviteStudentButton({ packages }: InviteStudentButtonProps) {
       <InviteStudentModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        packages={packages}
       />
     </>
   )

@@ -7,6 +7,7 @@ import { ProgramsTab } from '@/components/coach/student/programs/programs-tab'
 import { ReportsTab } from '@/components/coach/student/reports-tab'
 import type { ProgressEntry } from '@/types'
 import type { ProgramListItem } from '@/lib/coach/programs.server'
+import type { CoachStudentDetail } from '@/lib/coach/types'
 import type { StudentOnboardingView } from '@/lib/coach/onboarding.server'
 
 type StudentDetailTabsProps = {
@@ -15,6 +16,7 @@ type StudentDetailTabsProps = {
   entries: ProgressEntry[]
   programs: ProgramListItem[]
   onboarding: StudentOnboardingView | null
+  student: CoachStudentDetail
 }
 
 function TabPlaceholder({ title }: { title: string }) {
@@ -31,6 +33,7 @@ export function StudentDetailTabs({
   entries,
   programs,
   onboarding,
+  student,
 }: StudentDetailTabsProps) {
   return (
     <Tabs defaultValue="progress">
@@ -43,7 +46,7 @@ export function StudentDetailTabs({
       </TabsList>
 
       <TabsContent value="profile" className="mt-6">
-        <ProfileTab onboarding={onboarding} />
+        <ProfileTab onboarding={onboarding} student={student} />
       </TabsContent>
 
       <TabsContent value="progress" className="mt-6">

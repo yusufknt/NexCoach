@@ -12,21 +12,7 @@ export async function createInvitation(formData: FormData): Promise<ActionResult
     return { success: false, error: 'Oturum bulunamadı.' }
   }
 
-  const packageId = String(formData.get('packageId') ?? '').trim()
   const email = String(formData.get('email') ?? '').trim() || null
-
-  if (!packageId) {
-    return { success: false, error: 'Paket seçimi gerekli.' }
-  }
-
-  const pkg = await d1.first<{ id: string }>(
-    'SELECT id FROM packages WHERE id = ? AND coach_id = ?',
-    [packageId, coachId]
-  )
-
-  if (!pkg) {
-    return { success: false, error: 'Paket bulunamadı.' }
-  }
 
   const token = crypto.randomUUID()
   const id = crypto.randomUUID()
@@ -36,8 +22,8 @@ export async function createInvitation(formData: FormData): Promise<ActionResult
   try {
     await d1.run(
       `INSERT INTO invitations (id, coach_id, package_id, token, email, status, expires_at)
-       VALUES (?, ?, ?, ?, ?, 'pending', ?)`,
-      [id, coachId, packageId, token, email, expiresAt.toISOString()]
+       VALUES (?, ?, NULL, ?, ?, 'pending', ?)`,
+      [id, coachId, token, email, expiresAt.toISOString()]
     )
 
     revalidateTag('invitations', 'max')

@@ -10,15 +10,12 @@ import { createInvitation } from '@/lib/coach/invite-actions'
 type InviteStudentModalProps = {
   isOpen: boolean
   onClose: () => void
-  packages: { id: string; name: string; price: number }[]
 }
 
 export function InviteStudentModal({
   isOpen,
   onClose,
-  packages,
 }: InviteStudentModalProps) {
-  const [selectedPackage, setSelectedPackage] = useState('')
   const [email, setEmail] = useState('')
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -34,7 +31,6 @@ export function InviteStudentModal({
     setInviteLink(null)
 
     const formData = new FormData()
-    formData.append('packageId', selectedPackage)
     if (email.trim()) {
       formData.append('email', email.trim())
     }
@@ -59,7 +55,6 @@ export function InviteStudentModal({
   }
 
   function handleClose() {
-    setSelectedPackage('')
     setEmail('')
     setInviteLink(null)
     setError(null)
@@ -131,31 +126,6 @@ export function InviteStudentModal({
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="invite-package" className="text-muted-foreground">
-                Paket Seçin <span className="text-red-400">*</span>
-              </Label>
-              <select
-                id="invite-package"
-                value={selectedPackage}
-                onChange={(e) => setSelectedPackage(e.target.value)}
-                className="coach-input w-full rounded-xl px-3 py-2 text-sm"
-                required
-              >
-                <option value="">Paket seçin...</option>
-                {packages.map((pkg) => (
-                  <option key={pkg.id} value={pkg.id}>
-                    {pkg.name} — {new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(pkg.price)}
-                  </option>
-                ))}
-              </select>
-              {packages.length === 0 && (
-                <p className="text-xs text-muted-foreground/70">
-                  Davet oluşturmak için önce aktif bir paket eklemeniz gerekiyor.
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="invite-email" className="text-muted-foreground">
                 Öğrenci Emaili <span className="text-muted-foreground/50">(opsiyonel)</span>
               </Label>
@@ -187,7 +157,7 @@ export function InviteStudentModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || packages.length === 0}
+                disabled={isSubmitting}
                 className="px-6"
               >
                 {isSubmitting ? 'Oluşturuluyor...' : 'Davet Linki Oluştur'}

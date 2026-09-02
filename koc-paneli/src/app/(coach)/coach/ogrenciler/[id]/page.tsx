@@ -42,6 +42,7 @@ export default async function StudentDetailPage({
         entries={entries ?? []}
         programs={programs ?? []}
         onboarding={onboarding}
+        student={student}
       />
       </div>
     </div>
