@@ -11,8 +11,8 @@ const eventFieldsSchema = z.object({
   event_type: z.enum(['available', 'session', 'blocked']),
   start_time: z.string().min(1).max(50),
   end_time: z.string().min(1).max(50),
-  student_id: z.string().uuid().nullable().optional(),
-  student_ids: z.array(z.string().uuid()).optional(),
+  student_id: z.string().nullable().optional(),
+  student_ids: z.array(z.string()).optional(),
   description: z.string().trim().max(2000),
   meeting_url: z.string().max(2000).optional(),
 }).strict()
@@ -37,6 +37,7 @@ export async function createCalendarEvent(coachId: string, data: CalendarEventFo
   try {
     const authenticatedCoachId = await getAuthenticatedCoachId()
     const parsed = eventSchema.safeParse(data)
+    
     if (authenticatedCoachId !== coachId || !parsed.success) return null
     
     const parsedData = parsed.data
