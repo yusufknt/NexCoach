@@ -300,10 +300,10 @@ export function EventModal({
               <Label htmlFor="meeting-url" className="text-foreground">Görüşme Linki (Zoom/Meet vb.)</Label>
               <Input
                 id="meeting-url"
-                type="url"
+                type="text"
                 value={meetingUrl}
                 onChange={(e) => setMeetingUrl(e.target.value)}
-                placeholder="https://meet.google.com/..."
+                placeholder="https://meet.google.com/... veya ID"
                 className="coach-input mt-1.5"
               />
             </div>

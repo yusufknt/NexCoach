@@ -235,19 +235,21 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
       </div>
 
       {/* Modal */}
-      <EventModal
-        isOpen={modalOpen}
-        onClose={() => {
-          setModalOpen(false)
-          setEditingEvent(undefined)
-        }}
-        onSave={handleSave}
-        onDelete={modalMode === 'edit' || modalMode === 'view' ? handleDelete : undefined}
-        onEdit={() => setModalMode('edit')}
-        students={students}
-        initialData={editingEvent}
-        mode={modalMode}
-      />
+      {modalOpen && (
+        <EventModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false)
+            setEditingEvent(undefined)
+          }}
+          onSave={handleSave}
+          onDelete={modalMode === 'edit' || modalMode === 'view' ? handleDelete : undefined}
+          onEdit={() => setModalMode('edit')}
+          students={students}
+          initialData={editingEvent}
+          mode={modalMode}
+        />
+      )}
     </>
   )
 }
