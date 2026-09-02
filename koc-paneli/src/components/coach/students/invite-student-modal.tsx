@@ -68,18 +68,18 @@ export function InviteStudentModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-2xl border border-[#27272A] bg-[#18181B] p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#C3F400]/10">
-              <UserPlus className="h-5 w-5 text-[#C3F400]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+              <UserPlus className="h-5 w-5 text-primary" />
             </div>
-            <h2 className="text-lg font-bold text-white">Öğrenci Davet Et</h2>
+            <h2 className="text-lg font-bold text-foreground">Öğrenci Davet Et</h2>
           </div>
           <button
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-[#C4C9AC] transition-colors hover:bg-[#2A2A2C] hover:text-[#E5E1E4]"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="h-5 w-5" />
           </button>
@@ -87,17 +87,17 @@ export function InviteStudentModal({
 
         {inviteLink ? (
           <div className="space-y-4">
-            <div className="rounded-xl border border-[#C3F400]/20 bg-[#C3F400]/5 p-4">
-              <p className="text-sm font-medium text-[#C3F400]">
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+              <p className="text-sm font-medium text-primary">
                 Davet linki oluşturuldu!
               </p>
-              <p className="mt-1 text-xs text-[#C4C9AC]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Bu linki öğrencinize gönderin. Link 7 gün boyunca geçerlidir.
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[#C4C9AC]">Davet Linki</Label>
+              <Label className="text-muted-foreground">Davet Linki</Label>
               <div className="flex gap-2">
                 <Input
                   readOnly
@@ -107,7 +107,7 @@ export function InviteStudentModal({
                 <Button
                   type="button"
                   onClick={handleCopy}
-                  className="bg-[#C3F400] px-4 text-[#283500] hover:bg-[#ABD600]"
+                  className="px-4"
                 >
                   {copied ? (
                     <Check className="h-4 w-4" />
@@ -122,7 +122,7 @@ export function InviteStudentModal({
               <Button
                 type="button"
                 onClick={handleClose}
-                className="bg-[#C3F400] px-6 text-[#283500] hover:bg-[#ABD600]"
+                className="px-6"
               >
                 Kapat
               </Button>
@@ -131,7 +131,7 @@ export function InviteStudentModal({
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="invite-package" className="text-[#C4C9AC]">
+              <Label htmlFor="invite-package" className="text-muted-foreground">
                 Paket Seçin <span className="text-red-400">*</span>
               </Label>
               <select
@@ -149,15 +149,15 @@ export function InviteStudentModal({
                 ))}
               </select>
               {packages.length === 0 && (
-                <p className="text-xs text-[#C4C9AC]/70">
+                <p className="text-xs text-muted-foreground/70">
                   Davet oluşturmak için önce aktif bir paket eklemeniz gerekiyor.
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invite-email" className="text-[#C4C9AC]">
-                Öğrenci Emaili <span className="text-[#C4C9AC]/50">(opsiyonel)</span>
+              <Label htmlFor="invite-email" className="text-muted-foreground">
+                Öğrenci Emaili <span className="text-muted-foreground/50">(opsiyonel)</span>
               </Label>
               <Input
                 id="invite-email"
@@ -167,7 +167,7 @@ export function InviteStudentModal({
                 placeholder="ogrenci@email.com"
                 className="coach-input"
               />
-              <p className="text-xs text-[#C4C9AC]/70">
+              <p className="text-xs text-muted-foreground/70">
                 Email girerseniz, öğrenciye davet linki otomatik gönderilecek.
               </p>
             </div>
@@ -181,14 +181,14 @@ export function InviteStudentModal({
                 type="button"
                 variant="ghost"
                 onClick={handleClose}
-                className="text-[#C4C9AC] hover:bg-[#2A2A2C]"
+                className="text-muted-foreground hover:bg-muted"
               >
                 İptal
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting || packages.length === 0}
-                className="bg-[#C3F400] px-6 text-[#283500] hover:bg-[#ABD600]"
+                className="px-6"
               >
                 {isSubmitting ? 'Oluşturuluyor...' : 'Davet Linki Oluştur'}
               </Button>
