@@ -34,8 +34,28 @@ export function EventModal({
   const [eventType] = useState<'available' | 'session' | 'blocked'>(
     initialData?.event_type ?? 'session'
   )
-  const [startTime, setStartTime] = useState(initialData?.start_time ?? '')
-  const [endTime, setEndTime] = useState(initialData?.end_time ?? '')
+  
+  // Extract date and time from ISO strings
+  const parseDateStr = (iso: string | undefined, defaultTime: string) => {
+    if (!iso) return { date: new Date().toISOString().split('T')[0], time: defaultTime }
+    // Handles local string like "2024-05-15T10:00"
+    const [d, t] = iso.split('T')
+    return { date: d || new Date().toISOString().split('T')[0], time: t ? t.slice(0, 5) : defaultTime }
+  }
+
+  const initStart = parseDateStr(initialData?.start_time, '10:00')
+  const initEnd = parseDateStr(initialData?.end_time, '11:00')
+
+  // If month view click gives 00:00 or 03:00, use defaults for a better UX when creating
+  if (mode === 'create' && (initStart.time === '00:00' || initStart.time === '03:00')) {
+    initStart.time = '12:30'
+    initEnd.time = '13:30'
+  }
+
+  const [eventDate, setEventDate] = useState(initStart.date)
+  const [startTimeStr, setStartTimeStr] = useState(initStart.time)
+  const [endTimeStr, setEndTimeStr] = useState(initEnd.time)
+
   const [studentId, setStudentId] = useState(initialData?.student_id ?? '')
   const [studentIds, setStudentIds] = useState<string[]>([])
   const [description, setDescription] = useState(initialData?.description ?? '')
@@ -48,8 +68,8 @@ export function EventModal({
     onSave({
       title: title || (eventType === 'available' ? 'Müsait' : eventType === 'blocked' ? 'Bloklu' : 'Görüşme'),
       event_type: eventType,
-      start_time: startTime,
-      end_time: endTime,
+      start_time: `${eventDate}T${startTimeStr}`,
+      end_time: `${eventDate}T${endTimeStr}`,
       student_id: mode === 'edit' ? (studentId || null) : undefined,
       student_ids: mode === 'create' ? studentIds : undefined,
       description,
@@ -68,9 +88,9 @@ export function EventModal({
   }
 
   // Format dates for view mode
-  const startDate = startTime ? new Date(startTime) : null
-  const formattedDate = startDate ? startDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''
-  const timeStr = startDate ? `${formatTime(startTime)} - ${formatTime(endTime)}` : ''
+  const startDateObj = eventDate ? new Date(eventDate) : null
+  const formattedDate = startDateObj ? startDateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''
+  const timeStr = `${startTimeStr} - ${endTimeStr}`
 
   if (mode === 'view') {
     return (
@@ -182,28 +202,41 @@ export function EventModal({
           </div>
 
           {/* Date / Time */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-3">
             <div>
-              <Label htmlFor="start-time" className="text-foreground">Başlangıç</Label>
+              <Label htmlFor="event-date" className="text-foreground">Tarih</Label>
               <Input
-                id="start-time"
-                type="datetime-local"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                id="event-date"
+                type="date"
+                value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}
                 required
                 className="coach-input mt-1.5"
               />
             </div>
-            <div>
-              <Label htmlFor="end-time" className="text-foreground">Bitiş</Label>
-              <Input
-                id="end-time"
-                type="datetime-local"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                required
-                className="coach-input mt-1.5"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="start-time" className="text-foreground">Başlangıç Saati</Label>
+                <Input
+                  id="start-time"
+                  type="time"
+                  value={startTimeStr}
+                  onChange={(e) => setStartTimeStr(e.target.value)}
+                  required
+                  className="coach-input mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="end-time" className="text-foreground">Bitiş Saati</Label>
+                <Input
+                  id="end-time"
+                  type="time"
+                  value={endTimeStr}
+                  onChange={(e) => setEndTimeStr(e.target.value)}
+                  required
+                  className="coach-input mt-1.5"
+                />
+              </div>
             </div>
           </div>
 
