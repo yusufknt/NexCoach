@@ -39,11 +39,13 @@ export async function updateProfile(input: unknown): Promise<boolean> {
   }
 }
 
-export async function uploadAvatar(formData: FormData): Promise<string | null> {
+export async function uploadAvatar(formData: FormData): Promise<{ url?: string; error?: string }> {
   const coachId = await getAuthenticatedCoachId()
   const file = formData.get('avatar')
-  if (!coachId || !(file instanceof File) || file.size === 0) return null
-  if (file.size > MAX_AVATAR_SIZE || !ALLOWED_AVATAR_TYPES.has(file.type)) return null
+  if (!coachId) return { error: 'Oturum bulunamadı' }
+  if (!(file instanceof File) || file.size === 0) return { error: 'Geçersiz veya boş dosya' }
+  if (file.size > MAX_AVATAR_SIZE) return { error: `Dosya boyutu çok büyük (Maks 5MB). Yüklenen: ${(file.size / 1024 / 1024).toFixed(1)}MB` }
+  if (!ALLOWED_AVATAR_TYPES.has(file.type)) return { error: `Geçersiz dosya formatı (${file.type}). Sadece JPEG, PNG ve WebP kabul edilir.` }
 
   try {
     const extensionByType: Record<string, string> = {
@@ -52,8 +54,11 @@ export async function uploadAvatar(formData: FormData): Promise<string | null> {
       'image/webp': 'webp',
     }
     const filePath = `${coachId}/avatar.${extensionByType[file.type]}`
-    const { error } = await cfStorage.upload('avatars', filePath, await file.arrayBuffer(), file.type)
-    if (error) return null
+    const { error: uploadError } = await cfStorage.upload('avatars', filePath, await file.arrayBuffer(), file.type)
+    if (uploadError) {
+      console.error('R2 Upload error:', uploadError)
+      return { error: 'Dosya sunucuya yüklenirken bir hata oluştu.' }
+    }
 
     const publicUrl = cfStorage.getPublicUrl('avatars', filePath).data.publicUrl
     const urlWithCacheBuster = `${publicUrl}?v=${Date.now()}`
@@ -62,10 +67,10 @@ export async function uploadAvatar(formData: FormData): Promise<string | null> {
       [urlWithCacheBuster, new Date().toISOString(), coachId]
     )
     revalidatePath('/coach/ayarlar')
-    return urlWithCacheBuster
+    return { url: urlWithCacheBuster }
   } catch (error) {
     console.error('Error in uploadAvatar:', error)
-    return null
+    return { error: 'Veritabanı güncellenirken bir hata oluştu.' }
   }
 }
 

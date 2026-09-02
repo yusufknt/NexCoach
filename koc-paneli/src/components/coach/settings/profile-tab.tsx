@@ -39,12 +39,12 @@ export function ProfileTab({ profile }: ProfileTabProps) {
     try {
       const formData = new FormData()
       formData.set('avatar', file)
-      const url = await uploadAvatar(formData)
-      if (url) {
-        setAvatarUrl(url)
+      const result = await uploadAvatar(formData)
+      if (result.url) {
+        setAvatarUrl(result.url)
         showToast('success', 'Profil fotoğrafı güncellendi!')
       } else {
-        showToast('error', 'Fotoğraf yüklenemedi.')
+        showToast('error', result.error ?? 'Fotoğraf yüklenemedi.')
       }
     } catch (err) {
       console.error(err)
@@ -128,7 +128,7 @@ export function ProfileTab({ profile }: ProfileTabProps) {
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp"
                 className="hidden"
                 onChange={handleAvatarUpload}
               />
