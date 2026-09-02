@@ -14,7 +14,7 @@ const eventFieldsSchema = z.object({
   student_id: z.string().uuid().nullable().optional(),
   student_ids: z.array(z.string().uuid()).optional(),
   description: z.string().trim().max(2000),
-  meeting_url: z.union([z.literal(''), z.url().max(2000)]),
+  meeting_url: z.string().max(2000).optional().nullable(),
 }).strict()
 
 const eventSchema = eventFieldsSchema.refine(
