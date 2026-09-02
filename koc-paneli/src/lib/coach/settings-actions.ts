@@ -28,8 +28,8 @@ export async function updateProfile(input: unknown): Promise<boolean> {
 
   try {
     await d1.run(
-      'UPDATE profiles SET full_name = ?, bio = ?, updated_at = ? WHERE id = ?',
-      [parsed.data.fullName, parsed.data.bio || null, new Date().toISOString(), coachId]
+      'UPDATE profiles SET full_name = ?, bio = ? WHERE id = ?',
+      [parsed.data.fullName, parsed.data.bio || null, coachId]
     )
     revalidatePath('/coach/ayarlar')
     return true
@@ -63,8 +63,8 @@ export async function uploadAvatar(formData: FormData): Promise<{ url?: string; 
     const publicUrl = cfStorage.getPublicUrl('avatars', filePath).data.publicUrl
     const urlWithCacheBuster = `${publicUrl}?v=${Date.now()}`
     await d1.run(
-      'UPDATE profiles SET avatar_url = ?, updated_at = ? WHERE id = ?',
-      [urlWithCacheBuster, new Date().toISOString(), coachId]
+      'UPDATE profiles SET avatar_url = ? WHERE id = ?',
+      [urlWithCacheBuster, coachId]
     )
     revalidatePath('/coach/ayarlar')
     return { url: urlWithCacheBuster }
@@ -82,8 +82,8 @@ export async function updateNotificationPreferences(input: unknown): Promise<boo
   try {
     const preferences: NotificationPreferences = parsed.data
     await d1.run(
-      'UPDATE profiles SET notification_preferences = ?, updated_at = ? WHERE id = ?',
-      [JSON.stringify(preferences), new Date().toISOString(), coachId]
+      'UPDATE profiles SET notification_preferences = ? WHERE id = ?',
+      [JSON.stringify(preferences), coachId]
     )
     revalidatePath('/coach/ayarlar')
     return true
