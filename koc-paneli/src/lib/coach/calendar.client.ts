@@ -11,7 +11,8 @@ const eventFieldsSchema = z.object({
   event_type: z.enum(['available', 'session', 'blocked']),
   start_time: z.string().min(1).max(50),
   end_time: z.string().min(1).max(50),
-  student_id: z.string().uuid().nullable(),
+  student_id: z.string().uuid().nullable().optional(),
+  student_ids: z.array(z.string().uuid()).optional(),
   description: z.string().trim().max(2000),
   meeting_url: z.union([z.literal(''), z.url().max(2000)]),
 }).strict()
@@ -37,33 +38,47 @@ export async function createCalendarEvent(coachId: string, data: CalendarEventFo
     const authenticatedCoachId = await getAuthenticatedCoachId()
     const parsed = eventSchema.safeParse(data)
     if (authenticatedCoachId !== coachId || !parsed.success) return null
-    if (!await ownsStudent(coachId, parsed.data.student_id)) return null
-    data = parsed.data
-    const id = crypto.randomUUID()
-    await d1.run(
-      `INSERT INTO calendar_events (id, coach_id, title, event_type, start_time, end_time, student_id, description, meeting_url)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        id,
-        coachId,
-        data.title,
-        data.event_type,
-        data.start_time,
-        data.end_time,
-        data.student_id || null,
-        data.description || null,
-        data.meeting_url || null,
-      ]
-    )
+    
+    const parsedData = parsed.data
+    const studentIdsToProcess = (parsedData.student_ids && parsedData.student_ids.length > 0) 
+      ? parsedData.student_ids 
+      : [parsedData.student_id || null]
+
+    for (const sId of studentIdsToProcess) {
+      if (!await ownsStudent(coachId, sId)) return null
+    }
+
+    const createdEvents = []
+
+    for (const sId of studentIdsToProcess) {
+      const id = crypto.randomUUID()
+      await d1.run(
+        `INSERT INTO calendar_events (id, coach_id, title, event_type, start_time, end_time, student_id, description, meeting_url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          coachId,
+          parsedData.title,
+          parsedData.event_type,
+          parsedData.start_time,
+          parsedData.end_time,
+          sId,
+          parsedData.description || null,
+          parsedData.meeting_url || null,
+        ]
+      )
+
+      const created = await d1.first<{ id: string; start_time: string; end_time: string; student_id: string | null }>(
+        'SELECT * FROM calendar_events WHERE id = ?',
+        [id]
+      )
+      if (created) createdEvents.push(created)
+    }
 
     revalidatePath('/coach/takvim')
     revalidatePath('/coach/dashboard')
 
-    const created = await d1.first<{ id: string; start_time: string; end_time: string }>(
-      'SELECT * FROM calendar_events WHERE id = ?',
-      [id]
-    )
-    return created
+    return createdEvents
   } catch (error) {
     console.error('Error creating event:', error)
     return null

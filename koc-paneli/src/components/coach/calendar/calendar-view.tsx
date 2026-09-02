@@ -3,9 +3,7 @@
 import { useRef, useMemo } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import listPlugin from '@fullcalendar/list'
 import type { EventInput, EventClickArg, DateSelectArg, EventDropArg } from '@fullcalendar/core'
 
 type CalendarEvent = {
@@ -113,19 +111,16 @@ export function CalendarView({ events, onDateSelect, onEventClick, onEventDrop }
       `}</style>
       <FullCalendar
         ref={calendarRef}
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+        plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+          right: 'dayGridMonth',
         }}
         buttonText={{
           today: 'Bugün',
           month: 'Ay',
-          week: 'Hafta',
-          day: 'Gün',
-          list: 'Liste',
         }}
         locale="tr"
         firstDay={1}

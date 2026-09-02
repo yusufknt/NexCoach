@@ -90,12 +90,11 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
 
   const handleSave = useCallback(async (data: CalendarEventFormData) => {
     if (modalMode === 'create') {
-      const result = await createCalendarEvent(coachId, data)
-      if (result) {
-        const studentName = students.find((s) => s.id === data.student_id)?.fullName ?? null
-        setEvents((prev) => [
-          ...prev,
-          {
+      const results = await createCalendarEvent(coachId, data)
+      if (results && results.length > 0) {
+        const newEvents = results.map(result => {
+          const studentName = students.find((s) => s.id === result.student_id)?.fullName ?? null
+          return {
             id: result.id,
             title: data.title,
             start: result.start_time,
@@ -103,10 +102,11 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
             eventType: data.event_type,
             description: data.description,
             meetingUrl: data.meeting_url,
-            studentId: data.student_id,
+            studentId: result.student_id,
             studentName,
-          },
-        ])
+          }
+        })
+        setEvents((prev) => [...prev, ...newEvents])
       }
     } else if (editingEvent?.id) {
       const success = await updateCalendarEvent(editingEvent.id, data)
@@ -123,7 +123,7 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
                   eventType: data.event_type,
                   description: data.description,
                   meetingUrl: data.meeting_url,
-                  studentId: data.student_id,
+                  studentId: data.student_id ?? null,
                   studentName,
                 }
               : e

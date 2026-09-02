@@ -84,7 +84,8 @@ export type CalendarEventFormData = {
   event_type: 'available' | 'session' | 'blocked'
   start_time: string
   end_time: string
-  student_id: string | null
+  student_id?: string | null
+  student_ids?: string[]
   description: string
   meeting_url: string
 }
