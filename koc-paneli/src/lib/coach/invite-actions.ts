@@ -28,6 +28,24 @@ export async function createInvitation(formData: FormData): Promise<ActionResult
 
     revalidateTag('invitations', 'max')
     revalidatePath('/coach/ogrenciler')
+
+    if (email) {
+      const { sendStudentInvitationEmail } = await import('@/lib/email/send')
+      const coachProfile = await d1.first<{ full_name: string }>(
+        'SELECT full_name FROM profiles WHERE id = ?',
+        [coachId]
+      )
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || 'https://nexcoach.app'
+      const inviteUrl = `${appUrl}/kayit?invite=${token}`
+
+      await sendStudentInvitationEmail({
+        email,
+        coachName: coachProfile?.full_name ?? 'Koç',
+        inviteUrl,
+      })
+    }
+
     return { success: true, token }
   } catch (error) {
     console.error('Error creating invitation:', error)

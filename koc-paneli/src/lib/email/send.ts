@@ -190,3 +190,29 @@ export async function sendCoachInvitationEmail(params: {
     return false
   }
 }
+
+export async function sendStudentInvitationEmail(params: {
+  email: string
+  coachName: string
+  inviteUrl: string
+}): Promise<boolean> {
+  if (!resend) return false
+
+  try {
+    const { studentInvitationEmailTemplate } = await import('./templates')
+    
+    await resend.emails.send({
+      from: EMAIL_CONFIG.from,
+      to: params.email,
+      subject: `${params.coachName} sizi NexCoach'a davet ediyor!`,
+      html: studentInvitationEmailTemplate({
+        coachName: params.coachName,
+        inviteUrl: params.inviteUrl,
+      }),
+    })
+    return true
+  } catch (error) {
+    console.error('Failed to send student invitation email:', error)
+    return false
+  }
+}

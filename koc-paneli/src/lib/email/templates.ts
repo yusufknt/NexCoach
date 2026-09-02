@@ -207,3 +207,38 @@ export function coachInvitationEmailTemplate(params: CoachInvitationTemplatePara
 </body>
 </html>`
 }
+
+type StudentInvitationTemplateParams = {
+  coachName: string
+  inviteUrl: string
+}
+
+export function studentInvitationEmailTemplate(params: StudentInvitationTemplateParams): string {
+  const coachName = escapeHtml(params.coachName)
+  const inviteUrl = escapeHtml(params.inviteUrl)
+
+  return `<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexCoach Öğrenci Daveti</title>
+  ${baseStyles()}
+</head>
+<body>
+  <div class="container">
+    <div class="header"><h1>${EMAIL_CONFIG.appName}</h1></div>
+    <div class="content">
+      <h2>Koçunuz Sizi Davet Ediyor!</h2>
+      <p>Merhaba,</p>
+      <p><strong>${coachName}</strong> sizi NexCoach platformuna katılmaya davet etti. Öğrenci hesabınızı oluşturup hemen başlayabilirsiniz.</p>
+      <p>Aşağıdaki bağlantıya tıklayarak kaydınızı tamamlayabilirsiniz. Bu link 7 gün boyunca geçerlidir.</p>
+      <a href="${inviteUrl}" class="btn">Hesabımı Oluştur</a>
+      <p>Link çalışmıyorsa aşağıdaki adresi kopyalayıp tarayıcınıza yapıştırabilirsiniz:</p>
+      <p style="font-size: 12px; color: #6b7280; word-break: break-all;">${inviteUrl}</p>
+    </div>
+    <div class="footer"><p>Bu e-posta ${EMAIL_CONFIG.appName} tarafından gönderilmiştir.</p></div>
+  </div>
+</body>
+</html>`
+}
