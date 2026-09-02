@@ -13,6 +13,7 @@ export async function createInvitation(formData: FormData): Promise<ActionResult
   }
 
   const email = String(formData.get('email') ?? '').trim() || null
+  const packageId = String(formData.get('packageId') ?? '').trim() || null
 
   const token = crypto.randomUUID()
   const id = crypto.randomUUID()
@@ -22,8 +23,8 @@ export async function createInvitation(formData: FormData): Promise<ActionResult
   try {
     await d1.run(
       `INSERT INTO invitations (id, coach_id, package_id, token, email, status, expires_at)
-       VALUES (?, ?, NULL, ?, ?, 'pending', ?)`,
-      [id, coachId, token, email, expiresAt.toISOString()]
+       VALUES (?, ?, ?, ?, ?, 'pending', ?)`,
+      [id, coachId, packageId, token, email, expiresAt.toISOString()]
     )
 
     revalidateTag('invitations', 'max')

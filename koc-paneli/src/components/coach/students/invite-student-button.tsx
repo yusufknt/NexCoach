@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
 import { InviteStudentModal } from './invite-student-modal'
 
-export function InviteStudentButton() {
+export function InviteStudentButton({ packages = [] }: { packages?: { id: string; name: string; price: number }[] }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -20,6 +20,7 @@ export function InviteStudentButton() {
       <InviteStudentModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
+        packages={packages}
       />
     </>
   )

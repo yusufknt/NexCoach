@@ -10,13 +10,16 @@ import { createInvitation } from '@/lib/coach/invite-actions'
 type InviteStudentModalProps = {
   isOpen: boolean
   onClose: () => void
+  packages?: { id: string; name: string; price: number }[]
 }
 
 export function InviteStudentModal({
   isOpen,
   onClose,
+  packages = [],
 }: InviteStudentModalProps) {
   const [email, setEmail] = useState('')
+  const [packageId, setPackageId] = useState('')
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -33,6 +36,9 @@ export function InviteStudentModal({
     const formData = new FormData()
     if (email.trim()) {
       formData.append('email', email.trim())
+    }
+    if (packageId.trim()) {
+      formData.append('packageId', packageId.trim())
     }
 
     const result = await createInvitation(formData)
@@ -56,6 +62,7 @@ export function InviteStudentModal({
 
   function handleClose() {
     setEmail('')
+    setPackageId('')
     setInviteLink(null)
     setError(null)
     setCopied(false)
@@ -141,6 +148,30 @@ export function InviteStudentModal({
                 Email girerseniz, öğrenciye davet linki otomatik gönderilecek.
               </p>
             </div>
+
+            {packages.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="invite-package" className="text-muted-foreground">
+                  Paket <span className="text-muted-foreground/50">(opsiyonel)</span>
+                </Label>
+                <select
+                  id="invite-package"
+                  value={packageId}
+                  onChange={(e) => setPackageId(e.target.value)}
+                  className="coach-input w-full h-10 px-3 py-2 text-sm appearance-none bg-background border border-input rounded-md"
+                >
+                  <option value="">Paket Seçmeyin</option>
+                  {packages.map((pkg) => (
+                    <option key={pkg.id} value={pkg.id}>
+                      {pkg.name} ({pkg.price} ₺)
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground/70">
+                  Öğrenci kayıt olduğunda otomatik olarak bu pakete atanır.
+                </p>
+              </div>
+            )}
 
             {error && (
               <p className="text-sm text-destructive">{error}</p>
