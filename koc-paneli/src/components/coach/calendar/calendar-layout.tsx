@@ -33,7 +33,7 @@ type CalendarLayoutProps = {
 export function CalendarLayout({ coachId, initialEvents, initialSummary, students }: CalendarLayoutProps) {
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents)
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create')
   const [editingEvent, setEditingEvent] = useState<(Partial<CalendarEventFormData> & { id?: string }) | undefined>()
 
   const toLocalDatetime = (isoStr: string) => {
@@ -55,7 +55,7 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
   const handleEventClick = useCallback((info: EventClickArg) => {
     const evt = info.event
     const props = evt.extendedProps
-    setModalMode('edit')
+    setModalMode('view')
     setEditingEvent({
       id: evt.id,
       title: evt.title,
@@ -145,14 +145,14 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
     setEditingEvent(undefined)
   }, [editingEvent])
 
-  const handleAddAvailability = () => {
+  const handleAddMeeting = () => {
     const now = new Date()
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0)
-    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0)
+    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 0)
     setModalMode('create')
     setEditingEvent({
-      event_type: 'available',
-      title: 'Müsait',
+      event_type: 'session',
+      title: '',
       start_time: toLocalDatetime(start.toISOString()),
       end_time: toLocalDatetime(end.toISOString()),
     })
@@ -166,9 +166,9 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
           title="Takvim"
           description="Randevularınızı ve müsaitliğinizi yönetin."
           action={
-            <Button onClick={handleAddAvailability} className="bg-primary text-primary-foreground hover:bg-primary">
+            <Button onClick={handleAddMeeting} className="bg-primary text-primary-foreground hover:bg-primary">
               <Plus className="mr-2 h-4 w-4" />
-              Müsait Saat Ekle
+              Görüşme Ekle
             </Button>
           }
         />
@@ -199,7 +199,8 @@ export function CalendarLayout({ coachId, initialEvents, initialSummary, student
           setEditingEvent(undefined)
         }}
         onSave={handleSave}
-        onDelete={modalMode === 'edit' ? handleDelete : undefined}
+        onDelete={modalMode === 'edit' || modalMode === 'view' ? handleDelete : undefined}
+        onEdit={() => setModalMode('edit')}
         students={students}
         initialData={editingEvent}
         mode={modalMode}
