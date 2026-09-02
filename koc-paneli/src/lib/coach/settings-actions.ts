@@ -50,12 +50,13 @@ export async function uploadAvatar(formData: FormData): Promise<string | null> {
   if (error) return null
 
   const publicUrl = cfStorage.getPublicUrl('avatars', filePath).data.publicUrl
+  const urlWithCacheBuster = `${publicUrl}?v=${Date.now()}`
   await d1.run(
     'UPDATE profiles SET avatar_url = ?, updated_at = ? WHERE id = ?',
-    [publicUrl, new Date().toISOString(), coachId]
+    [urlWithCacheBuster, new Date().toISOString(), coachId]
   )
   revalidatePath('/coach/ayarlar')
-  return publicUrl
+  return urlWithCacheBuster
 }
 
 export async function updateNotificationPreferences(input: unknown): Promise<boolean> {
