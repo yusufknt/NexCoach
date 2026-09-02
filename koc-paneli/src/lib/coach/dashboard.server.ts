@@ -253,9 +253,9 @@ async function getMonthlyStudentGrowth(coachId: string): Promise<MonthlyStudentG
   twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11)
   twelveMonthsAgo.setDate(1)
 
-  const students = await d1.query<{ id: string; created_at: string }>(
-    'SELECT id, created_at FROM coach_students WHERE coach_id = ? AND created_at >= ?',
-    [coachId, twelveMonthsAgo.toISOString()]
+  const students = await d1.query<{ id: string; start_date: string; end_date: string | null }>(
+    "SELECT id, start_date, end_date FROM coach_students WHERE coach_id = ? AND status = 'active'",
+    [coachId]
   )
 
   const result: MonthlyStudentGrowth[] = []
@@ -266,8 +266,12 @@ async function getMonthlyStudentGrowth(coachId: string): Promise<MonthlyStudentG
     const nextMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 1)
 
     const count = (students ?? []).filter((s) => {
-      const date = new Date(s.created_at)
-      return date >= month && date < nextMonth
+      const startDate = new Date(s.start_date)
+      const endDate = s.end_date ? new Date(s.end_date) : null
+      
+      // Is active in this month if start date is before the end of the month
+      // AND (no end date OR end date is after the start of the month)
+      return startDate < nextMonth && (!endDate || endDate >= month)
     }).length
 
     result.push({

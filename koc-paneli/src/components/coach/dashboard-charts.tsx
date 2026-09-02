@@ -168,7 +168,7 @@ export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
             </div>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-                {latestGrowth} Yeni Danışan
+                {latestGrowth} Aktif Danışan
               </span>
               <span className={`inline-flex items-center text-xs font-semibold ${
                 growthDifference < 0 ? 'text-rose-600' : 'text-blue-600'
@@ -185,7 +185,7 @@ export function DashboardCharts({ revenue, growth }: DashboardChartsProps) {
 
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-            <span className="text-xs font-medium text-muted-foreground">Yeni Danışan</span>
+            <span className="text-xs font-medium text-muted-foreground">Aktif Danışan</span>
           </div>
         </div>
 

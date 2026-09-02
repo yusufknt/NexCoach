@@ -47,6 +47,7 @@ export async function extendMembershipAction(
     )
 
     revalidateTag('students', 'max')
+    revalidateTag('dashboard', 'max')
     revalidatePath(`/coach/ogrenciler/[id]`)
     
     return { success: true }
